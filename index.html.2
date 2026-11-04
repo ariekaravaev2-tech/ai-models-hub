@@ -1,5 +1,185 @@
-מדריך מודלי AI
-דף ראשי
-מחירים
-השוואה
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Models Hub - השוואת מחירי מודלים</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #3b82f6;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border-color: #334155;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 16px;
+            direction: rtl;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        h1 {
+            color: var(--accent-color);
+            margin-bottom: 8px;
+        }
+        p.subtitle {
+            color: var(--text-sub);
+            font-size: 14px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .price-badge {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: var(--accent-color);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .card-desc {
+            color: var(--text-sub);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        .calc-section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
 
+    <header>
+        <h1>AI Models Hub</h1>
+        <p class="subtitle">השוואת מודלי AI מובילים ומחשבון מחירים בזמן אמת</p>
+    </header>
+
+    <div class="grid">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">ChatGPT Plus</span>
+                <span class="price-badge">$20/חודש</span>
+            </div>
+            <div class="card-desc">גישה למודלים GPT-4o, ניתוח נתונים, יצירת תמונות (DALL-E) וחיפוש בזמן אמת.</div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Claude Pro</span>
+                <span class="price-badge">$20/חודש</span>
+            </div>
+            <div class="card-desc">גישה ל-Claude 3.5 Sonnet, חלון הקשר ענקי של 200K טוקנים, מעולה לתכנות וכתיבה.</div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Gemini Advanced</span>
+                <span class="price-badge">$19.99/חודש</span>
+            </div>
+            <div class="card-desc">אינטגרציה מלאה למוצרי Google, מעבד 1M טוקנים, כולל 2TB אחסון ב-Google One.</div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Perplexity Pro</span>
+                <span class="price-badge">$20/חודש</span>
+            </div>
+            <div class="card-desc">מנוע מחקר וחיפוש מתקדם, גישה למגוון מודלים לבחירה (GPT-4o, Claude) והעלאת קבצים.</div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Mistral Le Chat Pro</span>
+                <span class="price-badge">$14.99/חודש</span>
+            </div>
+            <div class="card-desc">פתרון אירופאי חזק, מהיר מאוד ומתאים לתכנות ולעיבוד שפות מרובות בעלות נמוכה.</div>
+        </div>
+    </div>
+
+    <div class="calc-section">
+        <h2>מחשבון עלויות לפי תקופה</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>מודל</th>
+                    <th>יום</th>
+                    <th>שבוע</th>
+                    <th>חודש</th>
+                    <th>שנה</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ChatGPT / Claude / Perplexity</td>
+                    <td>$0.66</td>
+                    <td>$4.61</td>
+                    <td>$20.00</td>
+                    <td>$240.00</td>
+                </tr>
+                <tr>
+                    <td>Gemini Advanced</td>
+                    <td>$0.66</td>
+                    <td>$4.61</td>
+                    <td>$19.99</td>
+                    <td>$239.88</td>
+                </tr>
+                <tr>
+                    <td>Mistral Le Chat Pro</td>
+                    <td>$0.50</td>
+                    <td>$3.46</td>
+                    <td>$14.99</td>
+                    <td>$179.88</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
