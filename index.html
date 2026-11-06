@@ -104,6 +104,32 @@ button { cursor: pointer; }
 .note { margin-top: 20px; color: var(--muted); font-size: 15px; max-width: 72ch; }
 .stamp { display: inline-block; margin-top: 14px; background: var(--accent-soft); color: var(--accent); border-radius: 8px; padding: 4px 12px; font-size: 15px; font-weight: 600; }
 
+
+.token-trigger{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:9px 14px;font-weight:700;white-space:nowrap}
+.token-trigger svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.token-panel{margin-top:16px;padding:20px;background:var(--surface);border:1px solid var(--accent);border-radius:14px}
+.token-panel[hidden]{display:none!important}
+.token-panel h2{font-size:23px}
+.token-intro,.token-footnote,.token-source{color:var(--muted)}
+.token-intro{margin:6px 0 16px}
+.token-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.token-control{display:grid;gap:8px;min-width:0}
+.token-control label{font-weight:600}
+.token-control input[type=range]{width:100%;accent-color:var(--accent)}
+.token-control input[type=number]{width:100%}
+.token-value{font-family:var(--font-display);font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.token-summary{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--muted);margin-top:12px}
+.token-table-wrap{overflow-x:auto;margin-top:18px;border:1px solid var(--line);border-radius:10px}
+.token-table{border-collapse:collapse;width:100%;min-width:620px;background:var(--surface)}
+.token-table th,.token-table td{text-align:start;padding:11px 13px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.token-table th{color:var(--muted);font-size:14px}
+.token-table tr:last-child td{border-bottom:0}
+.token-table .total{color:var(--accent);font-weight:700;font-family:var(--font-display)}
+.token-source{font-size:14px;margin-top:14px}
+.token-source a{color:var(--accent)}
+.token-footnote{font-size:14px;margin-top:10px}
+@media(max-width:560px){.token-trigger{flex:1;justify-content:center}.token-panel{padding:15px}}
+
 .tbl { margin-top: 18px; overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
 .tbl table { border-collapse: collapse; width: 100%; min-width: 520px; }
 .tbl th, .tbl td { text-align: start; vertical-align: top; padding: 12px 16px; border-bottom: 1px solid var(--line); }
@@ -206,10 +232,52 @@ function home() {
   }).join("");
   return '<section class="hero"><h1>כל המודלים המובילים במקום אחד</h1>' +
     '<p>לחצו על מודל כדי לראות במה הוא טוב ובמה הוא פחות. אפשר לחפש לפי שם או לסנן לפי תחום.</p></section>' +
-    '<div class="tools"><input class="field grow" id="q" type="search" placeholder="חיפוש מודל או יצרן" value="' + esc(query) + '" aria-label="חיפוש"></div>' +
+    '<div class="tools"><input class="field grow" id="q" type="search" placeholder="חיפוש מודל או יצרן" value="' + esc(query) + '" aria-label="חיפוש">
+<button class="token-trigger" id="token-toggle" type="button" aria-expanded="false" aria-controls="token-panel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 19.5 7v10L12 21.2 4.5 17V7L12 2.8Z"/><path d="m8.5 9 3.5-2 3.5 2v6L12 17l-3.5-2V9Z"/></svg>מחשבון טוקנים</button></div>
+<section class="token-panel" id="token-panel" hidden><h2>כמה יעלה להשתמש במודלים?</h2><p class="token-intro">בחרו את מספר הטוקנים הכולל. המחשבון מחלק אותם לקלט ולפלט ומחשב את העלות לפי מחיר ה-API של כל מודל.</p>
+<div class="token-controls"><div class="token-control"><label for="token-range">כמות טוקנים כוללת</label><input id="token-range" type="range" min="1000" max="10000000" step="1000" value="1000000"><div class="token-value" id="token-display">1,000,000 טוקנים</div><input class="field" id="token-count" type="number" min="1" max="1000000000" step="1000" value="1000000" aria-label="מספר טוקנים מדויק"></div>
+<div class="token-control"><label for="input-share">איזה חלק מהטוקנים הוא קלט?</label><input id="input-share" type="range" min="0" max="100" step="5" value="50"><div class="token-value" id="share-display">50% קלט · 50% פלט</div><div class="token-footnote">קלט הוא הטקסט שנשלח למודל. פלט הוא התשובה שהוא מחזיר.</div></div></div>
+<div class="token-summary" id="token-breakdown"></div><div class="token-control" style="margin-top:14px"><label><input id="deepseek-peak" type="checkbox"> לחשב לפי תעריף שעות שיא של DeepSeek</label></div>
+<div class="token-table-wrap"><table class="token-table"><thead><tr><th>מודל API</th><th>קלט למיליון</th><th>פלט למיליון</th><th>עלות קלט</th><th>עלות פלט</th><th>סה״כ</th></tr></thead><tbody id="token-results"></tbody></table></div>
+<p class="token-footnote">החישוב הוא אומדן לפי טוקנים רגילים, ללא הנחות על מטמון, Batch, כלים, חיפוש, תמונות או חיובים נוספים. בפועל, סוג התוכן, אורך ההקשר ותנאי הספק יכולים לשנות את המחיר.</p>
+<div class="token-source">מחירים מדפי התמחור הרשמיים: <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noopener">OpenAI</a> · <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener">Anthropic</a> · <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener">Google</a> · <a href="https://docs.x.ai/developers/pricing" target="_blank" rel="noopener">xAI</a> · <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">DeepSeek</a> · <a href="https://mistral.ai/pricing/api/" target="_blank" rel="noopener">Mistral</a> · <a href="https://cohere.com/pricing" target="_blank" rel="noopener">Cohere</a>. נבדק ב-6 בנובמבר 2026.</div></section>' +
     '<div class="chips" role="group" aria-label="סינון לפי תחום">' + chips + '</div>' +
     '<div class="grid" id="grid"></div><div id="detail-slot"></div>';
 }
+
+var API_MODELS=[
+{name:"GPT-5.5",vendor:"OpenAI",input:5,output:30,url:"https://developers.openai.com/api/docs/models/gpt-5.5"},
+{name:"GPT-5.4",vendor:"OpenAI",input:2.5,output:15,url:"https://developers.openai.com/api/docs/models/gpt-5.4"},
+{name:"GPT-5.4 Mini",vendor:"OpenAI",input:0.75,output:4.5,url:"https://developers.openai.com/api/docs/models/gpt-5.4-mini"},
+{name:"Claude Opus 5.5",vendor:"Anthropic",input:4,output:20,url:"https://platform.claude.com/docs/en/about-claude/pricing"},
+{name:"Claude Sonnet 5.5",vendor:"Anthropic",input:2,output:10,url:"https://platform.claude.com/docs/en/about-claude/pricing"},
+{name:"Claude Haiku 5.5",vendor:"Anthropic",input:0.1,output:0.5,url:"https://platform.claude.com/docs/en/about-claude/pricing"},
+{name:"Gemini 3.1 Flash",vendor:"Google",input:0.5,output:3,url:"https://ai.google.dev/gemini-api/docs/pricing"},
+{name:"Gemini 3.1 Flash-Lite",vendor:"Google",input:0.25,output:1.5,url:"https://ai.google.dev/gemini-api/docs/pricing"},
+{name:"Grok 4.6",vendor:"xAI",input:2,output:6,url:"https://docs.x.ai/developers/pricing"},
+{name:"DeepSeek V4.1 Flash",vendor:"DeepSeek",input:0.15,output:0.6,peakInput:0.3,peakOutput:1.2,url:"https://api-docs.deepseek.com/quick_start/pricing/"},
+{name:"DeepSeek V4 Pro",vendor:"DeepSeek",input:0.66,output:1.98,peakInput:1.32,peakOutput:3.96,url:"https://api-docs.deepseek.com/quick_start/pricing/"},
+{name:"Mistral Medium 3.5",vendor:"Mistral",input:1.5,output:7.5,url:"https://mistral.ai/pricing/api/"},
+{name:"Mistral Small 4",vendor:"Mistral",input:0.15,output:0.6,url:"https://mistral.ai/pricing/api/"},
+{name:"Mistral Large 3",vendor:"Mistral",input:0.5,output:1.5,url:"https://mistral.ai/pricing/api/"},
+{name:"Cohere Command R+",vendor:"Cohere",input:2.5,output:10,url:"https://cohere.com/pricing"},
+{name:"Cohere Command R",vendor:"Cohere",input:0.5,output:1.5,url:"https://cohere.com/pricing"}
+];
+var tokenCount=1000000,inputShare=50;
+function tokenUSD(v){var s=v<0.01?v.toFixed(5):v<1?v.toFixed(4):v.toFixed(3);return "$"+s.replace(/0+$/,"").replace(/\.$/,"");}
+function tokenFmt(v){return Math.round(v).toLocaleString("en-US");}
+function renderTokenCalculator(){
+ var range=document.getElementById("token-range"),count=document.getElementById("token-count");if(!range||!count)return;
+ range.value=Math.min(10000000,Math.max(1000,tokenCount));count.value=tokenCount;
+ document.getElementById("token-display").textContent=tokenFmt(tokenCount)+" טוקנים";
+ document.getElementById("share-display").textContent=inputShare+"% קלט · "+(100-inputShare)+"% פלט";
+ var inputTokens=tokenCount*inputShare/100,outputTokens=tokenCount-inputTokens;
+ document.getElementById("token-breakdown").innerHTML="<span>קלט: <b>"+tokenFmt(inputTokens)+"</b></span><span>פלט: <b>"+tokenFmt(outputTokens)+"</b></span><span>סה״כ: <b>"+tokenFmt(tokenCount)+"</b></span>";
+ var peak=document.getElementById("deepseek-peak").checked;
+ var rows=API_MODELS.map(function(m){var ip=peak&&m.peakInput!=null?m.peakInput:m.input,op=peak&&m.peakOutput!=null?m.peakOutput:m.output;var ic=inputTokens/1000000*ip,oc=outputTokens/1000000*op;return {m:m,ip:ip,op:op,ic:ic,oc:oc,total:ic+oc};}).sort(function(a,b){return a.total-b.total;});
+ document.getElementById("token-results").innerHTML=rows.map(function(r){return "<tr><td><b>"+esc(r.m.name)+"</b><br><span class='token-footnote'>"+esc(r.m.vendor)+"</span></td><td>"+tokenUSD(r.ip)+"</td><td>"+tokenUSD(r.op)+"</td><td>"+tokenUSD(r.ic)+"</td><td>"+tokenUSD(r.oc)+"</td><td class='total'>"+tokenUSD(r.total)+"</td></tr>";}).join("");
+}
+
 function renderGrid() {
   var q = query.trim().toLowerCase();
   var list = MODELS.filter(function (m) {
@@ -301,6 +369,7 @@ function render() {
 
 app.addEventListener("click", function (e) {
   var c = e.target.closest(".card"), s = e.target.closest("[data-p]"), f = e.target.closest("[data-f]"), cm = e.target.closest("[data-cmp]");
+  if(e.target.closest("#token-toggle")){var panel=document.getElementById("token-panel"),opening=panel.hidden;panel.hidden=!opening;document.getElementById("token-toggle").setAttribute("aria-expanded",String(opening));if(opening)renderTokenCalculator();return;}
   if (c) {
     openId = openId === c.dataset.id ? null : c.dataset.id;
     renderGrid(); renderDetail();
@@ -313,10 +382,13 @@ app.addEventListener("click", function (e) {
 });
 app.addEventListener("input", function (e) {
   if (e.target.id === "q") { query = e.target.value; renderGrid(); }
+  else if(e.target.id==="token-range"||e.target.id==="token-count"){var n=Number(e.target.value);if(Number.isFinite(n)&&n>=1){tokenCount=Math.min(e.target.id==="token-range"?10000000:1000000000,Math.floor(n));renderTokenCalculator();}}
+  else if(e.target.id==="input-share"){inputShare=Number(e.target.value);renderTokenCalculator();}
   else if (e.target.id === "days") { daysVal = Math.max(1, Math.min(365, parseInt(e.target.value, 10) || 1)); renderRows(); }
 });
 app.addEventListener("change", function (e) {
   if (e.target.id === "sort") { sortMode = e.target.value; renderRows(); }
+  else if(e.target.id==="deepseek-peak"){renderTokenCalculator();}
   else if (e.target.id === "cmpA") { cmpA = e.target.value; renderCompare(); }
   else if (e.target.id === "cmpB") { cmpB = e.target.value; renderCompare(); }
 });
