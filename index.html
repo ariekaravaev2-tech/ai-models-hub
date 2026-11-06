@@ -240,28 +240,22 @@ function home() {
 <div class="token-summary" id="token-breakdown"></div><div class="token-control" style="margin-top:14px"><label><input id="deepseek-peak" type="checkbox"> לחשב לפי תעריף שעות שיא של DeepSeek</label></div>
 <div class="token-table-wrap"><table class="token-table"><thead><tr><th>מודל API</th><th>קלט למיליון</th><th>פלט למיליון</th><th>עלות קלט</th><th>עלות פלט</th><th>סה״כ</th></tr></thead><tbody id="token-results"></tbody></table></div>
 <p class="token-footnote">החישוב הוא אומדן לפי טוקנים רגילים, ללא הנחות על מטמון, Batch, כלים, חיפוש, תמונות או חיובים נוספים. בפועל, סוג התוכן, אורך ההקשר ותנאי הספק יכולים לשנות את המחיר.</p>
-<div class="token-source">מחירים מדפי התמחור הרשמיים: <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noopener">OpenAI</a> · <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener">Anthropic</a> · <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener">Google</a> · <a href="https://docs.x.ai/developers/pricing" target="_blank" rel="noopener">xAI</a> · <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">DeepSeek</a> · <a href="https://mistral.ai/pricing/api/" target="_blank" rel="noopener">Mistral</a> · <a href="https://cohere.com/pricing" target="_blank" rel="noopener">Cohere</a>. נבדק ב-6 בנובמבר 2026.</div></section>' +
+<div class="token-source">מחירים מדפי התמחור הרשמיים. המחירים במחשבון מתייחסים לשימוש טקסט רגיל, לפני הנחות מטמון או Batch: <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noopener">OpenAI</a> · <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener">Anthropic</a> · <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener">Google</a> · <a href="https://docs.x.ai/developers/pricing" target="_blank" rel="noopener">xAI</a> · <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">DeepSeek</a> · <a href="https://mistral.ai/pricing/api/" target="_blank" rel="noopener">Mistral</a> · <a href="https://cohere.com/pricing" target="_blank" rel="noopener">Cohere</a>. נבדק ב-6 בנובמבר 2026.</div></section>' +
     '<div class="chips" role="group" aria-label="סינון לפי תחום">' + chips + '</div>' +
     '<div class="grid" id="grid"></div><div id="detail-slot"></div>';
 }
 
 var API_MODELS=[
 {name:"GPT-5.5",vendor:"OpenAI",input:5,output:30,url:"https://developers.openai.com/api/docs/models/gpt-5.5"},
-{name:"GPT-5.4",vendor:"OpenAI",input:2.5,output:15,url:"https://developers.openai.com/api/docs/models/gpt-5.4"},
-{name:"GPT-5.4 Mini",vendor:"OpenAI",input:0.75,output:4.5,url:"https://developers.openai.com/api/docs/models/gpt-5.4-mini"},
+{name:"GPT-5.4",vendor:"OpenAI",input:2.5,output:15,url:"https://developers.openai.com/api/docs/pricing"},
+{name:"GPT-5.4 Mini",vendor:"OpenAI",input:0.75,output:4.5,url:"https://developers.openai.com/api/docs/pricing"},
 {name:"Claude Opus 5.5",vendor:"Anthropic",input:4,output:20,url:"https://platform.claude.com/docs/en/about-claude/pricing"},
 {name:"Claude Sonnet 5.5",vendor:"Anthropic",input:2,output:10,url:"https://platform.claude.com/docs/en/about-claude/pricing"},
-{name:"Claude Haiku 5.5",vendor:"Anthropic",input:0.1,output:0.5,url:"https://platform.claude.com/docs/en/about-claude/pricing"},
-{name:"Gemini 3.1 Flash",vendor:"Google",input:0.5,output:3,url:"https://ai.google.dev/gemini-api/docs/pricing"},
+{name:"Claude Haiku 5.5",vendor:"Anthropic",input:0.1,output:0.5,url:"https://platform.claude.com/docs/en/about-claude/pricing",note:"עד 100 אלף טוקני קלט בבקשה"},
 {name:"Gemini 3.1 Flash-Lite",vendor:"Google",input:0.25,output:1.5,url:"https://ai.google.dev/gemini-api/docs/pricing"},
 {name:"Grok 4.6",vendor:"xAI",input:2,output:6,url:"https://docs.x.ai/developers/pricing"},
 {name:"DeepSeek V4.1 Flash",vendor:"DeepSeek",input:0.15,output:0.6,peakInput:0.3,peakOutput:1.2,url:"https://api-docs.deepseek.com/quick_start/pricing/"},
-{name:"DeepSeek V4 Pro",vendor:"DeepSeek",input:0.66,output:1.98,peakInput:1.32,peakOutput:3.96,url:"https://api-docs.deepseek.com/quick_start/pricing/"},
-{name:"Mistral Medium 3.5",vendor:"Mistral",input:1.5,output:7.5,url:"https://mistral.ai/pricing/api/"},
-{name:"Mistral Small 4",vendor:"Mistral",input:0.15,output:0.6,url:"https://mistral.ai/pricing/api/"},
-{name:"Mistral Large 3",vendor:"Mistral",input:0.5,output:1.5,url:"https://mistral.ai/pricing/api/"},
-{name:"Cohere Command R+",vendor:"Cohere",input:2.5,output:10,url:"https://cohere.com/pricing"},
-{name:"Cohere Command R",vendor:"Cohere",input:0.5,output:1.5,url:"https://cohere.com/pricing"}
+{name:"DeepSeek V4 Pro",vendor:"DeepSeek",input:0.66,output:1.98,peakInput:1.32,peakOutput:3.96,url:"https://api-docs.deepseek.com/quick_start/pricing/"}
 ];
 var tokenCount=1000000,inputShare=50;
 function tokenUSD(v){var s=v<0.01?v.toFixed(5):v<1?v.toFixed(4):v.toFixed(3);return "$"+s.replace(/0+$/,"").replace(/\.$/,"");}
