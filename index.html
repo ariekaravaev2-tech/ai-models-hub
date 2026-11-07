@@ -2,276 +2,434 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>html{color-scheme:light dark}body{margin:0}[hidden]{display:none!important}</style>
-</head>
-<body>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>מדריך מודלי AI</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<script>document.documentElement.lang = "he"; document.documentElement.dir = "rtl";</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Assistant:wght@400;600&display=swap">
 <style>
-/* Layout: sticky top bar (ראשי / מחירים / השוואה), card grid with search and filters, detail sheet on click, price rows with period switch, sort and day calculator, side-by-side compare table */
+/* Layout: sticky top bar whose buttons open windows (button grows, window grows out of it); home = search + token button + model cards; floating FAQ bot */
 :root {
-  --bg: #f3f5f7;
-  --surface: #ffffff;
-  --fg: #14202b;
-  --muted: #5c6b78;
-  --line: #dbe1e7;
-  --accent: #0b7a75;
-  --accent-soft: #d9efed;
-  --accent-fg: #ffffff;
+  --bg: #f3f5f7; --surface: #ffffff; --fg: #14202b; --muted: #5c6b78; --line: #dbe1e7;
+  --accent: #0b7a75; --accent-soft: #d9efed; --accent-fg: #ffffff;
+  --flame: #e8742c; --ad: #fff4d6; --ad-line: #e3c36a; --scrim: rgba(10, 20, 28, .55);
   --font-display: "Rubik", "Arial Hebrew", Arial, sans-serif;
   --font-body: "Assistant", "Arial Hebrew", Arial, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0f171e; --surface: #17222b; --fg: #e8eef3; --muted: #93a3b1;
-    --line: #28363f; --accent: #3fc3bb; --accent-soft: #123a38; --accent-fg: #06201f;
+    --bg: #0f171e; --surface: #17222b; --fg: #e8eef3; --muted: #93a3b1; --line: #28363f;
+    --accent: #3fc3bb; --accent-soft: #123a38; --accent-fg: #06201f;
+    --flame: #ff9a52; --ad: #2c2610; --ad-line: #6b5a20; --scrim: rgba(0, 0, 0, .65);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0f171e; --surface: #17222b; --fg: #e8eef3; --muted: #93a3b1;
-  --line: #28363f; --accent: #3fc3bb; --accent-soft: #123a38; --accent-fg: #06201f;
+  --bg: #0f171e; --surface: #17222b; --fg: #e8eef3; --muted: #93a3b1; --line: #28363f;
+  --accent: #3fc3bb; --accent-soft: #123a38; --accent-fg: #06201f;
+  --flame: #ff9a52; --ad: #2c2610; --ad-line: #6b5a20; --scrim: rgba(0, 0, 0, .65);
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+html { color-scheme: light dark; }
 body {
-  background: var(--bg); color: var(--fg);
+  margin: 0; background: var(--bg); color: var(--fg);
   font-family: var(--font-body); font-size: 17px; line-height: 1.6;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 0 48px;
+  padding-block: 0 96px;
 }
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+[hidden] { display: none !important; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--surface); }
 .wrap { max-width: 1040px; margin-inline: auto; }
 h1, h2, h3 { font-family: var(--font-display); line-height: 1.25; text-wrap: balance; margin: 0; }
-button, input, select { font: inherit; color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+a { color: var(--accent); }
 
-.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: var(--surface); border-bottom: 1px solid var(--line); margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-inline: max(16px, env(safe-area-inset-left, 0px)); }
-.bar-in { max-width: 1040px; margin-inline: auto; display: flex; align-items: center; gap: 8px 24px; min-height: 56px; flex-wrap: wrap; padding-block: 4px; }
-.brand { font-family: var(--font-display); font-weight: 700; font-size: 19px; }
-.nav { display: flex; gap: 4px; flex-wrap: wrap; }
-.nav a { text-decoration: none; color: var(--muted); padding: 8px 14px; border-radius: 8px; font-weight: 600; }
-.nav a[aria-current="page"] { background: var(--accent-soft); color: var(--accent); }
+/* top bar */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--surface); border-bottom: 1px solid var(--line); margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-inline: max(16px, env(safe-area-inset-left, 0px)); }
+.bar-in { max-width: 1040px; margin-inline: auto; display: flex; align-items: center; gap: 8px 14px; min-height: 60px; flex-wrap: wrap; padding-block: 6px; }
+.brand { font-family: var(--font-display); font-weight: 700; font-size: 19px; margin-inline-end: 6px; }
+.nav { display: flex; gap: 6px; flex-wrap: wrap; }
+.navbtn { background: none; border: 1px solid transparent; color: var(--muted); padding: 8px 14px; border-radius: 10px; font-weight: 600; transition: transform .28s cubic-bezier(.3,1.4,.5,1), background-color .2s, color .2s; }
+.navbtn:hover { background: var(--bg); color: var(--fg); }
+.navbtn.is-open { transform: scale(1.18); background: var(--accent); color: var(--accent-fg); position: relative; z-index: 2; }
+.side { margin-inline-start: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pill { display: inline-flex; align-items: center; gap: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 15px; }
+.pill svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.badge { font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.badge.pro { background: var(--accent); color: var(--accent-fg); }
 
-.theme { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 15px; }
-.theme svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.hero { padding-block: 36px 8px; }
-.hero h1 { font-size: clamp(28px, 6vw, 44px); font-weight: 700; }
-.hero p { color: var(--muted); max-width: 60ch; margin: 10px 0 0; }
-
+/* home */
+.hero { padding-block: 34px 6px; }
+.hero h1 { font-size: clamp(27px, 5.6vw, 42px); font-weight: 700; }
+.hero p { color: var(--muted); max-width: 62ch; margin: 10px 0 0; }
 .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 18px; }
 .field { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 14px; min-width: 0; }
 .field.grow { flex: 1 1 200px; }
+.tokbtn { display: inline-flex; align-items: center; gap: 8px; background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); border-radius: 10px; padding: 9px 16px; font-weight: 700; white-space: nowrap; transition: transform .28s cubic-bezier(.3,1.4,.5,1); }
+.tokbtn svg { width: 22px; height: 22px; }
+.tokbtn.is-open { transform: scale(1.12); }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .chip { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 5px 14px; font-size: 15px; color: var(--muted); }
 .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
-
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; margin-top: 18px; }
 .empty { color: var(--muted); margin-top: 24px; }
 .card { text-align: start; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 6px; min-width: 0; transition: border-color .15s, transform .15s; }
 .card:hover { border-color: var(--accent); transform: translateY(-2px); }
 .card[aria-expanded="true"] { border-color: var(--accent); background: var(--accent-soft); }
 .card .maker { font-size: 14px; color: var(--muted); }
-.card h3 { font-size: 20px; }
+.card h3 { font-size: 19px; }
 .card .tag { font-size: 15px; color: var(--muted); }
 .card .cost { margin-top: auto; padding-top: 10px; font-family: var(--font-display); font-weight: 500; color: var(--accent); font-variant-numeric: tabular-nums; }
-
 .detail { margin-top: 18px; background: var(--surface); border: 1px solid var(--accent); border-radius: 12px; padding: 22px; }
 .detail-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
 .detail h2 { font-size: 26px; }
-.close { background: none; border: 1px solid var(--line); border-radius: 8px; padding: 4px 12px; }
 .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-top: 16px; }
 .cols h3 { font-size: 16px; color: var(--accent); margin-bottom: 6px; }
 .cols ul { margin: 0; padding-inline-start: 20px; display: grid; gap: 4px; }
-.go { display: inline-block; margin-top: 18px; margin-inline-end: 8px; background: var(--accent); color: var(--accent-fg); padding: 10px 18px; border-radius: 8px; text-decoration: none; font-weight: 600; border: 0; }
-.go.alt { background: var(--accent-soft); color: var(--accent); }
+.btn { display: inline-block; background: var(--accent); color: var(--accent-fg); padding: 10px 18px; border-radius: 10px; text-decoration: none; font-weight: 600; border: 0; margin-top: 16px; margin-inline-end: 8px; }
+.btn.alt { background: var(--accent-soft); color: var(--accent); }
+.btn.ghost { background: none; border: 1px solid var(--line); color: var(--fg); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.ad { margin-top: 22px; background: var(--ad); border: 1px dashed var(--ad-line); border-radius: 10px; padding: 12px 16px; font-size: 15px; color: var(--muted); }
 
-.seg { display: inline-flex; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 4px; gap: 4px; flex-wrap: wrap; }
-.seg button { background: none; border: 0; padding: 8px 18px; border-radius: 7px; font-weight: 600; color: var(--muted); }
+/* windows */
+.overlay { position: fixed; inset: 0; z-index: 40; background: transparent; display: flex; justify-content: center; align-items: flex-start; padding: calc(16px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-left, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-right, 0px)); transition: background-color .25s; overflow: auto; }
+.overlay.in { background: var(--scrim); }
+.panel { width: 100%; max-width: 880px; margin-top: 56px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,.28); opacity: 0; transform: scale(.15); transition: transform .38s cubic-bezier(.2,1.1,.3,1), opacity .2s; min-width: 0; }
+.overlay.in .panel { opacity: 1; transform: scale(1); }
+.phead { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 22px; border-bottom: 1px solid var(--line); }
+.phead h2 { font-size: 22px; }
+.x { background: none; border: 1px solid var(--line); border-radius: 8px; width: 36px; height: 36px; font-size: 22px; line-height: 1; }
+.pbody { padding: 20px 22px 26px; }
+.seg { display: inline-flex; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 4px; gap: 4px; flex-wrap: wrap; }
+.seg button { background: none; border: 0; padding: 7px 16px; border-radius: 7px; font-weight: 600; color: var(--muted); }
 .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); }
-.days { width: 90px; font-variant-numeric: tabular-nums; }
-.rows { margin-top: 18px; display: grid; gap: 10px; }
-.row { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; align-items: center; }
-.row b { font-family: var(--font-display); font-size: 18px; }
-.row .p { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; text-align: end; }
+.row { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 14px; align-items: center; }
+.rows { display: grid; gap: 8px; margin-top: 14px; }
+.row b { font-family: var(--font-display); font-size: 17px; }
+.row .p { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; text-align: end; }
 .row .sub { color: var(--muted); font-size: 15px; }
 .row .unit { color: var(--muted); font-size: 14px; text-align: end; }
-.note { margin-top: 20px; color: var(--muted); font-size: 15px; max-width: 72ch; }
-.stamp { display: inline-block; margin-top: 14px; background: var(--accent-soft); color: var(--accent); border-radius: 8px; padding: 4px 12px; font-size: 15px; font-weight: 600; }
-
-
-.token-trigger{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:9px 14px;font-weight:700;white-space:nowrap}
-.token-trigger svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.token-panel{margin-top:16px;padding:20px;background:var(--surface);border:1px solid var(--accent);border-radius:14px}
-.token-panel[hidden]{display:none!important}
-.token-panel h2{font-size:23px}
-.token-intro,.token-footnote,.token-source{color:var(--muted)}
-.token-intro{margin:6px 0 16px}
-.token-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-.token-control{display:grid;gap:8px;min-width:0}
-.token-control label{font-weight:600}
-.token-control input[type=range]{width:100%;accent-color:var(--accent)}
-.token-control input[type=number]{width:100%}
-.token-value{font-family:var(--font-display);font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
-.token-summary{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--muted);margin-top:12px}
-.token-table-wrap{overflow-x:auto;margin-top:18px;border:1px solid var(--line);border-radius:10px}
-.token-table{border-collapse:collapse;width:100%;min-width:620px;background:var(--surface)}
-.token-table th,.token-table td{text-align:start;padding:11px 13px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
-.token-table th{color:var(--muted);font-size:14px}
-.token-table tr:last-child td{border-bottom:0}
-.token-table .total{color:var(--accent);font-weight:700;font-family:var(--font-display)}
-.token-source{font-size:14px;margin-top:14px}
-.token-source a{color:var(--accent)}
-.token-footnote{font-size:14px;margin-top:10px}
-@media(max-width:560px){.token-trigger{flex:1;justify-content:center}.token-panel{padding:15px}}
-
-.tbl { margin-top: 18px; overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.note { margin-top: 16px; color: var(--muted); font-size: 15px; max-width: 72ch; }
+.stamp { display: inline-block; background: var(--accent-soft); color: var(--accent); border-radius: 8px; padding: 3px 12px; font-size: 14px; font-weight: 600; }
+.days { width: 90px; font-variant-numeric: tabular-nums; }
+.tbl { margin-top: 14px; overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
 .tbl table { border-collapse: collapse; width: 100%; min-width: 520px; }
-.tbl th, .tbl td { text-align: start; vertical-align: top; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.tbl th, .tbl td { text-align: start; vertical-align: top; padding: 11px 14px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
 .tbl tr:last-child th, .tbl tr:last-child td { border-bottom: 0; }
-.tbl th { color: var(--muted); font-weight: 600; width: 140px; }
-.tbl thead th, .tbl thead td { font-family: var(--font-display); font-size: 19px; color: var(--accent); }
+.tbl th { color: var(--muted); font-weight: 600; font-size: 15px; }
+.tbl thead td, .tbl thead th { font-family: var(--font-display); color: var(--accent); font-size: 17px; }
 .tbl ul { margin: 0; padding-inline-start: 18px; }
-@media (prefers-reduced-motion: reduce) { .card { transition: none; } }
+.tbl .total { color: var(--accent); font-weight: 700; font-family: var(--font-display); }
+.form { display: grid; gap: 12px; max-width: 460px; }
+.form label { display: grid; gap: 4px; font-weight: 600; }
+.sk { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 20px; }
+.cats { display: grid; gap: 6px; align-content: start; }
+.cats button { text-align: start; background: none; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; color: var(--muted); font-weight: 600; }
+.cats button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.skills { display: grid; gap: 10px; }
+.skill { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; display: grid; gap: 2px; }
+.skill b { font-family: var(--font-display); }
+.skill code, .code { direction: ltr; unicode-bidi: plaintext; }
+.code { display: block; white-space: pre-wrap; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; text-align: left; margin: 10px 0; }
+details { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; margin-top: 10px; }
+summary { font-weight: 600; cursor: pointer; }
+details ol, details ul { padding-inline-start: 22px; display: grid; gap: 4px; margin: 10px 0 0; }
+.yes { color: var(--accent); font-weight: 700; }
+@media (max-width: 640px) { .sk { grid-template-columns: 1fr; } .cats { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); } }
+
+/* token window */
+.tk-in { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: end; margin-top: 18px; }
+.tk-in label { display: grid; gap: 4px; font-weight: 600; min-width: 0; }
+.tk-in input[type=text] { width: 200px; max-width: 100%; font-variant-numeric: tabular-nums; direction: ltr; text-align: center; font-size: 20px; font-family: var(--font-display); }
+.rail { position: relative; margin: 34px 22px 0; direction: ltr; height: 56px; }
+.track { position: absolute; inset: 0; border: 2px solid var(--fg); border-radius: 999px; background: var(--bg); overflow: hidden; }
+.fill { position: absolute; inset: 0 auto 0 0; background: var(--accent-soft); width: 0; }
+.stars { position: absolute; inset: 0; font-size: 11px; color: var(--muted); }
+.stars i { position: absolute; font-style: normal; transform: translate(-50%, -50%); }
+.rail input[type=range] { position: absolute; left: -18px; width: calc(100% + 36px); top: -10px; height: 76px; margin: 0; opacity: 0; z-index: 3; cursor: grab; }
+.thumb { position: absolute; top: 50%; z-index: 2; pointer-events: none; transform: translate(-50%, -50%); }
+.thumb svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.ends { display: flex; justify-content: space-between; margin: 10px 22px 0; direction: ltr; font-weight: 700; font-family: var(--font-display); color: var(--muted); }
+.bubble { position: relative; direction: ltr; height: 38px; margin: 4px 22px 0; }
+.bubble span { position: absolute; top: 0; transform: translateX(-50%); background: var(--accent); color: var(--accent-fg); border-radius: 10px; padding: 3px 14px; font-weight: 700; font-family: var(--font-display); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bar2 { height: 8px; border-radius: 99px; background: var(--accent-soft); margin-top: 6px; overflow: hidden; }
+.bar2 i { display: block; height: 100%; background: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .panel, .overlay, .navbtn, .tokbtn, .card { transition: none; } }
+
+/* bot */
+.botbtn { position: fixed; z-index: 25; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: inline-flex; gap: 8px; align-items: center; background: var(--accent); color: var(--accent-fg); border: 0; border-radius: 999px; padding: 12px 18px; font-weight: 700; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+.botbtn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.bot { position: fixed; z-index: 26; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: min(380px, calc(100vw - 32px)); max-height: min(560px, 80vh); display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,.3); overflow: hidden; }
+.bot header { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); font-family: var(--font-display); font-weight: 700; }
+.msgs { overflow: auto; padding: 12px 14px; display: grid; gap: 8px; align-content: start; flex: 1; min-height: 160px; }
+.m { max-width: 88%; padding: 8px 12px; border-radius: 12px; background: var(--bg); white-space: pre-wrap; }
+.m.me { justify-self: end; background: var(--accent); color: var(--accent-fg); }
+.bot form { display: flex; gap: 8px; padding: 10px; border-top: 1px solid var(--line); }
+.bot form input { flex: 1; min-width: 0; }
+.qs { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 14px 10px; }
+.qs button { background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; font-size: 14px; }
+
+/* login */
+.gate { position: fixed; inset: 0; z-index: 60; background: var(--bg); display: flex; justify-content: center; align-items: center; padding: 20px max(16px, env(safe-area-inset-left, 0px)); overflow: auto; }
+.gate .box { width: 100%; max-width: 440px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 26px; }
+.gate h1 { font-size: 26px; }
+.gate p { color: var(--muted); }
 </style>
+</head>
+<body>
 
 <header class="bar">
   <div class="bar-in">
     <span class="brand">מדריך מודלי AI</span>
-    <nav class="nav" aria-label="ראשי">
-      <a href="#home" id="nav-home">דף ראשי</a>
-      <a href="#prices" id="nav-prices">מחירים</a>
-      <a href="#compare" id="nav-compare">השוואה</a>
-    </nav>
-    <button class="theme" id="theme" type="button" aria-label="החלפה בין מצב לילה למצב יום" title="לילה / יום"></button>
+    <nav class="nav" aria-label="ראשי" id="nav"></nav>
+    <div class="side">
+      <button class="pill" id="who" type="button"></button>
+      <button class="pill" id="theme" type="button" aria-label="החלפה בין מצב לילה למצב יום"></button>
+    </div>
   </div>
 </header>
 
 <main class="wrap" id="app"></main>
+<div id="layer"></div>
+<div id="botDock"></div>
 
 <script>
-var MODELS = [
+/* ---------- data ---------- */
+var SUB = [
   { id: "chatgo", name: "ChatGPT Go", maker: "OpenAI", tag: "המנוי הזול של ChatGPT", month: 8, cats: ["כתיבה", "זול"],
     good: ["שיחה כללית ותשובות מהירות", "יותר הודעות מהחבילה החינמית", "כתיבה, תרגום וסיכומים"],
     less: ["פחות יכולות מ-Plus", "מגבלות על המודלים החזקים ביותר"] },
   { id: "chatgpt", name: "ChatGPT Plus", maker: "OpenAI", tag: "הכל-באחד, הכי מוכר", month: 20, cats: ["כתיבה", "קוד", "תמונות"],
-    good: ["שיחה כללית ותשובות מהירות", "יצירת תמונות", "מצב קולי טבעי", "כתיבה, תרגום וסיכומים", "אפליקציות ותוספים רבים"],
+    good: ["שיחה כללית ותשובות מהירות", "יצירת תמונות", "מצב קולי", "כתיבה, תרגום וסיכומים", "אפליקציות ותוספים רבים"],
     less: ["קוד ארוך מאוד בפרויקטים גדולים", "מגבלות על מספר הודעות במודלים החזקים"] },
   { id: "claude", name: "Claude Pro", maker: "Anthropic", tag: "כתיבה וקוד", month: 20, year: 200, cats: ["כתיבה", "קוד"],
-    good: ["כתיבה טבעית וארוכה", "תכנות ופרויקטים גדולים", "ניתוח מסמכים וקבצים ארוכים", "עבודה עם קבצים ו-Projects", "סגנון זהיר ומדויק"],
+    good: ["כתיבה ארוכה", "תכנות ופרויקטים גדולים", "ניתוח מסמכים וקבצים ארוכים", "עבודה עם קבצים ו-Projects"],
     less: ["אין יצירת תמונות", "מגבלות שימוש בשעות עומס"] },
+  { id: "claudemax", name: "Claude Max", maker: "Anthropic", tag: "פי 5 שימוש מ-Pro", month: 100, cats: ["כתיבה", "קוד"],
+    good: ["פי 5 שימוש מחבילת Pro", "מתאים לעבודה יומית רציפה בקוד"],
+    less: ["מחיר גבוה פי 5 מ-Pro", "חיוב חודשי בלבד, אין מחיר שנתי"] },
   { id: "gemini", name: "Google AI Pro", maker: "Google", tag: "משולב בשירותי גוגל", month: 19.99, year: 199.99, cats: ["חיפוש", "תמונות"],
-    good: ["עבודה עם Gmail, Docs ו-Drive", "הקשר ארוך מאוד", "חיפוש עדכני", "תמונות וסרטונים", "שטח אחסון בענן כלול"],
-    less: ["פחות יציב בסגנון כתיבה ארוך", "חלק מהיכולות תלויות באזור"] },
+    good: ["עבודה עם Gmail, Docs ו-Drive", "הקשר ארוך", "חיפוש עדכני", "תמונות וסרטונים", "שטח אחסון בענן כלול"],
+    less: ["חלק מהיכולות תלויות באזור"] },
+  { id: "geminiplus", name: "Google AI Plus", maker: "Google", tag: "המנוי הזול של גוגל", month: 4.99, cats: ["חיפוש", "זול"],
+    good: ["מחיר נמוך: $4.99 לחודש", "כניסה לעולם Gemini"],
+    less: ["פחות יכולות מ-AI Pro", "המחיר נלקח מאתר השוואה"] },
   { id: "grok", name: "SuperGrok", maker: "xAI", tag: "מידע עדכני מ-X", month: 30, cats: ["חיפוש", "תמונות"],
-    good: ["גישה לשיחות ולחדשות ב-X", "טון ישיר וחופשי", "חיפוש בזמן אמת", "יצירת תמונות"],
-    less: ["מחיר גבוה יותר", "פחות כלי עבודה לארגונים"] },
+    good: ["גישה לשיחות ולחדשות ב-X", "חיפוש בזמן אמת", "יצירת תמונות"],
+    less: ["מחיר גבוה יותר", "אין מחיר שנתי רשמי"] },
   { id: "perplexity", name: "Perplexity Pro", maker: "Perplexity", tag: "מנוע חיפוש חכם", month: 20, year: 200, cats: ["חיפוש"],
     good: ["תשובות עם מקורות", "מחקר מהיר", "השוואת מוצרים", "בחירה בין כמה מודלים"],
-    less: ["לא מתאים לכתיבה יצירתית ארוכה", "פחות שליטה בשיחה ארוכה"] },
+    less: ["לא מתאים לכתיבה יצירתית ארוכה"] },
   { id: "copilot", name: "Microsoft 365 Premium", maker: "Microsoft", tag: "Copilot בתוך Word ו-Excel", month: 19.99, year: 199.99, cats: ["Office", "תמונות"],
-    good: ["עבודה בתוך Office", "סיכום מיילים ופגישות", "יצירת תמונות", "שילוב עם Windows"],
-    less: ["הכי טוב רק עם חבילת Microsoft", "פחות גמיש מחוץ ל-Office", "מחליף את Copilot Pro שהופסק"] },
+    good: ["עבודה בתוך Office", "סיכום מיילים ופגישות", "יצירת תמונות"],
+    less: ["הכי טוב עם חבילת Microsoft", "מחליף את Copilot Pro שהופסק"] },
   { id: "mistral", name: "Le Chat Pro", maker: "Mistral", tag: "אירופי ומהיר", month: 14.99, cats: ["קוד", "זול"],
-    good: ["מהירות גבוהה", "מחיר נמוך יחסית", "מודלים פתוחים", "פרטיות לפי תקנות אירופה"],
-    less: ["פחות כלים נלווים", "קהילה קטנה יותר"] },
+    good: ["מהירות גבוהה", "מחיר נמוך יחסית", "מודלים פתוחים"],
+    less: ["פחות כלים נלווים"] },
   { id: "deepseek", name: "DeepSeek", maker: "DeepSeek", tag: "חינמי, חזק בחשיבה", month: 0, cats: ["קוד", "זול"],
     good: ["חינם לשימוש באתר", "הסקה ומתמטיקה", "קוד", "מודל פתוח להרצה עצמית"],
     less: ["שרתים מחוץ לאזור שלך, שימו לב לפרטיות", "עומסים ותקלות זמינות"] },
   { id: "midjourney", name: "Midjourney Basic", maker: "Midjourney", tag: "תמונות באיכות אמנותית", month: 10, year: 96, cats: ["תמונות"],
-    good: ["תמונות בסגנון אמנותי מרשים", "שליטה בסגנון ובקומפוזיציה", "קהילה גדולה ודוגמאות להשראה"],
-    less: ["לא מיועד לשיחה או לכתיבה", "חבילת Basic כוללת זמן יצירה מוגבל"] },
+    good: ["סגנון אמנותי", "שליטה בסגנון ובקומפוזיציה", "קהילה גדולה ודוגמאות"],
+    less: ["לא מיועד לשיחה או לכתיבה", "זמן יצירה מוגבל בחבילת Basic"] },
   { id: "ghcopilot", name: "GitHub Copilot Pro", maker: "GitHub", tag: "עוזר קוד בתוך העורך", month: 10, cats: ["קוד"],
     good: ["השלמת קוד תוך כדי כתיבה", "צ'אט בתוך VS Code וב-GitHub", "בחירה בין כמה מודלים", "סקירת קוד"],
     less: ["לא מיועד לשיחה כללית", "שימוש בצ'אט ובסוכנים נספר בקרדיטים"] },
   { id: "suno", name: "Suno Pro", maker: "Suno", tag: "שירים שלמים מטקסט", month: 8, cats: ["קול ומוזיקה"],
-    good: ["יצירת שיר עם שירה ממשפט אחד", "סגנונות מוזיקליים רבים", "הורדת השירים"],
-    less: ["פחות שליטה בפרטים של העיבוד", "מספר היצירות מוגבל בקרדיטים"] },
+    good: ["שיר עם שירה ממשפט אחד", "סגנונות מוזיקליים רבים", "הורדת השירים"],
+    less: ["פחות שליטה בעיבוד", "מספר היצירות מוגבל בקרדיטים"] },
   { id: "elevenlabs", name: "ElevenLabs Starter", maker: "ElevenLabs", tag: "דיבור וקול סינתטי", month: 6, cats: ["קול ומוזיקה"],
     good: ["הקראת טקסט בקול טבעי", "שפות רבות", "קריינות לסרטונים", "שכפול קול"],
     less: ["מכסת תווים חודשית מוגבלת", "החודש הראשון ב-$1 ואחריו $6"] },
   { id: "meta", name: "Meta AI", maker: "Meta", tag: "חינמי בתוך האפליקציות של Meta", month: 0, cats: ["כתיבה", "זול"],
-    good: ["חינם לשימוש", "זמין בווטסאפ, באינסטגרם ובפייסבוק", "שיחה כללית ותשובות קצרות"],
+    good: ["חינם", "זמין בווטסאפ, באינסטגרם ובפייסבוק", "שיחה כללית ותשובות קצרות"],
     less: ["פחות עומק בכתיבה ובקוד", "קשור לחשבון Meta"] },
   { id: "qwen", name: "Qwen Chat", maker: "Alibaba", tag: "חינמי, חזק בקוד ובשפות", month: 0, cats: ["קוד", "זול"],
-    good: ["חינם לשימוש באתר", "קוד ומתמטיקה", "תמיכה בהרבה שפות", "מודלים פתוחים"],
+    good: ["חינם לשימוש באתר", "קוד ומתמטיקה", "הרבה שפות", "מודלים פתוחים"],
     less: ["שרתים מחוץ לאזור שלך, שימו לב לפרטיות", "פחות כלים נלווים"] }
 ];
-var FILTERS = ["הכל", "כתיבה", "קוד", "חיפוש", "תמונות", "קול ומוזיקה", "Office", "זול"];
+
+/* USD per 1M tokens. url = official pricing page. cats feed the home filter. */
+var API_MODELS = [
+  { name: "Claude Fable 5.1", vendor: "Anthropic", input: 10, output: 50, url: "https://platform.claude.com/docs/en/about-claude/pricing", cats: ["כתיבה", "קוד"], facts: ["מטמון: $0.25 למיליון", "Batch: חצי מחיר"], less: ["המחיר הגבוה ביותר ברשימה"] },
+  { name: "Claude Opus 5.5", vendor: "Anthropic", input: 4, output: 20, url: "https://platform.claude.com/docs/en/about-claude/pricing", cats: ["כתיבה", "קוד"], facts: ["מטמון: $0.20 למיליון", "Batch: חצי מחיר"], less: ["Fast mode עולה $8 קלט ו-$40 פלט"] },
+  { name: "Claude Sonnet 5.5", vendor: "Anthropic", input: 2, output: 10, url: "https://platform.claude.com/docs/en/about-claude/pricing", cats: ["כתיבה", "קוד"], facts: ["מטמון: $0.10 למיליון", "Batch: חצי מחיר"], less: ["יקר פי 20 מ-Haiku 5.5 בקלט"] },
+  { name: "Claude Haiku 5.5", vendor: "Anthropic", input: 0.1, output: 0.5, url: "https://platform.claude.com/docs/en/about-claude/pricing", cats: ["זול", "קוד"], note: "עד 100 אלף טוקני קלט בבקשה", facts: ["מטמון: $0.01 למיליון", "Batch: חצי מחיר"], less: ["מעל 100 אלף טוקנים בבקשה: $0.50 קלט ו-$2.50 פלט"] },
+  { name: "GPT-5.5", vendor: "OpenAI", input: 5, output: 30, url: "https://developers.openai.com/api/docs/models/gpt-5.5", cats: ["כתיבה", "קוד"], facts: ["רמת תמחור רגילה"], less: ["הפלט יקר פי 6 מהקלט"] },
+  { name: "GPT-5.4", vendor: "OpenAI", input: 2.5, output: 15, url: "https://developers.openai.com/api/docs/pricing", cats: ["כתיבה", "קוד"], facts: ["חצי מהמחיר של GPT-5.5 בקלט"], less: ["הפלט יקר פי 6 מהקלט"] },
+  { name: "GPT-5.4 Mini", vendor: "OpenAI", input: 0.75, output: 4.5, url: "https://developers.openai.com/api/docs/pricing", cats: ["זול", "קוד"], facts: ["גרסה זולה של GPT-5.4"], less: ["פחות יכולות מהגרסה המלאה"] },
+  { name: "Gemini 3.1 Pro", vendor: "Google", input: 2, output: 12, url: "https://ai.google.dev/gemini-api/docs/pricing", cats: ["חיפוש", "קוד"], note: "עד 200 אלף טוקנים בבקשה", facts: ["הפלט כולל טוקני חשיבה"], less: ["מעל 200 אלף: $4 קלט ו-$18 פלט", "גרסת Preview"] },
+  { name: "Gemini 3.5 Flash", vendor: "Google", input: 1.5, output: 9, url: "https://ai.google.dev/gemini-api/docs/pricing", cats: ["חיפוש"], facts: ["בלי סף גודל בבקשה"], less: ["יקר פי 6 מ-Flash-Lite בקלט"] },
+  { name: "Gemini 3.1 Flash-Lite", vendor: "Google", input: 0.25, output: 1.5, url: "https://ai.google.dev/gemini-api/docs/pricing", cats: ["זול"], facts: ["הזול ביותר בין מודלי Gemini ברשימה"], less: ["קלט אודיו עולה $0.50"] },
+  { name: "Grok 4.7", vendor: "xAI", input: 2, output: 6, url: "https://docs.x.ai/developers/pricing", cats: ["חיפוש", "קוד"], note: "תעריף הקשר קצר", facts: ["הפלט יקר פי 3 מהקלט"], less: ["מעל 200 אלף טוקנים בבקשה התעריף גבוה יותר"] },
+  { name: "Grok 4.6", vendor: "xAI", input: 2, output: 6, url: "https://docs.x.ai/developers/pricing", cats: ["חיפוש"], note: "תעריף הקשר קצר", facts: ["הפלט יקר פי 3 מהקלט"], less: ["מעל 200 אלף טוקנים בבקשה התעריף גבוה יותר"] },
+  { name: "Grok 4.3", vendor: "xAI", input: 1.25, output: 2.5, url: "https://docs.x.ai/developers/pricing", cats: ["חיפוש", "זול"], note: "תעריף הקשר קצר", facts: ["הפלט יקר פי 2 מהקלט"], less: ["מעל 200 אלף טוקנים בבקשה התעריף גבוה יותר"] },
+  { name: "DeepSeek V4.1 Flash", vendor: "DeepSeek", input: 0.15, output: 0.6, peakInput: 0.3, peakOutput: 1.2, url: "https://api-docs.deepseek.com/quick_start/pricing/", cats: ["זול", "קוד"], facts: ["תעריף שעות שיא כפול"], less: ["שרתים מחוץ לאזור שלך"] },
+  { name: "DeepSeek V4 Pro", vendor: "DeepSeek", input: 0.66, output: 1.98, peakInput: 1.32, peakOutput: 3.96, url: "https://api-docs.deepseek.com/quick_start/pricing/", cats: ["קוד"], facts: ["תעריף שעות שיא כפול"], less: ["שרתים מחוץ לאזור שלך"] },
+  { name: "Mistral Large 4", vendor: "Mistral", input: 0.7, output: 2.1, url: "https://docs.mistral.ai/inference/pricing", cats: ["כתיבה", "קוד"], facts: ["משקלות פתוחים לפי Mistral"], less: ["יקר פי 4.7 מ-Small 4 בקלט"] },
+  { name: "Mistral Small 4", vendor: "Mistral", input: 0.15, output: 0.6, url: "https://docs.mistral.ai/inference/pricing", cats: ["זול"], facts: ["הפלט יקר פי 4 מהקלט"], less: ["מודל קטן יותר מ-Large 4"] }
+];
+
+var MODELS = SUB.concat(API_MODELS.map(function (a, i) {
+  return { id: "api" + i, name: a.name + " (API)", maker: a.vendor, tag: "מחיר לפי טוקנים", month: null, api: a,
+    cats: ["API"].concat(a.cats),
+    good: ["קלט $" + a.input + " ופלט $" + a.output + " למיליון טוקנים"].concat(a.facts, a.note ? [a.note] : []), less: a.less };
+}));
+var FILTERS = ["הכל", "כתיבה", "קוד", "חיפוש", "תמונות", "קול ומוזיקה", "Office", "זול", "API"];
 var PERIODS = {
-  day:    { label: "ליום",   unit: "ליום",   calc: function (m) { return m * 12 / 365; } },
-  week:   { label: "לשבוע", unit: "לשבוע", calc: function (m) { return m * 12 / 52; } },
-  month:  { label: "לחודש", unit: "לחודש", calc: function (m) { return m; } },
-  year:   { label: "לשנה",  unit: "לשנה",  calc: function (m) { return m * 12; } },
-  custom: { label: "מספר ימים", unit: "", calc: function (m) { return m * 12 / 365 * (daysVal || 0); } }
+  day: { label: "ליום", unit: "ליום", calc: function (m) { return m * 12 / 365; } },
+  week: { label: "לשבוע", unit: "לשבוע", calc: function (m) { return m * 12 / 52; } },
+  month: { label: "לחודש", unit: "לחודש", calc: function (m) { return m; } },
+  year: { label: "לשנה", unit: "לשנה", calc: function (m) { return m * 12; } },
+  custom: { label: "מספר ימים", unit: "", calc: function (m) { return m * 12 / 365 * pr.days; } }
 };
-var openId = null, period = "month", filter = "הכל", query = "", sortMode = "default", daysVal = 10;
-var cmpA = "claude", cmpB = "chatgpt";
-var app = document.getElementById("app");
 
+/* Skills come from Anthropic's public skills repository (github.com/anthropics/skills). */
+var SKILL_CATS = ["הכל", "אתרים ועיצוב", "מסמכים", "קוד וכלים", "כתיבה", "יצירה"];
+var SKILLS = [
+  { n: "frontend-design", c: "אתרים ועיצוב", d: "עיצוב ממשקי אתר עם בחירות עיצוב מכוונות במקום תבניות כלליות." },
+  { n: "web-artifacts-builder", c: "אתרים ועיצוב", d: "בניית אפליקציות ווב מורכבות כ-artifacts." },
+  { n: "theme-factory", c: "אתרים ועיצוב", d: "החלת ערכות צבעים ופונטים על מסמכים, מצגות ודפים." },
+  { n: "brand-guidelines", c: "אתרים ועיצוב", d: "החלת צבעי המותג והטיפוגרפיה על תוצרים." },
+  { n: "pdf", c: "מסמכים", d: "קריאה, חילוץ טקסט וטבלאות, מיזוג ופיצול של קובצי PDF." },
+  { n: "docx", c: "מסמכים", d: "יצירה ועריכה של מסמכי Word." },
+  { n: "pptx", c: "מסמכים", d: "יצירה ועריכה של מצגות PowerPoint." },
+  { n: "xlsx", c: "מסמכים", d: "עבודה עם גיליונות Excel ונוסחאות." },
+  { n: "mcp-builder", c: "קוד וכלים", d: "בניית שרתי MCP שמחברים מודל לשירותים חיצוניים." },
+  { n: "webapp-testing", c: "קוד וכלים", d: "בדיקת אפליקציות ווב מקומיות עם Playwright." },
+  { n: "skill-creator", c: "קוד וכלים", d: "יצירה ושיפור של skills חדשים." },
+  { n: "doc-coauthoring", c: "כתיבה", d: "תהליך כתיבה משותפת של מסמכים." },
+  { n: "internal-comms", c: "כתיבה", d: "כתיבת תקשורת פנימית כמו עדכוני סטטוס וניוזלטרים." },
+  { n: "canvas-design", c: "יצירה", d: "יצירת עיצובים ויזואליים סטטיים." },
+  { n: "algorithmic-art", c: "יצירה", d: "אמנות גנרטיבית שנוצרת בקוד." },
+  { n: "slack-gif-creator", c: "יצירה", d: "יצירת GIF מונפש לסלאק." }
+];
+
+var SKILL_TEMPLATE = "---\nname: my-skill\ndescription: מתי להשתמש ב-skill הזה ומה הוא עושה, במשפט אחד.\n---\n\n# הוראות\n\n1. הצעד הראשון.\n2. הצעד השני.\n3. איך נראה תוצר גמור.";
+
+/* ---------- state ---------- */
+var USER_KEY = "ai-guide-user", THEME_KEY = "ai-guide-theme";
+var user = null, openId = null, filter = "הכל", query = "", current = null, botOpen = false;
+var pr = { tab: "sub", period: "month", sort: "default", days: 10 };
+var cmp = { a: "claude", b: "chatgpt" };
+var sk = { cat: "הכל", q: "" };
+var tk = { tokens: 1000000, share: 75, peak: false };
+var botCount = 0;
+
+function load(k) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function $(id) { return document.getElementById(id); }
 function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-function money(n) {
-  if (n === 0) return "חינם";
-  return "$" + (n < 10 || n % 1 !== 0 ? n.toFixed(2) : n.toFixed(0));
-}
-function price(m, k) {
-  if (k === "year" && m.year) return m.year;
-  return PERIODS[k].calc(m.month);
-}
 function byId(id) { return MODELS.filter(function (x) { return x.id === id; })[0]; }
+function money(n) { if (n === 0) return "חינם"; return "$" + (n < 10 || n % 1 !== 0 ? n.toFixed(2) : n.toFixed(0)); }
+function price(m, k) { if (k === "year" && m.year) return m.year; return PERIODS[k].calc(m.month); }
+function isPro() { return !!(user && user.premium); }
+function adBox() { return isPro() ? "" : '<div class="ad">מקום לפרסומת. משתמשי Premium לא רואים אותה. בגרסה הזו זו דוגמה בלבד.</div>'; }
+function sub() { return SUB; }
 
-/* home */
+/* ---------- top bar ---------- */
+var NAV = [
+  ["home", "דף ראשי"], ["prices", "מחירים"], ["compare", "השוואה"],
+  ["skills", "ספריית סקילים"], ["guides", "מדריכים"], ["upgrade", "שדרוג"]
+];
+var SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>';
+var MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>';
+var COIN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.8"></circle><path d="M12 6.5l1.5 4 4 1.5-4 1.5-1.5 4-1.5-4-4-1.5 4-1.5z" fill="currentColor"></path></svg>';
+var CHAT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12z"></path></svg>';
+
+function paintBar() {
+  $("nav").innerHTML = NAV.map(function (n) {
+    var open = current && current.id === n[0];
+    return '<button class="navbtn' + (open ? " is-open" : "") + '" type="button" data-win="' + n[0] + '">' + n[1] + '</button>';
+  }).join("");
+  $("who").innerHTML = user ? '<span>' + esc(user.name) + '</span><span class="badge' + (isPro() ? " pro" : "") + '">' + (isPro() ? "Premium" : "חינם") + '</span>' : "כניסה";
+  $("theme").innerHTML = isDark() ? SUN + "<span>מצב יום</span>" : MOON + "<span>מצב לילה</span>";
+}
+function isDark() {
+  var t = document.documentElement.getAttribute("data-theme");
+  if (t) return t === "dark";
+  return !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+}
+$("theme").addEventListener("click", function () {
+  var next = isDark() ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  save(THEME_KEY, next);
+  paintBar();
+});
+$("who").addEventListener("click", function (e) { if (user) openWindow("account", e.currentTarget); });
+$("nav").addEventListener("click", function (e) {
+  var b = e.target.closest("[data-win]");
+  if (!b) return;
+  if (b.dataset.win === "home") { closeWindow(true); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+  openWindow(b.dataset.win, b);
+});
+
+/* ---------- windows ---------- */
+var WINDOWS = {
+  prices: { title: "מחירים", render: pricesWin, bind: bindPrices },
+  compare: { title: "השוואה בין שני מודלים", render: compareWin, bind: bindCompare },
+  skills: { title: "ספריית סקילים", render: skillsWin, bind: bindSkills },
+  guides: { title: "מדריכים", render: guidesWin, bind: bindGuides },
+  upgrade: { title: "שדרוג ל-Premium", render: upgradeWin, bind: bindUpgrade },
+  account: { title: "החשבון שלי", render: accountWin, bind: bindAccount },
+  tokens: { title: "מחשבון טוקנים", render: tokensWin, bind: bindTokens }
+};
+
+function openWindow(id, btn) {
+  if (current && current.id === id) { closeWindow(); return; }
+  closeWindow(true);
+  var def = WINDOWS[id];
+  var overlay = document.createElement("div");
+  overlay.className = "overlay";
+  overlay.innerHTML = '<section class="panel" role="dialog" aria-modal="true" aria-labelledby="wtitle"><header class="phead"><h2 id="wtitle">' + def.title + '</h2><button class="x" type="button" data-close aria-label="סגירה">×</button></header><div class="pbody" id="pbody"></div></section>';
+  $("layer").appendChild(overlay);
+  var panel = overlay.firstChild;
+  $("pbody").innerHTML = def.render();
+  var r = panel.getBoundingClientRect();
+  if (btn) {
+    var b = btn.getBoundingClientRect();
+    panel.style.transformOrigin = (b.left + b.width / 2 - r.left) + "px " + (b.top + b.height / 2 - r.top) + "px";
+  }
+  current = { id: id, overlay: overlay, btn: btn, prev: document.activeElement };
+  if (btn) btn.classList.add("is-open");
+  paintBar();
+  requestAnimationFrame(function () { requestAnimationFrame(function () { overlay.classList.add("in"); }); });
+  def.bind($("pbody"));
+  panel.querySelector(".x").focus({ preventScroll: true });
+  overlay.addEventListener("mousedown", function (e) { if (e.target === overlay) closeWindow(); });
+  panel.querySelector("[data-close]").addEventListener("click", function () { closeWindow(); });
+}
+function closeWindow(instant) {
+  if (!current) return;
+  var c = current;
+  current = null;
+  if (c.btn) c.btn.classList.remove("is-open");
+  if (instant) { c.overlay.remove(); } else {
+    c.overlay.classList.remove("in");
+    setTimeout(function () { c.overlay.remove(); }, 260);
+  }
+  paintBar();
+  $("tokbtn") && $("tokbtn").classList.remove("is-open");
+  if (!instant && c.prev && c.prev.focus) { try { c.prev.focus({ preventScroll: true }); } catch (e) {} }
+}
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (current) closeWindow(); else if (botOpen) toggleBot(false); } });
+
+/* ---------- home ---------- */
 function home() {
   var chips = FILTERS.map(function (f) {
-    return '<button class="chip" data-f="' + f + '" aria-pressed="' + (f === filter) + '">' + (f === "זול" ? "זול וחינמי" : f) + '</button>';
+    var label = f === "זול" ? "זול וחינמי" : f === "API" ? "API לפי טוקנים" : f;
+    return '<button class="chip" data-f="' + f + '" aria-pressed="' + (f === filter) + '">' + label + '</button>';
   }).join("");
-  return '<section class="hero"><h1>כל המודלים המובילים במקום אחד</h1>' +
-    '<p>לחצו על מודל כדי לראות במה הוא טוב ובמה הוא פחות. אפשר לחפש לפי שם או לסנן לפי תחום.</p></section>' +
-    '<div class="tools"><input class="field grow" id="q" type="search" placeholder="חיפוש מודל או יצרן" value="' + esc(query) + '" aria-label="חיפוש">
-<button class="token-trigger" id="token-toggle" type="button" aria-expanded="false" aria-controls="token-panel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 19.5 7v10L12 21.2 4.5 17V7L12 2.8Z"/><path d="m8.5 9 3.5-2 3.5 2v6L12 17l-3.5-2V9Z"/></svg>מחשבון טוקנים</button></div>
-<section class="token-panel" id="token-panel" hidden><h2>כמה יעלה להשתמש במודלים?</h2><p class="token-intro">בחרו את מספר הטוקנים הכולל. המחשבון מחלק אותם לקלט ולפלט ומחשב את העלות לפי מחיר ה-API של כל מודל.</p>
-<div class="token-controls"><div class="token-control"><label for="token-range">כמות טוקנים כוללת</label><input id="token-range" type="range" min="1000" max="10000000" step="1000" value="1000000"><div class="token-value" id="token-display">1,000,000 טוקנים</div><input class="field" id="token-count" type="number" min="1" max="1000000000" step="1000" value="1000000" aria-label="מספר טוקנים מדויק"></div>
-<div class="token-control"><label for="input-share">איזה חלק מהטוקנים הוא קלט?</label><input id="input-share" type="range" min="0" max="100" step="5" value="50"><div class="token-value" id="share-display">50% קלט · 50% פלט</div><div class="token-footnote">קלט הוא הטקסט שנשלח למודל. פלט הוא התשובה שהוא מחזיר.</div></div></div>
-<div class="token-summary" id="token-breakdown"></div><div class="token-control" style="margin-top:14px"><label><input id="deepseek-peak" type="checkbox"> לחשב לפי תעריף שעות שיא של DeepSeek</label></div>
-<div class="token-table-wrap"><table class="token-table"><thead><tr><th>מודל API</th><th>קלט למיליון</th><th>פלט למיליון</th><th>עלות קלט</th><th>עלות פלט</th><th>סה״כ</th></tr></thead><tbody id="token-results"></tbody></table></div>
-<p class="token-footnote">החישוב הוא אומדן לפי טוקנים רגילים, ללא הנחות על מטמון, Batch, כלים, חיפוש, תמונות או חיובים נוספים. בפועל, סוג התוכן, אורך ההקשר ותנאי הספק יכולים לשנות את המחיר.</p>
-<div class="token-source">מחירים מדפי התמחור הרשמיים. המחירים במחשבון מתייחסים לשימוש טקסט רגיל, לפני הנחות מטמון או Batch: <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noopener">OpenAI</a> · <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener">Anthropic</a> · <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener">Google</a> · <a href="https://docs.x.ai/developers/pricing" target="_blank" rel="noopener">xAI</a> · <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">DeepSeek</a> · <a href="https://mistral.ai/pricing/api/" target="_blank" rel="noopener">Mistral</a> · <a href="https://cohere.com/pricing" target="_blank" rel="noopener">Cohere</a>. נבדק ב-6 בנובמבר 2026.</div></section>' +
+  return '<section class="hero"><h1>מודלי AI: מה כל אחד עושה וכמה הוא עולה</h1>' +
+    '<p>לחצו על מודל כדי לראות במה הוא טוב ובמה פחות. הכפתור "טוקנים" מחשב עלות לפי כמות טוקנים ולפי מחירי ה-API הרשמיים.</p></section>' +
+    '<div class="tools"><input class="field grow" id="q" type="search" placeholder="חיפוש מודל או יצרן" value="' + esc(query) + '" aria-label="חיפוש">' +
+    '<button class="tokbtn" id="tokbtn" type="button">' + COIN + 'טוקנים</button></div>' +
     '<div class="chips" role="group" aria-label="סינון לפי תחום">' + chips + '</div>' +
-    '<div class="grid" id="grid"></div><div id="detail-slot"></div>';
+    '<div class="grid" id="grid"></div><div id="detail-slot"></div>' + adBox();
 }
-
-var API_MODELS=[
-{name:"GPT-5.5",vendor:"OpenAI",input:5,output:30,url:"https://developers.openai.com/api/docs/models/gpt-5.5"},
-{name:"GPT-5.4",vendor:"OpenAI",input:2.5,output:15,url:"https://developers.openai.com/api/docs/pricing"},
-{name:"GPT-5.4 Mini",vendor:"OpenAI",input:0.75,output:4.5,url:"https://developers.openai.com/api/docs/pricing"},
-{name:"Claude Opus 5.5",vendor:"Anthropic",input:4,output:20,url:"https://platform.claude.com/docs/en/about-claude/pricing"},
-{name:"Claude Sonnet 5.5",vendor:"Anthropic",input:2,output:10,url:"https://platform.claude.com/docs/en/about-claude/pricing"},
-{name:"Claude Haiku 5.5",vendor:"Anthropic",input:0.1,output:0.5,url:"https://platform.claude.com/docs/en/about-claude/pricing",note:"עד 100 אלף טוקני קלט בבקשה"},
-{name:"Gemini 3.1 Flash-Lite",vendor:"Google",input:0.25,output:1.5,url:"https://ai.google.dev/gemini-api/docs/pricing"},
-{name:"Grok 4.6",vendor:"xAI",input:2,output:6,url:"https://docs.x.ai/developers/pricing"},
-{name:"DeepSeek V4.1 Flash",vendor:"DeepSeek",input:0.15,output:0.6,peakInput:0.3,peakOutput:1.2,url:"https://api-docs.deepseek.com/quick_start/pricing/"},
-{name:"DeepSeek V4 Pro",vendor:"DeepSeek",input:0.66,output:1.98,peakInput:1.32,peakOutput:3.96,url:"https://api-docs.deepseek.com/quick_start/pricing/"}
-];
-var tokenCount=1000000,inputShare=50;
-function tokenUSD(v){var s=v<0.01?v.toFixed(5):v<1?v.toFixed(4):v.toFixed(3);return "$"+s.replace(/0+$/,"").replace(/\.$/,"");}
-function tokenFmt(v){return Math.round(v).toLocaleString("en-US");}
-function renderTokenCalculator(){
- var range=document.getElementById("token-range"),count=document.getElementById("token-count");if(!range||!count)return;
- range.value=Math.min(10000000,Math.max(1000,tokenCount));count.value=tokenCount;
- document.getElementById("token-display").textContent=tokenFmt(tokenCount)+" טוקנים";
- document.getElementById("share-display").textContent=inputShare+"% קלט · "+(100-inputShare)+"% פלט";
- var inputTokens=tokenCount*inputShare/100,outputTokens=tokenCount-inputTokens;
- document.getElementById("token-breakdown").innerHTML="<span>קלט: <b>"+tokenFmt(inputTokens)+"</b></span><span>פלט: <b>"+tokenFmt(outputTokens)+"</b></span><span>סה״כ: <b>"+tokenFmt(tokenCount)+"</b></span>";
- var peak=document.getElementById("deepseek-peak").checked;
- var rows=API_MODELS.map(function(m){var ip=peak&&m.peakInput!=null?m.peakInput:m.input,op=peak&&m.peakOutput!=null?m.peakOutput:m.output;var ic=inputTokens/1000000*ip,oc=outputTokens/1000000*op;return {m:m,ip:ip,op:op,ic:ic,oc:oc,total:ic+oc};}).sort(function(a,b){return a.total-b.total;});
- document.getElementById("token-results").innerHTML=rows.map(function(r){return "<tr><td><b>"+esc(r.m.name)+"</b><br><span class='token-footnote'>"+esc(r.m.vendor)+"</span></td><td>"+tokenUSD(r.ip)+"</td><td>"+tokenUSD(r.op)+"</td><td>"+tokenUSD(r.ic)+"</td><td>"+tokenUSD(r.oc)+"</td><td class='total'>"+tokenUSD(r.total)+"</td></tr>";}).join("");
-}
-
 function renderGrid() {
   var q = query.trim().toLowerCase();
   var list = MODELS.filter(function (m) {
@@ -279,135 +437,342 @@ function renderGrid() {
     var okQ = !q || (m.name + " " + m.maker + " " + m.tag).toLowerCase().indexOf(q) > -1;
     return okF && okQ;
   });
-  document.getElementById("grid").innerHTML = list.length ? list.map(function (m) {
-    return '<button class="card" data-id="' + m.id + '" aria-expanded="' + (openId === m.id) + '">' +
-      '<span class="maker">' + esc(m.maker) + '</span><h3>' + esc(m.name) + '</h3>' +
-      '<span class="tag">' + esc(m.tag) + '</span>' +
-      '<span class="cost">' + (m.month ? money(m.month) + ' לחודש' : 'חינם') + '</span></button>';
-  }).join("") : '<p class="empty">לא נמצא מודל שמתאים. נסו לנקות את החיפוש או לבחור "הכל".</p>';
+  $("grid").innerHTML = list.length ? list.map(function (m) {
+    var cost = m.month !== null ? (m.month ? money(m.month) + " לחודש" : "חינם") : "$" + m.api.input + " קלט · $" + m.api.output + " פלט";
+    return '<button class="card" data-id="' + m.id + '" aria-expanded="' + (openId === m.id) + '"><span class="maker">' + esc(m.maker) + '</span><h3>' + esc(m.name) + '</h3><span class="tag">' + esc(m.tag) + '</span><span class="cost">' + cost + '</span></button>';
+  }).join("") : '<p class="empty">לא נמצא מודל שמתאים. נקו את החיפוש או בחרו "הכל".</p>';
 }
 function renderDetail() {
-  var m = byId(openId), slot = document.getElementById("detail-slot");
+  var m = byId(openId), slot = $("detail-slot");
   if (!m) { slot.innerHTML = ""; return; }
-  slot.innerHTML = '<section class="detail" id="detail" aria-label="פרטי ' + esc(m.name) + '">' +
-    '<div class="detail-head"><div><h2>' + esc(m.name) + '</h2><div style="color:var(--muted)">' + esc(m.maker) + ' · ' + (m.month ? money(m.month) + ' לחודש' : 'חינם') + '</div></div>' +
-    '<button class="close" id="close">סגירה</button></div>' +
-    '<div class="cols"><div><h3>במה הוא טוב</h3><ul>' + m.good.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + '</ul></div>' +
-    '<div><h3>פחות מתאים ל</h3><ul>' + m.less.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + '</ul></div></div>' +
-    '<a class="go" href="#prices">לראות מחירים</a>' +
-    '<button class="go alt" data-cmp="' + m.id + '">להשוות למודל אחר</button></section>';
+  var li = function (a) { return a.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join(""); };
+  var head = m.month !== null ? (m.month ? money(m.month) + " לחודש" : "חינם") : "מחיר לפי טוקנים";
+  slot.innerHTML = '<section class="detail" id="detail" aria-label="פרטי ' + esc(m.name) + '"><div class="detail-head"><div><h2>' + esc(m.name) + '</h2><div style="color:var(--muted)">' + esc(m.maker) + " · " + head + '</div></div><button class="x" type="button" id="dclose" aria-label="סגירה">×</button></div>' +
+    '<div class="cols"><div><h3>במה הוא טוב</h3><ul>' + li(m.good) + '</ul></div><div><h3>פחות מתאים ל</h3><ul>' + li(m.less) + '</ul></div></div>' +
+    '<button class="btn" type="button" data-open="' + (m.month !== null ? "prices" : "tokens") + '">' + (m.month !== null ? "לראות מחירים" : "לחשב עלות") + '</button>' +
+    '<button class="btn alt" type="button" data-cmp="' + m.id + '">להשוות למודל אחר</button></section>';
 }
+var app = $("app");
+function renderHome() { app.innerHTML = home(); renderGrid(); renderDetail(); }
+app.addEventListener("click", function (e) {
+  var c = e.target.closest(".card"), f = e.target.closest("[data-f]"), cm = e.target.closest("[data-cmp]"), op = e.target.closest("[data-open]");
+  if (e.target.closest("#tokbtn")) { var tb = $("tokbtn"); openWindow("tokens", tb); return; }
+  if (op) { openWindow(op.dataset.open, op); return; }
+  if (cm) { cmp.a = cm.dataset.cmp; cmp.b = cm.dataset.cmp === "claude" ? "chatgpt" : "claude"; openWindow("compare", cm); return; }
+  if (c) { openId = openId === c.dataset.id ? null : c.dataset.id; renderGrid(); renderDetail(); var d = $("detail"); if (d) d.scrollIntoView({ behavior: "smooth", block: "nearest" }); return; }
+  if (f) { filter = f.dataset.f; renderHome(); return; }
+  if (e.target.id === "dclose") { openId = null; renderGrid(); renderDetail(); }
+});
+app.addEventListener("input", function (e) { if (e.target.id === "q") { query = e.target.value; renderGrid(); } });
 
-/* prices */
-function prices() {
-  var seg = Object.keys(PERIODS).map(function (k) {
-    return '<button data-p="' + k + '" aria-pressed="' + (k === period) + '">' + PERIODS[k].label + '</button>';
-  }).join("");
-  var customBox = period === "custom"
-    ? '<label class="field">כמה ימים? <input class="days" id="days" type="number" min="1" max="365" value="' + daysVal + '"></label>' : "";
-  return '<section class="hero"><h1>מחירים</h1><p>מחירי מנוי רשמיים בדולרים. בחרו תקופה כדי לראות את המחיר של כל מודל, או הקלידו מספר ימים משלכם.</p>' +
-    '<span class="stamp">נבדק ב-4 בנובמבר 2026</span></section>' +
-    '<div class="tools"><div class="seg" role="group" aria-label="תקופה">' + seg + '</div>' + customBox +
+/* ---------- prices window ---------- */
+function pricesWin() {
+  return '<div class="seg" role="group" aria-label="סוג מחיר"><button type="button" data-tab="sub" aria-pressed="true">מנויים</button><button type="button" data-tab="api" aria-pressed="false">API לפי טוקנים</button></div><span class="stamp" style="margin-inline-start:10px">נבדק ב-4 וב-7 בנובמבר 2026</span><div id="prc"></div>';
+}
+function bindPrices(root) {
+  paintPrices(root);
+  root.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-tab]"), p = e.target.closest("[data-p]");
+    if (t) { pr.tab = t.dataset.tab; root.querySelectorAll("[data-tab]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.tab === pr.tab)); }); paintPrices(root); }
+    else if (p) { pr.period = p.dataset.p; paintPrices(root); }
+  });
+  root.addEventListener("change", function (e) { if (e.target.id === "sort") { pr.sort = e.target.value; paintRows(root); } });
+  root.addEventListener("input", function (e) { if (e.target.id === "days") { pr.days = Math.max(1, Math.min(365, parseInt(e.target.value, 10) || 1)); paintRows(root); } });
+}
+function paintPrices(root) {
+  var box = root.querySelector("#prc");
+  if (pr.tab === "api") {
+    box.innerHTML = '<div class="tbl"><table><thead><tr><th>מודל</th><th>קלט למיליון</th><th>פלט למיליון</th><th>הערה</th></tr></thead><tbody>' +
+      API_MODELS.map(function (a) { return "<tr><td><b>" + esc(a.name) + "</b><br><span style='color:var(--muted);font-size:14px'>" + esc(a.vendor) + "</span></td><td>$" + a.input + "</td><td>$" + a.output + "</td><td>" + esc(a.note || "") + "</td></tr>"; }).join("") +
+      '</tbody></table></div><p class="note">מחירים בדולרים לכל מיליון טוקנים, מדפי התמחור הרשמיים של: <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener">Anthropic</a>, <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noopener">OpenAI</a>, <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener">Google</a>, <a href="https://docs.x.ai/developers/pricing" target="_blank" rel="noopener">xAI</a>, <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">DeepSeek</a>, <a href="https://docs.mistral.ai/inference/pricing" target="_blank" rel="noopener">Mistral</a>. לחישוב לפי כמות פתחו את "טוקנים" בדף הראשי.</p>';
+    return;
+  }
+  var seg = Object.keys(PERIODS).map(function (k) { return '<button type="button" data-p="' + k + '" aria-pressed="' + (k === pr.period) + '">' + PERIODS[k].label + "</button>"; }).join("");
+  var custom = pr.period === "custom" ? '<label class="field">כמה ימים? <input class="days" id="days" type="number" min="1" max="365" value="' + pr.days + '"></label>' : "";
+  box.innerHTML = '<div class="tools"><div class="seg" role="group" aria-label="תקופה">' + seg + "</div>" + custom +
     '<label class="field">מיון <select id="sort"><option value="default">לפי הרשימה</option><option value="asc">מהזול ליקר</option><option value="desc">מהיקר לזול</option></select></label></div>' +
     '<div class="rows" id="rows"></div>' +
-    '<p class="note">המחיר החודשי הוא מחיר המנוי הרשמי. החברות האלה לא מוכרות מנוי ליום או לשבוע, ולכן המחיר ליום, לשבוע ולמספר ימים מחושב מהמחיר החודשי. אתרים צד שלישי שמוכרים גישה ליום או לשבוע גובים מחיר אחר ואין להם קשר לחברות. מחיר שנתי רשמי קיים ב-Claude Pro, ב-Google AI Pro, ב-Microsoft 365 Premium, ב-Perplexity Pro וב-Midjourney Basic. בשאר המודלים הוא מחושב כ-12 חודשים. מחירי ChatGPT לא הוצגו בעמוד הרשמי בזמן הבדיקה ולכן נלקחו מאתר השוואה. ב-DeepSeek, ב-Meta AI וב-Qwen השימוש הבסיסי חינמי. ב-ElevenLabs החודש הראשון עולה $1 ואחריו $6 לחודש, והמחירים כאן הם של החבילה הזולה ביותר בכל שירות.</p>' +
-    '<p class="note">האתר עדיין לא מתעדכן אוטומטית. כדי להפוך אותו למערכת מסחרית, השלב הבא הוא לחבר מנגנון שבודק את עמודי המחירים מדי פעם ומעדכן אותם. עד אז כדאי לבדוק באתר הרשמי לפני קנייה.</p>';
+    '<p class="note">המחיר החודשי הוא מחיר המנוי הרשמי. החברות לא מוכרות מנוי ליום או לשבוע, ולכן המחיר ליום, לשבוע ולמספר ימים מחושב מהמחיר החודשי. אתרים צד שלישי שמוכרים גישה ליום או לשבוע גובים מחיר אחר ואין להם קשר לחברות. מחיר שנתי רשמי קיים ב-Claude Pro, Google AI Pro, Microsoft 365 Premium, Perplexity Pro ו-Midjourney Basic. בשאר המנויים הוא מחושב כ-12 חודשים. מחירי ChatGPT, Google AI Plus ו-Claude Max נלקחו מאתרי השוואה ולא מהדף הרשמי. ב-DeepSeek, Meta AI ו-Qwen השימוש הבסיסי חינמי. ב-ElevenLabs החודש הראשון עולה $1 ואחריו $6. האתר עדיין לא מתעדכן אוטומטית, ולכן כדאי לבדוק באתר הרשמי לפני קנייה.</p>';
+  box.querySelector("#sort").value = pr.sort;
+  paintRows(root);
 }
-function renderRows() {
-  var P = PERIODS[period];
-  var list = MODELS.slice();
-  if (sortMode !== "default") list.sort(function (a, b) { return (price(a, period) - price(b, period)) * (sortMode === "asc" ? 1 : -1); });
-  document.getElementById("sort").value = sortMode;
-  document.getElementById("rows").innerHTML = list.map(function (m) {
-    var deal = (period === "year" && m.year) ? " · מחיר מנוי שנתי" : "";
-    var unit = !m.month ? "" : period === "custom" ? "ל-" + daysVal + " ימים" : P.unit;
-    return '<div class="row"><b>' + esc(m.name) + '</b><span class="p">' + money(price(m, period)) + '</span>' +
-      '<span class="sub">' + esc(m.maker) + ' · ' + esc(m.tag) + deal + '</span><span class="unit">' + unit + '</span></div>';
+function paintRows(root) {
+  var rows = root.querySelector("#rows");
+  if (!rows) return;
+  var P = PERIODS[pr.period], list = sub().slice();
+  if (pr.sort !== "default") list.sort(function (a, b) { return (price(a, pr.period) - price(b, pr.period)) * (pr.sort === "asc" ? 1 : -1); });
+  rows.innerHTML = list.map(function (m) {
+    var deal = (pr.period === "year" && m.year) ? " · מחיר מנוי שנתי" : "";
+    var unit = !m.month ? "" : pr.period === "custom" ? "ל-" + pr.days + " ימים" : P.unit;
+    return '<div class="row"><b>' + esc(m.name) + '</b><span class="p">' + money(price(m, pr.period)) + '</span><span class="sub">' + esc(m.maker) + " · " + esc(m.tag) + deal + '</span><span class="unit">' + unit + "</span></div>";
   }).join("");
 }
 
-/* compare */
-function compare() {
-  var opts = function (sel) {
-    return MODELS.map(function (m) { return '<option value="' + m.id + '"' + (m.id === sel ? " selected" : "") + '>' + esc(m.name) + '</option>'; }).join("");
-  };
-  return '<section class="hero"><h1>השוואה בין שני מודלים</h1><p>בחרו שני מודלים כדי לראות אותם זה לצד זה.</p></section>' +
-    '<div class="tools"><label class="field">מודל ראשון <select id="cmpA">' + opts(cmpA) + '</select></label>' +
-    '<label class="field">מודל שני <select id="cmpB">' + opts(cmpB) + '</select></label></div>' +
-    '<div class="tbl" id="cmpTable"></div>';
+/* ---------- compare window ---------- */
+function compareWin() {
+  var opts = function (sel) { return MODELS.map(function (m) { return '<option value="' + m.id + '"' + (m.id === sel ? " selected" : "") + ">" + esc(m.name) + "</option>"; }).join(""); };
+  return '<div class="tools"><label class="field">מודל ראשון <select id="cmpA">' + opts(cmp.a) + '</select></label><label class="field">מודל שני <select id="cmpB">' + opts(cmp.b) + '</select></label></div><div class="tbl" id="cmpT"></div>';
 }
-function renderCompare() {
-  var a = byId(cmpA), b = byId(cmpB);
+function bindCompare(root) {
+  paintCompare(root);
+  root.addEventListener("change", function (e) { if (e.target.id === "cmpA") cmp.a = e.target.value; else if (e.target.id === "cmpB") cmp.b = e.target.value; else return; paintCompare(root); });
+}
+function paintCompare(root) {
+  var a = byId(cmp.a), b = byId(cmp.b);
   var li = function (arr) { return "<ul>" + arr.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>"; };
-  var yr = function (m) { return m.month ? money(m.year || m.month * 12) + (m.year ? "" : " (מחושב)") : "חינם"; };
+  var mo = function (m) { return m.month === null ? "לפי טוקנים: $" + m.api.input + " קלט, $" + m.api.output + " פלט למיליון" : money(m.month); };
+  var yr = function (m) { return m.month === null ? "אין" : m.month ? money(m.year || m.month * 12) + (m.year ? "" : " (מחושב)") : "חינם"; };
   var row = function (h, f) { return "<tr><th>" + h + "</th><td>" + f(a) + "</td><td>" + f(b) + "</td></tr>"; };
-  document.getElementById("cmpTable").innerHTML = "<table><thead><tr><th></th><td>" + esc(a.name) + "</td><td>" + esc(b.name) + "</td></tr></thead><tbody>" +
-    row("יצרן", function (m) { return esc(m.maker); }) +
-    row("מחיר לחודש", function (m) { return money(m.month); }) +
-    row("מחיר לשנה", yr) +
-    row("מתאים במיוחד ל", function (m) { return esc(m.tag); }) +
-    row("במה הוא טוב", function (m) { return li(m.good); }) +
-    row("פחות מתאים ל", function (m) { return li(m.less); }) + "</tbody></table>";
+  root.querySelector("#cmpT").innerHTML = "<table><thead><tr><th></th><td>" + esc(a.name) + "</td><td>" + esc(b.name) + "</td></tr></thead><tbody>" +
+    row("יצרן", function (m) { return esc(m.maker); }) + row("מחיר לחודש", mo) + row("מחיר לשנה", yr) +
+    row("מתאים במיוחד ל", function (m) { return esc(m.tag); }) + row("במה הוא טוב", function (m) { return li(m.good); }) + row("פחות מתאים ל", function (m) { return li(m.less); }) + "</tbody></table>";
 }
 
-function render() {
-  var h = location.hash.replace("#", "");
-  var page = h === "prices" ? "prices" : h === "compare" ? "compare" : "home";
-  ["home", "prices", "compare"].forEach(function (p) {
-    document.getElementById("nav-" + p).setAttribute("aria-current", p === page ? "page" : "false");
+/* ---------- token window ---------- */
+var TK_MIN = 100000, TK_MAX = 10000000;
+function tkFromT(t) { var v = TK_MIN * Math.pow(TK_MAX / TK_MIN, t / 1000); var step = v < 1e6 ? 10000 : 100000; return Math.round(v / step) * step; }
+function tkToT(v) { v = Math.min(TK_MAX, Math.max(TK_MIN, v)); return Math.round(1000 * Math.log(v / TK_MIN) / Math.log(TK_MAX / TK_MIN)); }
+function tkShort(v) { if (v >= 1e9) return +(v / 1e9).toFixed(2) + "B"; if (v >= 1e6) return +(v / 1e6).toFixed(2) + "M"; return Math.round(v / 1e3) + "K"; }
+function tkParse(s) {
+  var m = String(s).toLowerCase().replace(/[,\s]/g, "").match(/^(\d+(?:\.\d+)?)([kmb]?)$/);
+  if (!m) return null;
+  var n = parseFloat(m[1]) * ({ "": 1, k: 1e3, m: 1e6, b: 1e9 })[m[2]];
+  return n >= 1 && n <= 1e9 ? Math.round(n) : null;
+}
+function thumbSvg() {
+  return '<svg viewBox="-44 -32 88 64" aria-hidden="true">' +
+    '<g id="trail" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" opacity="0"><line x1="-44" y1="-10" x2="-30" y2="-10"></line><line x1="-50" y1="0" x2="-30" y2="0"></line><line x1="-44" y1="10" x2="-30" y2="10"></line></g>' +
+    '<g id="coin"><circle r="18" fill="var(--accent)" stroke="var(--fg)" stroke-width="2"></circle><circle r="12.5" fill="none" stroke="var(--accent-fg)" stroke-width="1.5"></circle><path d="M0 -9 L2.6 -2.6 L9 0 L2.6 2.6 L0 9 L-2.6 2.6 L-9 0 L-2.6 -2.6Z" fill="var(--accent-fg)"></path></g>' +
+    '<g id="rocket" opacity="0"><path id="flame" d="M-20 -5 L-38 0 L-20 5Z" fill="var(--flame)"></path><path d="M-20 -9 L-31 -19 L-12 -9Z M-20 9 L-31 19 L-12 9Z" fill="var(--fg)"></path><path d="M-20 -10 Q8 -17 30 0 Q8 17 -20 10Z" fill="var(--accent)" stroke="var(--fg)" stroke-width="2"></path><circle cx="6" cy="0" r="5" fill="var(--accent-fg)" stroke="var(--fg)" stroke-width="1.5"></circle></g></svg>';
+}
+function tokensWin() {
+  var starsHtml = "";
+  for (var i = 0; i < 16; i++) starsHtml += '<i style="left:' + (4 + (i * 6.1) % 92) + '%;top:' + (22 + ((i * 37) % 56)) + '%">' + (i % 3 ? "·" : "✦") + "</i>";
+  return '<p style="margin:0;color:var(--muted)">גררו את הטוקן או הקלידו מספר. העלות מחושבת לפי מחירי ה-API הרשמיים, לכל מודל.</p>' +
+    '<div class="rail" id="rail"><div class="track"><div class="fill" id="fill"></div><div class="stars">' + starsHtml + '</div></div>' +
+    '<input id="tkRange" type="range" min="0" max="1000" step="1" aria-label="כמות טוקנים"><div class="thumb" id="thumb">' + thumbSvg() + '</div></div>' +
+    '<div class="ends"><span>' + tkShort(TK_MIN) + '</span><span>' + tkShort(TK_MAX) + '</span></div>' +
+    '<div class="bubble"><span id="bubble"></span></div>' +
+    '<div class="tk-in"><label>מספר טוקנים מדויק<input class="field" id="tkText" type="text" inputmode="decimal" autocomplete="off" aria-describedby="tkHint"></label>' +
+    '<label>חלק הקלט מתוך הטוקנים<select class="field" id="tkShare"><option value="90">90% קלט · 10% פלט</option><option value="75">75% קלט · 25% פלט</option><option value="50">50% קלט · 50% פלט</option><option value="25">25% קלט · 75% פלט</option></select></label>' +
+    '<label style="font-weight:400"><span><input type="checkbox" id="tkPeak"> תעריף שעות שיא של DeepSeek</span></label></div>' +
+    '<div id="tkHint" class="note" style="margin-top:6px">אפשר לכתוב 1,000,000 או 500k או 2m. הסליידר מכסה 100K עד 10M, והשדה מקבל עד מיליארד.</div>' +
+    '<div class="tbl" id="tkRes"></div>' +
+    '<p class="note">החישוב הוא אומדן לפי טוקנים רגילים, בלי הנחות מטמון ו-Batch ובלי חיובי כלים וחיפוש. כשבקשה אחת ארוכה מהסף שמצוין ליד מודל, המחיר בפועל גבוה יותר. מחירים מדפי התמחור הרשמיים, נבדקו ב-6 וב-7 בנובמבר 2026.</p>';
+}
+function bindTokens(root) {
+  var range = root.querySelector("#tkRange"), text = root.querySelector("#tkText");
+  root.querySelector("#tkShare").value = String(tk.share);
+  root.querySelector("#tkPeak").checked = tk.peak;
+  text.value = tk.tokens.toLocaleString("en-US");
+  range.value = tkToT(tk.tokens);
+  paintTokens(root);
+  range.addEventListener("input", function () { tk.tokens = tkFromT(Number(range.value)); text.value = tk.tokens.toLocaleString("en-US"); text.setCustomValidity(""); paintTokens(root); });
+  text.addEventListener("input", function () {
+    var n = tkParse(text.value);
+    if (n === null) { text.setAttribute("aria-invalid", "true"); return; }
+    text.removeAttribute("aria-invalid"); tk.tokens = n; range.value = tkToT(n); paintTokens(root);
   });
-  if (page === "home") { app.innerHTML = home(); renderGrid(); renderDetail(); }
-  else if (page === "prices") { app.innerHTML = prices(); renderRows(); }
-  else { app.innerHTML = compare(); renderCompare(); }
+  text.addEventListener("blur", function () { text.removeAttribute("aria-invalid"); text.value = tk.tokens.toLocaleString("en-US"); });
+  root.querySelector("#tkShare").addEventListener("change", function (e) { tk.share = Number(e.target.value); paintTokens(root); });
+  root.querySelector("#tkPeak").addEventListener("change", function (e) { tk.peak = e.target.checked; paintTokens(root); });
+}
+function clamp01(x) { return Math.max(0, Math.min(1, x)); }
+function paintTokens(root) {
+  var t = tkToT(tk.tokens), p = t / 1000;
+  var rail = root.querySelector("#rail"), thumb = root.querySelector("#thumb");
+  var size = 40 + 44 * p, w = size * 88 / 64;
+  thumb.style.left = (p * 100) + "%"; thumb.style.width = w + "px"; thumb.style.height = size + "px";
+  var rocket = clamp01((p - 0.3) / 0.35);
+  root.querySelector("#coin").setAttribute("opacity", 1 - rocket);
+  root.querySelector("#rocket").setAttribute("opacity", rocket);
+  root.querySelector("#trail").setAttribute("opacity", clamp01((p - 0.5) / 0.4));
+  root.querySelector("#flame").setAttribute("transform", "scale(" + (0.7 + 0.8 * p) + " 1)");
+  root.querySelector("#fill").style.width = (p * 100) + "%";
+  var bub = root.querySelector("#bubble");
+  bub.textContent = tkShort(tk.tokens); bub.style.left = (p * 100) + "%";
+  var inT = tk.tokens * tk.share / 100, outT = tk.tokens - inT;
+  var rows = API_MODELS.map(function (m) {
+    var ip = tk.peak && m.peakInput != null ? m.peakInput : m.input, op = tk.peak && m.peakOutput != null ? m.peakOutput : m.output;
+    var ic = inT / 1e6 * ip, oc = outT / 1e6 * op;
+    return { m: m, ip: ip, op: op, ic: ic, oc: oc, total: ic + oc };
+  }).sort(function (a, b) { return a.total - b.total; });
+  var max = rows[rows.length - 1].total || 1;
+  root.querySelector("#tkRes").innerHTML = "<table><thead><tr><th>מודל</th><th>קלט / פלט למיליון</th><th>עלות קלט</th><th>עלות פלט</th><th>סה״כ</th></tr></thead><tbody>" +
+    rows.map(function (r) {
+      return "<tr><td><b>" + esc(r.m.name) + "</b><br><span style='color:var(--muted);font-size:14px'>" + esc(r.m.vendor) + (r.m.note ? " · " + esc(r.m.note) : "") + "</span></td><td>$" + r.ip + " / $" + r.op + "</td><td>" + usd(r.ic) + "</td><td>" + usd(r.oc) + "</td><td class='total'>" + usd(r.total) + "<div class='bar2'><i style='width:" + Math.max(2, r.total / max * 100) + "%'></i></div></td></tr>";
+    }).join("") + "</tbody></table>";
+}
+function usd(v) {
+  if (v === 0) return "$0";
+  if (v < 0.01) return "פחות מ-$0.01";
+  if (v >= 1000) return "$" + Math.round(v).toLocaleString("en-US");
+  return "$" + v.toFixed(2);
 }
 
-app.addEventListener("click", function (e) {
-  var c = e.target.closest(".card"), s = e.target.closest("[data-p]"), f = e.target.closest("[data-f]"), cm = e.target.closest("[data-cmp]");
-  if(e.target.closest("#token-toggle")){var panel=document.getElementById("token-panel"),opening=panel.hidden;panel.hidden=!opening;document.getElementById("token-toggle").setAttribute("aria-expanded",String(opening));if(opening)renderTokenCalculator();return;}
-  if (c) {
-    openId = openId === c.dataset.id ? null : c.dataset.id;
-    renderGrid(); renderDetail();
-    var d = document.getElementById("detail");
-    if (d) d.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  } else if (f) { filter = f.dataset.f; render(); }
-  else if (s) { period = s.dataset.p; render(); }
-  else if (cm) { cmpA = cm.dataset.cmp; cmpB = cmpA === "chatgpt" ? "claude" : "chatgpt"; location.hash = "#compare"; }
-  else if (e.target.id === "close") { openId = null; renderGrid(); renderDetail(); }
-});
-app.addEventListener("input", function (e) {
-  if (e.target.id === "q") { query = e.target.value; renderGrid(); }
-  else if(e.target.id==="token-range"||e.target.id==="token-count"){var n=Number(e.target.value);if(Number.isFinite(n)&&n>=1){tokenCount=Math.min(e.target.id==="token-range"?10000000:1000000000,Math.floor(n));renderTokenCalculator();}}
-  else if(e.target.id==="input-share"){inputShare=Number(e.target.value);renderTokenCalculator();}
-  else if (e.target.id === "days") { daysVal = Math.max(1, Math.min(365, parseInt(e.target.value, 10) || 1)); renderRows(); }
-});
-app.addEventListener("change", function (e) {
-  if (e.target.id === "sort") { sortMode = e.target.value; renderRows(); }
-  else if(e.target.id==="deepseek-peak"){renderTokenCalculator();}
-  else if (e.target.id === "cmpA") { cmpA = e.target.value; renderCompare(); }
-  else if (e.target.id === "cmpB") { cmpB = e.target.value; renderCompare(); }
-});
-/* night / day switch */
-var SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>';
-var MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>';
-function isDark() {
-  var t = document.documentElement.getAttribute("data-theme");
-  if (t) return t === "dark";
-  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+/* ---------- skills + guides ---------- */
+function skillsWin() {
+  var cats = SKILL_CATS.map(function (c) { return '<button type="button" data-cat="' + c + '" aria-pressed="' + (c === sk.cat) + '">' + c + "</button>"; }).join("");
+  return '<p style="margin:0 0 14px;color:var(--muted)">בחרו תחום, ותראו את הסקילים שמתאימים. הרשימה לקוחה מהמאגר הציבורי של Anthropic, ותיאורי הסקילים מקוצרים.</p>' +
+    '<div class="sk"><div class="cats" id="cats" role="group" aria-label="תחום">' + cats + '</div><div><input class="field" id="skq" type="search" placeholder="חיפוש סקיל" aria-label="חיפוש סקיל" style="width:100%"><div class="skills" id="skl" style="margin-top:12px"></div>' + adBox() + "</div></div>";
 }
-function paintThemeButton() {
-  document.getElementById("theme").innerHTML = isDark() ? SUN + "<span>מצב יום</span>" : MOON + "<span>מצב לילה</span>";
+function bindSkills(root) {
+  paintSkills(root);
+  root.querySelector("#cats").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-cat]"); if (!b) return;
+    sk.cat = b.dataset.cat; root.querySelectorAll("[data-cat]").forEach(function (x) { x.setAttribute("aria-pressed", String(x.dataset.cat === sk.cat)); }); paintSkills(root);
+  });
+  root.querySelector("#skq").addEventListener("input", function (e) { sk.q = e.target.value; paintSkills(root); });
+  root.querySelector("#skl").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-copy]"); if (!b) return;
+    copyText(b.dataset.copy, b);
+  });
 }
-try { var saved = localStorage.getItem("ai-guide-theme"); if (saved) document.documentElement.setAttribute("data-theme", saved); } catch (e) {}
-document.getElementById("theme").addEventListener("click", function () {
-  var next = isDark() ? "light" : "dark";
-  document.documentElement.setAttribute("data-theme", next);
-  try { localStorage.setItem("ai-guide-theme", next); } catch (e) {}
-  paintThemeButton();
+function paintSkills(root) {
+  var q = sk.q.trim().toLowerCase();
+  var list = SKILLS.filter(function (s) { return (sk.cat === "הכל" || s.c === sk.cat) && (!q || (s.n + " " + s.d).toLowerCase().indexOf(q) > -1); });
+  root.querySelector("#skl").innerHTML = list.length ? list.map(function (s) {
+    return '<div class="skill"><b><code>' + esc(s.n) + '</code></b><span>' + esc(s.d) + '</span><span style="color:var(--muted);font-size:14px">' + esc(s.c) + ' · <a href="https://github.com/anthropics/skills" target="_blank" rel="noopener">מאגר Anthropic</a></span></div>';
+  }).join("") : '<p class="empty">אין סקיל שמתאים לחיפוש.</p>';
+}
+function copyText(txt, btn) {
+  var done = function (ok) { if (btn) { var old = btn.textContent; btn.textContent = ok ? "הועתק" : "בחרו והעתיקו ידנית"; setTimeout(function () { btn.textContent = old; }, 1600); } };
+  try { navigator.clipboard.writeText(txt).then(function () { done(true); }, function () { done(false); }); } catch (e) { done(false); }
+}
+function guidesWin() {
+  return '<p style="margin:0;color:var(--muted)">איך מוסיפים סקיל לכלי AI. הפרטים של ממשק הכלים משתנים, ולכן בדקו את התפריטים בגרסה שלכם.</p>' +
+    '<details open><summary>Claude</summary><ol><li>צרו תיקייה בשם הסקיל, ובתוכה קובץ <code>SKILL.md</code>. בראש הקובץ חייבים להיות השדות <code>name</code> ו-<code>description</code>.</li><li>ב-Claude.ai, בהגדרות באזור Capabilities, מעלים את התיקייה כקובץ zip.</li><li>ב-Claude Code, שמים את התיקייה ב-<code>~/.claude/skills/</code> לשימוש אישי, או ב-<code>.claude/skills/</code> בתוך הפרויקט.</li><li>Claude קורא את התיאור ומפעיל את הסקיל כשהבקשה מתאימה לו.</li></ol><span class="code" id="tpl">' + esc(SKILL_TEMPLATE) + '</span><button class="btn alt" type="button" data-copy-tpl style="margin-top:0">העתקת התבנית</button></details>' +
+    '<details><summary>ChatGPT</summary><ul><li>עד כמה שבדקתי, ChatGPT לא משתמש בפורמט <code>SKILL.md</code>.</li><li>הדבר הקרוב הוא GPT מותאם אישית, או הוראות קבועות בתוך Project. מדביקים שם את ההוראות של הסקיל.</li><li>את התבנית אפשר להשתמש בה כטקסט ההוראות, בלי שורות ה-<code>name</code> וה-<code>description</code>.</li></ul></details>' +
+    '<details><summary>Gemini</summary><ul><li>הדבר הקרוב הוא Gem: עוזר מותאם אישית עם הוראות קבועות.</li><li>יוצרים Gem חדש ומדביקים בו את ההוראות של הסקיל.</li></ul></details>' +
+    '<details><summary>כתיבת סקיל טוב</summary><ul><li>התיאור קובע מתי הסקיל מופעל, ולכן כתבו בו מתי להשתמש בו ולא רק מה הוא עושה.</li><li>הוראות קצרות וממוספרות עובדות טוב יותר מפסקאות ארוכות.</li><li>דוגמה אחת של תוצר מוכן שווה יותר מתיאור כללי.</li></ul></details>';
+}
+function bindGuides(root) {
+  root.addEventListener("click", function (e) { var b = e.target.closest("[data-copy-tpl]"); if (b) copyText(SKILL_TEMPLATE, b); });
+}
+
+/* ---------- upgrade ---------- */
+function upgradeWin() {
+  var rows = [
+    ["חשבון ושמירת העדפות", "יש", "יש"],
+    ["מחשבון טוקנים, מחירים והשוואה", "יש", "יש"],
+    ["ספריית סקילים", "יש", "יש"],
+    ["פרסומות", "יש", "אין"],
+    ["שאלות לבוט בכל ביקור", "5", "ללא הגבלה"],
+    ["סקילים מועדפים", "אין", "יש"],
+    ["התראה במייל על מודל שמתאים לבקשה שלך", "אין", "בקרוב"]
+  ];
+  return '<div class="tbl"><table><thead><tr><th></th><td>חינם</td><td>Premium</td></tr></thead><tbody>' + rows.map(function (r) { return "<tr><th>" + r[0] + "</th><td>" + r[1] + "</td><td class='yes'>" + r[2] + "</td></tr>"; }).join("") + "</tbody></table></div>" +
+    '<p class="note">מחיר מוצע: $3 לחודש. התשלום עדיין לא מחובר, ובגרסת ההדגמה השדרוג מופעל רק בדפדפן הזה. התראות מייל דורשות שרת, ולכן הן עדיין לא פעילות.</p>' +
+    '<div id="upAct"></div>';
+}
+function bindUpgrade(root) { paintUpgrade(root); root.addEventListener("click", function (e) {
+  var b = e.target.closest("[data-up]"); if (!b) return;
+  user.premium = b.dataset.up === "on"; save(USER_KEY, user); paintBar(); paintUpgrade(root); renderHome();
+}); }
+function paintUpgrade(root) {
+  root.querySelector("#upAct").innerHTML = isPro() ? '<span class="badge pro">Premium פעיל</span> <button class="btn ghost" type="button" data-up="off" style="margin-top:0">חזרה לחינם</button>' : '<button class="btn" type="button" data-up="on" style="margin-top:0">שדרוג (הדגמה)</button>';
+}
+
+/* ---------- account ---------- */
+var USES = ["כתיבה", "קוד", "חיפוש", "תמונות", "Office", "קול ומוזיקה"];
+function accountWin() {
+  return '<div class="form"><div><b>' + esc(user.name) + '</b><div style="color:var(--muted)">' + esc(user.email) + ' <span class="badge' + (isPro() ? " pro" : "") + '">' + (isPro() ? "Premium" : "חינם") + '</span></div></div>' +
+    '<label>במה אתם צריכים AI?<select class="field" id="aUse">' + USES.map(function (u) { return '<option value="' + u + '"' + (user.use === u ? " selected" : "") + ">" + u + "</option>"; }).join("") + '</select></label>' +
+    '<label>תקציב חודשי בדולרים<input class="field" id="aBudget" type="number" min="0" max="1000" step="1" value="' + (user.budget == null ? 10 : user.budget) + '"></label>' +
+    '<label style="font-weight:400"><span><input type="checkbox" disabled> עדכון במייל כשיש מודל שמתאים יותר (מחכה לשרת מיילים)</span></label></div>' +
+    '<h3 style="margin-top:20px">מה מתאים לכם עכשיו</h3><div class="rows" id="recs"></div>' +
+    '<p class="note">החשבון נשמר רק בדפדפן הזה. אין סיסמה ואין שרת, ולכן אף אחד אחר לא רואה את הפרטים. כשיתחבר שרת, אפשר יהיה לשמור חשבון בין מכשירים.</p>' +
+    '<button class="btn ghost" type="button" id="logout" style="margin-top:6px">יציאה</button>';
+}
+function bindAccount(root) {
+  paintRecs(root);
+  root.addEventListener("input", function (e) {
+    if (e.target.id === "aBudget") { var v = parseFloat(e.target.value); user.budget = isFinite(v) ? Math.max(0, v) : 0; }
+    else return;
+    save(USER_KEY, user); paintRecs(root);
+  });
+  root.addEventListener("change", function (e) { if (e.target.id === "aUse") { user.use = e.target.value; save(USER_KEY, user); paintRecs(root); } });
+  root.querySelector("#logout").addEventListener("click", function () { closeWindow(true); user = null; try { localStorage.removeItem(USER_KEY); } catch (e) {} botOpen = false; paintBar(); renderBot(); showGate(); });
+}
+function paintRecs(root) {
+  var use = user.use || "כתיבה", budget = user.budget == null ? 10 : user.budget;
+  var fit = SUB.filter(function (m) { return m.cats.indexOf(use) > -1 && m.month <= budget; }).sort(function (a, b) { return b.month - a.month; }).slice(0, 3);
+  var html;
+  if (fit.length) html = fit.map(function (m) { return '<div class="row"><b>' + esc(m.name) + '</b><span class="p">' + money(m.month) + '</span><span class="sub">' + esc(m.tag) + "</span><span class=\"unit\">" + (m.month ? "לחודש" : "") + "</span></div>"; }).join("");
+  else {
+    var cheapest = SUB.filter(function (m) { return m.cats.indexOf(use) > -1; }).sort(function (a, b) { return a.month - b.month; })[0];
+    html = '<p class="empty" style="margin:0">אין מנוי בתחום "' + esc(use) + '" עד $' + budget + '. הזול ביותר בתחום: ' + (cheapest ? esc(cheapest.name) + " ב-" + money(cheapest.month) + " לחודש" : "לא נמצא") + ".</p>";
+  }
+  root.querySelector("#recs").innerHTML = html;
+}
+
+/* ---------- FAQ bot (rule-based, runs in the browser) ---------- */
+var BOT_RULES = [
+  [/מחיר|עולה|כמה|עלות|דולר/, "המחירים נמצאים בחלון \"מחירים\": מנויים לפי יום, שבוע, חודש, שנה או מספר ימים, וטבלת API לפי טוקנים. לחישוב לפי כמות, לחצו על \"טוקנים\" ליד החיפוש."],
+  [/טוקן|טוקנים|api|קלט|פלט/, "בכפתור \"טוקנים\" בוחרים כמות בין 100K ל-10M, או מקלידים מספר. האתר מחשב עלות לכל מודל לפי מחיר הקלט והפלט למיליון טוקנים. אפשר לשנות את חלוקת הקלט והפלט."],
+  [/שדרג|שדרוג|פרימיום|premium|מנוי שלכם/, "ב-Premium אין פרסומות, אין הגבלה על שאלות לבוט ואפשר לשמור סקילים מועדפים. התשלום עדיין לא מחובר, ובגרסת ההדגמה השדרוג מופעל בדפדפן הזה בלבד."],
+  [/סקיל|skill|סקילים/, "בחלון \"ספריית סקילים\" בוחרים תחום ורואים את הסקילים שמתאימים. בחלון \"מדריכים\" יש הסבר איך מוסיפים סקיל ל-Claude, ומה הקרוב לזה ב-ChatGPT וב-Gemini."],
+  [/מייל|התראה|אימייל/, "התראות במייל דורשות שרת, ולכן הן עדיין לא פעילות. אפשר להגדיר תחום ותקציב בחשבון, והאתר יציג מיד מה מתאים."],
+  [/חשבון|התחבר|כניסה|סיסמ|יציאה/, "החשבון נשמר רק בדפדפן הזה, בלי סיסמה ובלי שרת. כדי להחליף משתמש, לחצו על השם שלכם למעלה ואז על \"יציאה\"."],
+  [/פרסומ/, "בגרסה החינמית יש מקומות לפרסומות. אלה דוגמאות בלבד. ב-Premium הם לא מוצגים."],
+  [/לילה|יום|כהה|בהיר|מצב/, "הכפתור בפינה העליונה מחליף בין מצב לילה למצב יום, והבחירה נשמרת."],
+  [/השוואה|להשוות/, "בחלון \"השוואה\" בוחרים שני מודלים ורואים אותם זה לצד זה: מחיר, במה כל אחד טוב ובמה פחות."],
+  [/מתי|עדכון|נבדק|אמיתי|מדויק/, "המחירים נבדקו ב-4 וב-7 בנובמבר 2026 מדפי התמחור הרשמיים. כמה מחירים נלקחו מאתרי השוואה, וזה כתוב בחלון המחירים. האתר לא מתעדכן לבד, ולכן בדקו באתר הרשמי לפני קנייה."]
+];
+var BOT_SUGGEST = ["כמה זה עולה?", "איך עובד מחשבון הטוקנים?", "מה יש ב-Premium?", "איך מוסיפים סקיל?"];
+function botAnswer(q) {
+  for (var i = 0; i < BOT_RULES.length; i++) if (BOT_RULES[i][0].test(q.toLowerCase())) return BOT_RULES[i][1];
+  return "אני עונה רק על שאלות על האתר: מחירים, טוקנים, סקילים, שדרוג וחשבון. נסו לשאול למשל \"כמה זה עולה?\".";
+}
+function renderBot() {
+  var dock = $("botDock");
+  if (!user) { dock.innerHTML = ""; return; }
+  if (!botOpen) { dock.innerHTML = '<button class="botbtn" id="botOpen" type="button">' + CHAT + "שאלות על האתר</button>"; return; }
+  dock.innerHTML = '<section class="bot" role="dialog" aria-label="בוט שאלות על האתר"><header><span>שאלות על האתר</span><button class="x" id="botClose" type="button" aria-label="סגירה">×</button></header>' +
+    '<div class="msgs" id="msgs"><div class="m">שלום ' + esc(user.name) + '. אני עונה על שאלות על האתר. אני בוט פשוט שרץ בדפדפן ואינו מודל שפה, ולכן אני מכיר רק את הנושאים של האתר.</div></div>' +
+    '<div class="qs">' + BOT_SUGGEST.map(function (s) { return '<button type="button" data-q="' + s + '">' + s + "</button>"; }).join("") + "</div>" +
+    '<form id="botForm"><input class="field" id="botQ" autocomplete="off" placeholder="כתבו שאלה" aria-label="שאלה"><button class="btn" type="submit" style="margin:0">שלח</button></form></section>';
+  $("botQ").focus({ preventScroll: true });
+}
+function toggleBot(v) { botOpen = v; renderBot(); }
+function botSend(q) {
+  q = q.trim(); if (!q) return;
+  var box = $("msgs");
+  var add = function (t, me) { var d = document.createElement("div"); d.className = "m" + (me ? " me" : ""); d.textContent = t; box.appendChild(d); box.scrollTop = box.scrollHeight; };
+  add(q, true);
+  if (!isPro() && botCount >= 5) { add("הגעתם ל-5 שאלות בביקור הזה. ב-Premium אין הגבלה.", false); return; }
+  botCount++;
+  add(botAnswer(q), false);
+}
+$("botDock").addEventListener("click", function (e) {
+  if (e.target.closest("#botOpen")) toggleBot(true);
+  else if (e.target.closest("#botClose")) toggleBot(false);
+  else { var s = e.target.closest("[data-q]"); if (s) botSend(s.dataset.q); }
 });
-paintThemeButton();
-window.addEventListener("hashchange", render);
-render();
+$("botDock").addEventListener("submit", function (e) { e.preventDefault(); var i = $("botQ"); botSend(i.value); i.value = ""; });
+
+/* ---------- login gate ---------- */
+function showGate() {
+  var g = document.createElement("div");
+  g.className = "gate"; g.id = "gate";
+  g.innerHTML = '<form class="box" id="gateForm"><h1>כניסה</h1><p>כדי להשתמש באתר צריך חשבון. החשבון נשמר רק בדפדפן הזה, בלי סיסמה ובלי שרת.</p>' +
+    '<div class="form" style="max-width:none"><label>שם<input class="field" id="gName" required autocomplete="name"></label><label>אימייל<input class="field" id="gMail" type="email" required autocomplete="email" dir="ltr"></label><button class="btn" type="submit" style="margin:0">כניסה</button></div></form>';
+  document.body.appendChild(g);
+  $("gName").focus();
+  $("gateForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    user = { name: $("gName").value.trim(), email: $("gMail").value.trim(), premium: false, use: "כתיבה", budget: 10 };
+    save(USER_KEY, user); g.remove(); paintBar(); renderHome(); renderBot();
+  });
+}
+
+/* ---------- start ---------- */
+(function () {
+  var t = load(THEME_KEY); if (t) document.documentElement.setAttribute("data-theme", t);
+  user = load(USER_KEY);
+  paintBar(); renderHome(); renderBot();
+  if (!user) showGate();
+})();
 </script>
-
 </body>
 </html>
