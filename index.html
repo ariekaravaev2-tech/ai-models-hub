@@ -241,7 +241,7 @@ var SUB = [
   { id: "suno", name: "Suno Pro", maker: "Suno", tag: "שירים שלמים מטקסט", month: 8, cats: ["קול ומוזיקה"],
     good: ["שיר עם שירה ממשפט אחד", "סגנונות מוזיקליים רבים", "הורדת השירים"],
     less: ["פחות שליטה בעיבוד", "מספר היצירות מוגבל בקרדיטים"] },
-  { id: "elevenlabs", name: "ElevenLabs Starter", maker: "ElevenLabs", tag: "דיבור וקול סינתטי", month: 6, cats: ["קול ומוזיקה"],
+  { id: "elevenlabs", name: "ElevenLabs Starter", maker: "ElevenLabs", tag: "דיבור וקול סינתטי", month: 6, cats: ["קול ומוזיקה"], aff: "https://try.elevenlabs.io/8s3zrrpk8e3h",
     good: ["הקראת טקסט בקול טבעי", "שפות רבות", "קריינות לסרטונים", "שכפול קול"],
     less: ["מכסת תווים חודשית מוגבלת", "החודש הראשון ב-$1 ואחריו $6"] },
   { id: "meta", name: "Meta AI", maker: "Meta", tag: "חינמי בתוך האפליקציות של Meta", month: 0, cats: ["כתיבה", "זול"],
@@ -428,7 +428,8 @@ function home() {
     '<div class="tools"><input class="field grow" id="q" type="search" placeholder="חיפוש מודל או יצרן" value="' + esc(query) + '" aria-label="חיפוש">' +
     '<button class="tokbtn" id="tokbtn" type="button">' + COIN + 'טוקנים</button></div>' +
     '<div class="chips" role="group" aria-label="סינון לפי תחום">' + chips + '</div>' +
-    '<div class="grid" id="grid"></div><div id="detail-slot"></div>' + adBox();
+    '<div class="grid" id="grid"></div><div id="detail-slot"></div>' + adBox() +
+    '<p class="note">גילוי נאות: חלק מהקישורים באתר הם קישורי שותפים. אם תרכשו דרכם, ייתכן שאקבל עמלה. המחירים והדירוג לא נקבעים לפי זה.</p>';
 }
 function renderGrid() {
   var q = query.trim().toLowerCase();
@@ -450,7 +451,8 @@ function renderDetail() {
   slot.innerHTML = '<section class="detail" id="detail" aria-label="פרטי ' + esc(m.name) + '"><div class="detail-head"><div><h2>' + esc(m.name) + '</h2><div style="color:var(--muted)">' + esc(m.maker) + " · " + head + '</div></div><button class="x" type="button" id="dclose" aria-label="סגירה">×</button></div>' +
     '<div class="cols"><div><h3>במה הוא טוב</h3><ul>' + li(m.good) + '</ul></div><div><h3>פחות מתאים ל</h3><ul>' + li(m.less) + '</ul></div></div>' +
     '<button class="btn" type="button" data-open="' + (m.month !== null ? "prices" : "tokens") + '">' + (m.month !== null ? "לראות מחירים" : "לחשב עלות") + '</button>' +
-    '<button class="btn alt" type="button" data-cmp="' + m.id + '">להשוות למודל אחר</button></section>';
+    '<button class="btn alt" type="button" data-cmp="' + m.id + '">להשוות למודל אחר</button>' +
+    (m.aff ? '<a class="btn ghost" href="' + esc(m.aff) + '" target="_blank" rel="sponsored noopener noreferrer">לאתר של ' + esc(m.maker) + ' (קישור שותפים)</a><p class="note" style="margin-top:10px">קישור שותפים: ייתכן שאקבל עמלה אם תרכשו דרכו. המחירים והתיאור באתר לא תלויים בכך.</p>' : "") + '</section>';
 }
 var app = $("app");
 function renderHome() { app.innerHTML = home(); renderGrid(); renderDetail(); }
