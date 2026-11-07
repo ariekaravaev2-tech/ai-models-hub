@@ -1,18 +1,22 @@
 <!doctype html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>מדריך מודלי AI</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Assistant:wght@400;600&display=swap">
+<title>AI Models Guide</title>
+<meta name="description" content="Compare AI subscriptions and API token prices. See what ChatGPT, Claude, Gemini, Grok and others cost, and estimate your token bill.">
+<meta property="og:title" content="AI Models Guide">
+<meta property="og:description" content="Compare AI subscriptions and API token prices, and estimate what your token usage will cost.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Source+Sans+3:wght@400;600&display=swap">
 <style>
 /* Layout: sticky top bar whose buttons open windows (button grows, window grows out of it); home = search + token button + model cards; floating FAQ bot */
 :root {
   --bg: #f3f5f7; --surface: #ffffff; --fg: #14202b; --muted: #5c6b78; --line: #dbe1e7;
   --accent: #0b7a75; --accent-soft: #d9efed; --accent-fg: #ffffff;
   --flame: #e8742c; --ad: #fff4d6; --ad-line: #e3c36a; --scrim: rgba(10, 20, 28, .55);
-  --font-display: "Rubik", "Arial Hebrew", Arial, sans-serif;
-  --font-body: "Assistant", "Arial Hebrew", Arial, sans-serif;
+  --font-display: "Rubik", system-ui, Arial, sans-serif;
+  --font-body: "Source Sans 3", system-ui, Arial, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -32,7 +36,7 @@
 html { color-scheme: light dark; }
 body {
   margin: 0; background: var(--bg); color: var(--fg);
-  font-family: var(--font-body); font-size: 17px; line-height: 1.6;
+  font-family: var(--font-body); font-size: 18px; line-height: 1.55;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   padding-block: 0 96px;
@@ -46,7 +50,6 @@ button { cursor: pointer; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 a { color: var(--accent); }
 
-/* top bar */
 .bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--surface); border-bottom: 1px solid var(--line); margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-inline: max(16px, env(safe-area-inset-left, 0px)); }
 .bar-in { max-width: 1040px; margin-inline: auto; display: flex; align-items: center; gap: 8px 14px; min-height: 60px; flex-wrap: wrap; padding-block: 6px; }
 .brand { font-family: var(--font-display); font-weight: 700; font-size: 19px; margin-inline-end: 6px; }
@@ -55,14 +58,13 @@ a { color: var(--accent); }
 .navbtn:hover { background: var(--bg); color: var(--fg); }
 .navbtn.is-open { transform: scale(1.18); background: var(--accent); color: var(--accent-fg); position: relative; z-index: 2; }
 .side { margin-inline-start: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.pill { display: inline-flex; align-items: center; gap: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 15px; }
+.pill { display: inline-flex; align-items: center; gap: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 16px; }
 .pill svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .badge { font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
 .badge.pro { background: var(--accent); color: var(--accent-fg); }
 
-/* home */
 .hero { padding-block: 34px 6px; }
-.hero h1 { font-size: clamp(27px, 5.6vw, 42px); font-weight: 700; }
+.hero h1 { font-size: clamp(28px, 5.6vw, 44px); font-weight: 700; }
 .hero p { color: var(--muted); max-width: 62ch; margin: 10px 0 0; }
 .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 18px; }
 .field { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 14px; min-width: 0; }
@@ -71,7 +73,7 @@ a { color: var(--accent); }
 .tokbtn svg { width: 22px; height: 22px; }
 .tokbtn.is-open { transform: scale(1.12); }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-.chip { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 5px 14px; font-size: 15px; color: var(--muted); }
+.chip { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 5px 14px; font-size: 16px; color: var(--muted); }
 .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; margin-top: 18px; }
 .empty { color: var(--muted); margin-top: 24px; }
@@ -80,7 +82,7 @@ a { color: var(--accent); }
 .card[aria-expanded="true"] { border-color: var(--accent); background: var(--accent-soft); }
 .card .maker { font-size: 14px; color: var(--muted); }
 .card h3 { font-size: 19px; }
-.card .tag { font-size: 15px; color: var(--muted); }
+.card .tag { font-size: 16px; color: var(--muted); }
 .card .cost { margin-top: auto; padding-top: 10px; font-family: var(--font-display); font-weight: 500; color: var(--accent); font-variant-numeric: tabular-nums; }
 .detail { margin-top: 18px; background: var(--surface); border: 1px solid var(--accent); border-radius: 12px; padding: 22px; }
 .detail-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
@@ -91,10 +93,8 @@ a { color: var(--accent); }
 .btn { display: inline-block; background: var(--accent); color: var(--accent-fg); padding: 10px 18px; border-radius: 10px; text-decoration: none; font-weight: 600; border: 0; margin-top: 16px; margin-inline-end: 8px; }
 .btn.alt { background: var(--accent-soft); color: var(--accent); }
 .btn.ghost { background: none; border: 1px solid var(--line); color: var(--fg); }
-.btn:disabled { opacity: .5; cursor: not-allowed; }
-.ad { margin-top: 22px; background: var(--ad); border: 1px dashed var(--ad-line); border-radius: 10px; padding: 12px 16px; font-size: 15px; color: var(--muted); }
+.ad { margin-top: 22px; background: var(--ad); border: 1px dashed var(--ad-line); border-radius: 10px; padding: 12px 16px; font-size: 16px; color: var(--muted); }
 
-/* windows */
 .overlay { position: fixed; inset: 0; z-index: 40; background: transparent; display: flex; justify-content: center; align-items: flex-start; padding: calc(16px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-left, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-right, 0px)); transition: background-color .25s; overflow: auto; }
 .overlay.in { background: var(--scrim); }
 .panel { width: 100%; max-width: 880px; margin-top: 56px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,.28); opacity: 0; transform: scale(.15); transition: transform .38s cubic-bezier(.2,1.1,.3,1), opacity .2s; min-width: 0; }
@@ -110,16 +110,16 @@ a { color: var(--accent); }
 .rows { display: grid; gap: 8px; margin-top: 14px; }
 .row b { font-family: var(--font-display); font-size: 17px; }
 .row .p { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; text-align: end; }
-.row .sub { color: var(--muted); font-size: 15px; }
+.row .sub { color: var(--muted); font-size: 16px; }
 .row .unit { color: var(--muted); font-size: 14px; text-align: end; }
-.note { margin-top: 16px; color: var(--muted); font-size: 15px; max-width: 72ch; }
+.note { margin-top: 16px; color: var(--muted); font-size: 16px; max-width: 72ch; }
 .stamp { display: inline-block; background: var(--accent-soft); color: var(--accent); border-radius: 8px; padding: 3px 12px; font-size: 14px; font-weight: 600; }
 .days { width: 90px; font-variant-numeric: tabular-nums; }
 .tbl { margin-top: 14px; overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
 .tbl table { border-collapse: collapse; width: 100%; min-width: 520px; }
 .tbl th, .tbl td { text-align: start; vertical-align: top; padding: 11px 14px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
 .tbl tr:last-child th, .tbl tr:last-child td { border-bottom: 0; }
-.tbl th { color: var(--muted); font-weight: 600; font-size: 15px; }
+.tbl th { color: var(--muted); font-weight: 600; font-size: 16px; }
 .tbl thead td, .tbl thead th { font-family: var(--font-display); color: var(--accent); font-size: 17px; }
 .tbl ul { margin: 0; padding-inline-start: 18px; }
 .tbl .total { color: var(--accent); font-weight: 700; font-family: var(--font-display); }
@@ -132,19 +132,17 @@ a { color: var(--accent); }
 .skills { display: grid; gap: 10px; }
 .skill { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; display: grid; gap: 2px; }
 .skill b { font-family: var(--font-display); }
-.skill code, .code { direction: ltr; unicode-bidi: plaintext; }
-.code { display: block; white-space: pre-wrap; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; text-align: left; margin: 10px 0; }
+.code { display: block; white-space: pre-wrap; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; margin: 10px 0; }
 details { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; margin-top: 10px; }
 summary { font-weight: 600; cursor: pointer; }
 details ol, details ul { padding-inline-start: 22px; display: grid; gap: 4px; margin: 10px 0 0; }
 .yes { color: var(--accent); font-weight: 700; }
 @media (max-width: 640px) { .sk { grid-template-columns: 1fr; } .cats { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); } }
 
-/* token window */
 .tk-in { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: end; margin-top: 18px; }
 .tk-in label { display: grid; gap: 4px; font-weight: 600; min-width: 0; }
-.tk-in input[type=text] { width: 200px; max-width: 100%; font-variant-numeric: tabular-nums; direction: ltr; text-align: center; font-size: 20px; font-family: var(--font-display); }
-.rail { position: relative; margin: 34px 22px 0; direction: ltr; height: 56px; }
+.tk-in input[type=text] { width: 200px; max-width: 100%; font-variant-numeric: tabular-nums; text-align: center; font-size: 20px; font-family: var(--font-display); }
+.rail { position: relative; margin: 34px 22px 0; height: 56px; }
 .track { position: absolute; inset: 0; border: 2px solid var(--fg); border-radius: 999px; background: var(--bg); overflow: hidden; }
 .fill { position: absolute; inset: 0 auto 0 0; background: var(--accent-soft); width: 0; }
 .stars { position: absolute; inset: 0; font-size: 11px; color: var(--muted); }
@@ -152,17 +150,16 @@ details ol, details ul { padding-inline-start: 22px; display: grid; gap: 4px; ma
 .rail input[type=range] { position: absolute; left: -18px; width: calc(100% + 36px); top: -10px; height: 76px; margin: 0; opacity: 0; z-index: 3; cursor: grab; }
 .thumb { position: absolute; top: 50%; z-index: 2; pointer-events: none; transform: translate(-50%, -50%); }
 .thumb svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.ends { display: flex; justify-content: space-between; margin: 10px 22px 0; direction: ltr; font-weight: 700; font-family: var(--font-display); color: var(--muted); }
-.bubble { position: relative; direction: ltr; height: 38px; margin: 4px 22px 0; }
+.ends { display: flex; justify-content: space-between; margin: 10px 22px 0; font-weight: 700; font-family: var(--font-display); color: var(--muted); }
+.bubble { position: relative; height: 38px; margin: 4px 22px 0; }
 .bubble span { position: absolute; top: 0; transform: translateX(-50%); background: var(--accent); color: var(--accent-fg); border-radius: 10px; padding: 3px 14px; font-weight: 700; font-family: var(--font-display); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bar2 { height: 8px; border-radius: 99px; background: var(--accent-soft); margin-top: 6px; overflow: hidden; }
 .bar2 i { display: block; height: 100%; background: var(--accent); }
 @media (prefers-reduced-motion: reduce) { .panel, .overlay, .navbtn, .tokbtn, .card { transition: none; } }
 
-/* bot */
-.botbtn { position: fixed; z-index: 25; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: inline-flex; gap: 8px; align-items: center; background: var(--accent); color: var(--accent-fg); border: 0; border-radius: 999px; padding: 12px 18px; font-weight: 700; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+.botbtn { position: fixed; z-index: 25; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: inline-flex; gap: 8px; align-items: center; background: var(--accent); color: var(--accent-fg); border: 0; border-radius: 999px; padding: 12px 18px; font-weight: 700; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
 .botbtn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.bot { position: fixed; z-index: 26; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: min(380px, calc(100vw - 32px)); max-height: min(560px, 80vh); display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,.3); overflow: hidden; }
+.bot { position: fixed; z-index: 26; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: min(380px, calc(100vw - 32px)); max-height: min(560px, 80vh); display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,.3); overflow: hidden; }
 .bot header { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); font-family: var(--font-display); font-weight: 700; }
 .msgs { overflow: auto; padding: 12px 14px; display: grid; gap: 8px; align-content: start; flex: 1; min-height: 160px; }
 .m { max-width: 88%; padding: 8px 12px; border-radius: 12px; background: var(--bg); white-space: pre-wrap; }
@@ -172,7 +169,6 @@ details ol, details ul { padding-inline-start: 22px; display: grid; gap: 4px; ma
 .qs { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 14px 10px; }
 .qs button { background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; font-size: 14px; }
 
-/* login */
 .gate { position: fixed; inset: 0; z-index: 60; background: var(--bg); display: flex; justify-content: center; align-items: center; padding: 20px max(16px, env(safe-area-inset-left, 0px)); overflow: auto; }
 .gate .box { width: 100%; max-width: 440px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 26px; }
 .gate h1 { font-size: 26px; }
@@ -183,11 +179,11 @@ details ol, details ul { padding-inline-start: 22px; display: grid; gap: 4px; ma
 
 <header class="bar">
   <div class="bar-in">
-    <span class="brand">מדריך מודלי AI</span>
-    <nav class="nav" aria-label="ראשי" id="nav"></nav>
+    <span class="brand">AI Models Guide</span>
+    <nav class="nav" aria-label="Main" id="nav"></nav>
     <div class="side">
       <button class="pill" id="who" type="button"></button>
-      <button class="pill" id="theme" type="button" aria-label="החלפה בין מצב לילה למצב יום"></button>
+      <button class="pill" id="theme" type="button" aria-label="Switch between light and dark mode"></button>
     </div>
   </div>
 </header>
@@ -199,123 +195,123 @@ details ol, details ul { padding-inline-start: 22px; display: grid; gap: 4px; ma
 <script>
 /* ---------- data ---------- */
 var SUB = [
-  { id: "chatgo", name: "ChatGPT Go", maker: "OpenAI", tag: "המנוי הזול של ChatGPT", month: 8, cats: ["כתיבה", "זול"],
-    good: ["שיחה כללית ותשובות מהירות", "יותר הודעות מהחבילה החינמית", "כתיבה, תרגום וסיכומים"],
-    less: ["פחות יכולות מ-Plus", "מגבלות על המודלים החזקים ביותר"] },
-  { id: "chatgpt", name: "ChatGPT Plus", maker: "OpenAI", tag: "הכל-באחד, הכי מוכר", month: 20, cats: ["כתיבה", "קוד", "תמונות"],
-    good: ["שיחה כללית ותשובות מהירות", "יצירת תמונות", "מצב קולי", "כתיבה, תרגום וסיכומים", "אפליקציות ותוספים רבים"],
-    less: ["קוד ארוך מאוד בפרויקטים גדולים", "מגבלות על מספר הודעות במודלים החזקים"] },
-  { id: "claude", name: "Claude Pro", maker: "Anthropic", tag: "כתיבה וקוד", month: 20, year: 200, cats: ["כתיבה", "קוד"],
-    good: ["כתיבה ארוכה", "תכנות ופרויקטים גדולים", "ניתוח מסמכים וקבצים ארוכים", "עבודה עם קבצים ו-Projects"],
-    less: ["אין יצירת תמונות", "מגבלות שימוש בשעות עומס"] },
-  { id: "claudemax", name: "Claude Max", maker: "Anthropic", tag: "פי 5 שימוש מ-Pro", month: 100, cats: ["כתיבה", "קוד"],
-    good: ["פי 5 שימוש מחבילת Pro", "מתאים לעבודה יומית רציפה בקוד"],
-    less: ["מחיר גבוה פי 5 מ-Pro", "חיוב חודשי בלבד, אין מחיר שנתי"] },
-  { id: "gemini", name: "Google AI Pro", maker: "Google", tag: "משולב בשירותי גוגל", month: 19.99, year: 199.99, cats: ["חיפוש", "תמונות"],
-    good: ["עבודה עם Gmail, Docs ו-Drive", "הקשר ארוך", "חיפוש עדכני", "תמונות וסרטונים", "שטח אחסון בענן כלול"],
-    less: ["חלק מהיכולות תלויות באזור"] },
-  { id: "geminiplus", name: "Google AI Plus", maker: "Google", tag: "המנוי הזול של גוגל", month: 4.99, cats: ["חיפוש", "זול"],
-    good: ["מחיר נמוך: $4.99 לחודש", "כניסה לעולם Gemini"],
-    less: ["פחות יכולות מ-AI Pro", "המחיר נלקח מאתר השוואה"] },
-  { id: "grok", name: "SuperGrok", maker: "xAI", tag: "מידע עדכני מ-X", month: 30, cats: ["חיפוש", "תמונות"],
-    good: ["גישה לשיחות ולחדשות ב-X", "חיפוש בזמן אמת", "יצירת תמונות"],
-    less: ["מחיר גבוה יותר", "אין מחיר שנתי רשמי"] },
-  { id: "perplexity", name: "Perplexity Pro", maker: "Perplexity", tag: "מנוע חיפוש חכם", month: 20, year: 200, cats: ["חיפוש"],
-    good: ["תשובות עם מקורות", "מחקר מהיר", "השוואת מוצרים", "בחירה בין כמה מודלים"],
-    less: ["לא מתאים לכתיבה יצירתית ארוכה"] },
-  { id: "copilot", name: "Microsoft 365 Premium", maker: "Microsoft", tag: "Copilot בתוך Word ו-Excel", month: 19.99, year: 199.99, cats: ["Office", "תמונות"],
-    good: ["עבודה בתוך Office", "סיכום מיילים ופגישות", "יצירת תמונות"],
-    less: ["הכי טוב עם חבילת Microsoft", "מחליף את Copilot Pro שהופסק"] },
-  { id: "mistral", name: "Le Chat Pro", maker: "Mistral", tag: "אירופי ומהיר", month: 14.99, cats: ["קוד", "זול"],
-    good: ["מהירות גבוהה", "מחיר נמוך יחסית", "מודלים פתוחים"],
-    less: ["פחות כלים נלווים"] },
-  { id: "deepseek", name: "DeepSeek", maker: "DeepSeek", tag: "חינמי, חזק בחשיבה", month: 0, cats: ["קוד", "זול"],
-    good: ["חינם לשימוש באתר", "הסקה ומתמטיקה", "קוד", "מודל פתוח להרצה עצמית"],
-    less: ["שרתים מחוץ לאזור שלך, שימו לב לפרטיות", "עומסים ותקלות זמינות"] },
-  { id: "midjourney", name: "Midjourney Basic", maker: "Midjourney", tag: "תמונות באיכות אמנותית", month: 10, year: 96, cats: ["תמונות"],
-    good: ["סגנון אמנותי", "שליטה בסגנון ובקומפוזיציה", "קהילה גדולה ודוגמאות"],
-    less: ["לא מיועד לשיחה או לכתיבה", "זמן יצירה מוגבל בחבילת Basic"] },
-  { id: "ghcopilot", name: "GitHub Copilot Pro", maker: "GitHub", tag: "עוזר קוד בתוך העורך", month: 10, cats: ["קוד"],
-    good: ["השלמת קוד תוך כדי כתיבה", "צ'אט בתוך VS Code וב-GitHub", "בחירה בין כמה מודלים", "סקירת קוד"],
-    less: ["לא מיועד לשיחה כללית", "שימוש בצ'אט ובסוכנים נספר בקרדיטים"] },
-  { id: "suno", name: "Suno Pro", maker: "Suno", tag: "שירים שלמים מטקסט", month: 8, cats: ["קול ומוזיקה"],
-    good: ["שיר עם שירה ממשפט אחד", "סגנונות מוזיקליים רבים", "הורדת השירים"],
-    less: ["פחות שליטה בעיבוד", "מספר היצירות מוגבל בקרדיטים"] },
-  { id: "elevenlabs", name: "ElevenLabs Starter", maker: "ElevenLabs", tag: "דיבור וקול סינתטי", month: 6, cats: ["קול ומוזיקה"], aff: "https://try.elevenlabs.io/8s3zrrpk8e3h",
-    good: ["הקראת טקסט בקול טבעי", "שפות רבות", "קריינות לסרטונים", "שכפול קול"],
-    less: ["מכסת תווים חודשית מוגבלת", "החודש הראשון ב-$1 ואחריו $6"] },
-  { id: "meta", name: "Meta AI", maker: "Meta", tag: "חינמי בתוך האפליקציות של Meta", month: 0, cats: ["כתיבה", "זול"],
-    good: ["חינם", "זמין בווטסאפ, באינסטגרם ובפייסבוק", "שיחה כללית ותשובות קצרות"],
-    less: ["פחות עומק בכתיבה ובקוד", "קשור לחשבון Meta"] },
-  { id: "qwen", name: "Qwen Chat", maker: "Alibaba", tag: "חינמי, חזק בקוד ובשפות", month: 0, cats: ["קוד", "זול"],
-    good: ["חינם לשימוש באתר", "קוד ומתמטיקה", "הרבה שפות", "מודלים פתוחים"],
-    less: ["שרתים מחוץ לאזור שלך, שימו לב לפרטיות", "פחות כלים נלווים"] }
+  { id: "chatgo", name: "ChatGPT Go", maker: "OpenAI", tag: "OpenAI’s low-cost plan", month: 8, cats: ["Writing", "Budget"],
+    good: ["General chat and quick answers", "More messages than the free plan", "Writing, translation and summaries"],
+    less: ["Fewer features than Plus", "Limits on the strongest models"] },
+  { id: "chatgpt", name: "ChatGPT Plus", maker: "OpenAI", tag: "The best-known all-rounder", month: 20, cats: ["Writing", "Coding", "Images"],
+    good: ["General chat and quick answers", "Image generation", "Voice mode", "Writing, translation and summaries", "Many apps and plugins"],
+    less: ["Very long coding projects", "Message limits on the strongest models"] },
+  { id: "claude", name: "Claude Pro", maker: "Anthropic", tag: "Writing and code", month: 20, year: 200, cats: ["Writing", "Coding"],
+    good: ["Long-form writing", "Programming and large projects", "Long documents and files", "Projects and file work"],
+    less: ["No image generation", "Usage limits at busy times"] },
+  { id: "claudemax", name: "Claude Max", maker: "Anthropic", tag: "5x the usage of Pro", month: 100, cats: ["Writing", "Coding"],
+    good: ["5x the usage of Pro", "Suits heavy daily coding work"],
+    less: ["5x the price of Pro", "Monthly billing only, no annual price"] },
+  { id: "gemini", name: "Google AI Pro", maker: "Google", tag: "Built into Google services", month: 19.99, year: 199.99, cats: ["Search", "Images"],
+    good: ["Works with Gmail, Docs and Drive", "Long context", "Fresh search results", "Images and video", "Cloud storage included"],
+    less: ["Some features depend on your region"] },
+  { id: "geminiplus", name: "Google AI Plus", maker: "Google", tag: "Google’s low-cost plan", month: 4.99, cats: ["Search", "Budget"],
+    good: ["Low price: $4.99 a month", "An entry point to Gemini"],
+    less: ["Fewer features than AI Pro", "Price taken from a comparison site"] },
+  { id: "grok", name: "SuperGrok", maker: "xAI", tag: "Live data from X", month: 30, cats: ["Search", "Images"],
+    good: ["Access to posts and news on X", "Real-time search", "Image generation"],
+    less: ["Higher price", "No official annual price"] },
+  { id: "perplexity", name: "Perplexity Pro", maker: "Perplexity", tag: "Search engine with answers", month: 20, year: 200, cats: ["Search"],
+    good: ["Answers with sources", "Fast research", "Product comparisons", "Choice between several models"],
+    less: ["Not built for long creative writing"] },
+  { id: "copilot", name: "Microsoft 365 Premium", maker: "Microsoft", tag: "Copilot inside Word and Excel", month: 19.99, year: 199.99, cats: ["Office", "Images"],
+    good: ["Works inside Office", "Summarizes email and meetings", "Image generation"],
+    less: ["Best with the Microsoft suite", "Replaces Copilot Pro, which was discontinued"] },
+  { id: "mistral", name: "Le Chat Pro", maker: "Mistral", tag: "European and fast", month: 14.99, cats: ["Coding", "Budget"],
+    good: ["High speed", "Relatively low price", "Open models"],
+    less: ["Fewer companion tools"] },
+  { id: "deepseek", name: "DeepSeek", maker: "DeepSeek", tag: "Free, strong at reasoning", month: 0, cats: ["Coding", "Budget"],
+    good: ["Free on the website", "Reasoning and math", "Coding", "Open model you can run yourself"],
+    less: ["Servers outside your region, mind your privacy", "Busy-hour outages"] },
+  { id: "midjourney", name: "Midjourney Basic", maker: "Midjourney", tag: "Artistic images", month: 10, year: 96, cats: ["Images"],
+    good: ["Artistic style", "Control over style and composition", "Large community and examples"],
+    less: ["Not for chat or writing", "Limited generation time on Basic"] },
+  { id: "ghcopilot", name: "GitHub Copilot Pro", maker: "GitHub", tag: "Coding help inside your editor", month: 10, cats: ["Coding"],
+    good: ["Completes code as you type", "Chat in VS Code and on GitHub", "Choice between several models", "Code review"],
+    less: ["Not for general chat", "Chat and agent use count against credits"] },
+  { id: "suno", name: "Suno Pro", maker: "Suno", tag: "Full songs from text", month: 8, cats: ["Voice & music"],
+    good: ["A sung song from one sentence", "Many musical styles", "Song downloads"],
+    less: ["Less control over arrangement", "The number of songs is capped by credits"] },
+  { id: "elevenlabs", name: "ElevenLabs Starter", maker: "ElevenLabs", tag: "Speech and synthetic voice", month: 6, cats: ["Voice & music"], aff: "https://try.elevenlabs.io/8s3zrrpk8e3h",
+    good: ["Natural text-to-speech", "Many languages", "Voice-over for video", "Voice cloning"],
+    less: ["Monthly character quota", "First month is $1, then $6"] },
+  { id: "meta", name: "Meta AI", maker: "Meta", tag: "Free inside Meta apps", month: 0, cats: ["Writing", "Budget"],
+    good: ["Free", "Inside WhatsApp, Instagram and Facebook", "General chat and short answers"],
+    less: ["Less depth in writing and code", "Tied to a Meta account"] },
+  { id: "qwen", name: "Qwen Chat", maker: "Alibaba", tag: "Free, strong at code and languages", month: 0, cats: ["Coding", "Budget"],
+    good: ["Free on the website", "Code and math", "Many languages", "Open models"],
+    less: ["Servers outside your region, mind your privacy", "Fewer companion tools"] }
 ];
 
 /* USD per 1M tokens. url = official pricing page. cats feed the home filter. */
 var API_MODELS = [
-  { name: "Claude Fable 5.1", vendor: "Anthropic", input: 10, output: 50, url: "https://platform.claude.com/docs/en/about-claude/pricing", cats: ["כתיבה", "קוד"], facts: ["מטמון: $0.25 למיליון", "Batch: חצי מחיר"], less: ["המחיר הגבוה ביותר ברשימה"] },
-  { name: "Claude Opus 5.5", vendor: "Anthropic", input: 4, output: 20, url: "https://platform.claude.com/docs/en/about-claude/pricing", cats: ["כתיבה", "קוד"], facts: ["מטמון: $0.20 למיליון", "Batch: חצי מחיר"], less: ["Fast mode עולה $8 קלט ו-$40 פלט"] },
-  { name: "Claude Sonnet 5.5", vendor: "Anthropic", input: 2, output: 10, url: "https://platform.claude.com/docs/en/about-claude/pricing", cats: ["כתיבה", "קוד"], facts: ["מטמון: $0.10 למיליון", "Batch: חצי מחיר"], less: ["יקר פי 20 מ-Haiku 5.5 בקלט"] },
-  { name: "Claude Haiku 5.5", vendor: "Anthropic", input: 0.1, output: 0.5, url: "https://platform.claude.com/docs/en/about-claude/pricing", cats: ["זול", "קוד"], note: "עד 100 אלף טוקני קלט בבקשה", facts: ["מטמון: $0.01 למיליון", "Batch: חצי מחיר"], less: ["מעל 100 אלף טוקנים בבקשה: $0.50 קלט ו-$2.50 פלט"] },
-  { name: "GPT-5.5", vendor: "OpenAI", input: 5, output: 30, url: "https://developers.openai.com/api/docs/models/gpt-5.5", cats: ["כתיבה", "קוד"], facts: ["רמת תמחור רגילה"], less: ["הפלט יקר פי 6 מהקלט"] },
-  { name: "GPT-5.4", vendor: "OpenAI", input: 2.5, output: 15, url: "https://developers.openai.com/api/docs/pricing", cats: ["כתיבה", "קוד"], facts: ["חצי מהמחיר של GPT-5.5 בקלט"], less: ["הפלט יקר פי 6 מהקלט"] },
-  { name: "GPT-5.4 Mini", vendor: "OpenAI", input: 0.75, output: 4.5, url: "https://developers.openai.com/api/docs/pricing", cats: ["זול", "קוד"], facts: ["גרסה זולה של GPT-5.4"], less: ["פחות יכולות מהגרסה המלאה"] },
-  { name: "Gemini 3.1 Pro", vendor: "Google", input: 2, output: 12, url: "https://ai.google.dev/gemini-api/docs/pricing", cats: ["חיפוש", "קוד"], note: "עד 200 אלף טוקנים בבקשה", facts: ["הפלט כולל טוקני חשיבה"], less: ["מעל 200 אלף: $4 קלט ו-$18 פלט", "גרסת Preview"] },
-  { name: "Gemini 3.5 Flash", vendor: "Google", input: 1.5, output: 9, url: "https://ai.google.dev/gemini-api/docs/pricing", cats: ["חיפוש"], facts: ["בלי סף גודל בבקשה"], less: ["יקר פי 6 מ-Flash-Lite בקלט"] },
-  { name: "Gemini 3.1 Flash-Lite", vendor: "Google", input: 0.25, output: 1.5, url: "https://ai.google.dev/gemini-api/docs/pricing", cats: ["זול"], facts: ["הזול ביותר בין מודלי Gemini ברשימה"], less: ["קלט אודיו עולה $0.50"] },
-  { name: "Grok 4.7", vendor: "xAI", input: 2, output: 6, url: "https://docs.x.ai/developers/pricing", cats: ["חיפוש", "קוד"], note: "תעריף הקשר קצר", facts: ["הפלט יקר פי 3 מהקלט"], less: ["מעל 200 אלף טוקנים בבקשה התעריף גבוה יותר"] },
-  { name: "Grok 4.6", vendor: "xAI", input: 2, output: 6, url: "https://docs.x.ai/developers/pricing", cats: ["חיפוש"], note: "תעריף הקשר קצר", facts: ["הפלט יקר פי 3 מהקלט"], less: ["מעל 200 אלף טוקנים בבקשה התעריף גבוה יותר"] },
-  { name: "Grok 4.3", vendor: "xAI", input: 1.25, output: 2.5, url: "https://docs.x.ai/developers/pricing", cats: ["חיפוש", "זול"], note: "תעריף הקשר קצר", facts: ["הפלט יקר פי 2 מהקלט"], less: ["מעל 200 אלף טוקנים בבקשה התעריף גבוה יותר"] },
-  { name: "DeepSeek V4.1 Flash", vendor: "DeepSeek", input: 0.15, output: 0.6, peakInput: 0.3, peakOutput: 1.2, url: "https://api-docs.deepseek.com/quick_start/pricing/", cats: ["זול", "קוד"], facts: ["תעריף שעות שיא כפול"], less: ["שרתים מחוץ לאזור שלך"] },
-  { name: "DeepSeek V4 Pro", vendor: "DeepSeek", input: 0.66, output: 1.98, peakInput: 1.32, peakOutput: 3.96, url: "https://api-docs.deepseek.com/quick_start/pricing/", cats: ["קוד"], facts: ["תעריף שעות שיא כפול"], less: ["שרתים מחוץ לאזור שלך"] },
-  { name: "Mistral Large 4", vendor: "Mistral", input: 0.7, output: 2.1, url: "https://docs.mistral.ai/inference/pricing", cats: ["כתיבה", "קוד"], facts: ["משקלות פתוחים לפי Mistral"], less: ["יקר פי 4.7 מ-Small 4 בקלט"] },
-  { name: "Mistral Small 4", vendor: "Mistral", input: 0.15, output: 0.6, url: "https://docs.mistral.ai/inference/pricing", cats: ["זול"], facts: ["הפלט יקר פי 4 מהקלט"], less: ["מודל קטן יותר מ-Large 4"] }
+  { name: "Claude Fable 5.1", vendor: "Anthropic", input: 10, output: 50, url: "https://platform.claude.com/docs/en/about-claude/pricing", cats: ["Writing", "Coding"], facts: ["Cache reads: $0.25 per million", "Batch API: half price"], less: ["Highest price on this list"] },
+  { name: "Claude Opus 5.5", vendor: "Anthropic", input: 4, output: 20, url: "https://platform.claude.com/docs/en/about-claude/pricing", cats: ["Writing", "Coding"], facts: ["Cache reads: $0.20 per million", "Batch API: half price"], less: ["Fast mode costs $8 input and $40 output"] },
+  { name: "Claude Sonnet 5.5", vendor: "Anthropic", input: 2, output: 10, url: "https://platform.claude.com/docs/en/about-claude/pricing", cats: ["Writing", "Coding"], facts: ["Cache reads: $0.10 per million", "Batch API: half price"], less: ["20x the input price of Haiku 5.5"] },
+  { name: "Claude Haiku 5.5", vendor: "Anthropic", input: 0.1, output: 0.5, url: "https://platform.claude.com/docs/en/about-claude/pricing", cats: ["Budget", "Coding"], note: "Up to 100K input tokens per request", facts: ["Cache reads: $0.01 per million", "Batch API: half price"], less: ["Above 100K tokens per request: $0.50 input and $2.50 output"] },
+  { name: "GPT-5.5", vendor: "OpenAI", input: 5, output: 30, url: "https://developers.openai.com/api/docs/models/gpt-5.5", cats: ["Writing", "Coding"], facts: ["Standard pricing tier"], less: ["Output costs 6x input"] },
+  { name: "GPT-5.4", vendor: "OpenAI", input: 2.5, output: 15, url: "https://developers.openai.com/api/docs/pricing", cats: ["Writing", "Coding"], facts: ["Half the input price of GPT-5.5"], less: ["Output costs 6x input"] },
+  { name: "GPT-5.4 Mini", vendor: "OpenAI", input: 0.75, output: 4.5, url: "https://developers.openai.com/api/docs/pricing", cats: ["Budget", "Coding"], facts: ["A cheaper version of GPT-5.4"], less: ["Less capable than the full model"] },
+  { name: "Gemini 3.1 Pro", vendor: "Google", input: 2, output: 12, url: "https://ai.google.dev/gemini-api/docs/pricing", cats: ["Search", "Coding"], note: "Up to 200K tokens per request", facts: ["Output includes thinking tokens"], less: ["Above 200K: $4 input and $18 output", "Preview release"] },
+  { name: "Gemini 3.5 Flash", vendor: "Google", input: 1.5, output: 9, url: "https://ai.google.dev/gemini-api/docs/pricing", cats: ["Search"], facts: ["No request-size threshold"], less: ["6x the input price of Flash-Lite"] },
+  { name: "Gemini 3.1 Flash-Lite", vendor: "Google", input: 0.25, output: 1.5, url: "https://ai.google.dev/gemini-api/docs/pricing", cats: ["Budget"], facts: ["Cheapest Gemini model on this list"], less: ["Audio input costs $0.50"] },
+  { name: "Grok 4.7", vendor: "xAI", input: 2, output: 6, url: "https://docs.x.ai/developers/pricing", cats: ["Search", "Coding"], note: "Short-context rate", facts: ["Output costs 3x input"], less: ["Higher rate above 200K tokens per request"] },
+  { name: "Grok 4.6", vendor: "xAI", input: 2, output: 6, url: "https://docs.x.ai/developers/pricing", cats: ["Search"], note: "Short-context rate", facts: ["Output costs 3x input"], less: ["Higher rate above 200K tokens per request"] },
+  { name: "Grok 4.3", vendor: "xAI", input: 1.25, output: 2.5, url: "https://docs.x.ai/developers/pricing", cats: ["Search", "Budget"], note: "Short-context rate", facts: ["Output costs 2x input"], less: ["Higher rate above 200K tokens per request"] },
+  { name: "DeepSeek V4.1 Flash", vendor: "DeepSeek", input: 0.15, output: 0.6, peakInput: 0.3, peakOutput: 1.2, url: "https://api-docs.deepseek.com/quick_start/pricing/", cats: ["Budget", "Coding"], facts: ["Peak-hour rate is double"], less: ["Servers outside your region"] },
+  { name: "DeepSeek V4 Pro", vendor: "DeepSeek", input: 0.66, output: 1.98, peakInput: 1.32, peakOutput: 3.96, url: "https://api-docs.deepseek.com/quick_start/pricing/", cats: ["Coding"], facts: ["Peak-hour rate is double"], less: ["Servers outside your region"] },
+  { name: "Mistral Large 4", vendor: "Mistral", input: 0.7, output: 2.1, url: "https://docs.mistral.ai/inference/pricing", cats: ["Writing", "Coding"], facts: ["Open weights, according to Mistral"], less: ["4.7x the input price of Small 4"] },
+  { name: "Mistral Small 4", vendor: "Mistral", input: 0.15, output: 0.6, url: "https://docs.mistral.ai/inference/pricing", cats: ["Budget"], facts: ["Output costs 4x input"], less: ["Smaller than Large 4"] }
 ];
 
 var MODELS = SUB.concat(API_MODELS.map(function (a, i) {
-  return { id: "api" + i, name: a.name + " (API)", maker: a.vendor, tag: "מחיר לפי טוקנים", month: null, api: a,
+  return { id: "api" + i, name: a.name + " (API)", maker: a.vendor, tag: "Priced per token", month: null, api: a,
     cats: ["API"].concat(a.cats),
-    good: ["קלט $" + a.input + " ופלט $" + a.output + " למיליון טוקנים"].concat(a.facts, a.note ? [a.note] : []), less: a.less };
+    good: ["Input $" + a.input + " and output $" + a.output + " per million tokens"].concat(a.facts, a.note ? [a.note] : []), less: a.less };
 }));
-var FILTERS = ["הכל", "כתיבה", "קוד", "חיפוש", "תמונות", "קול ומוזיקה", "Office", "זול", "API"];
+var FILTERS = ["All", "Writing", "Coding", "Search", "Images", "Voice & music", "Office", "Budget", "API"];
 var PERIODS = {
-  day: { label: "ליום", unit: "ליום", calc: function (m) { return m * 12 / 365; } },
-  week: { label: "לשבוע", unit: "לשבוע", calc: function (m) { return m * 12 / 52; } },
-  month: { label: "לחודש", unit: "לחודש", calc: function (m) { return m; } },
-  year: { label: "לשנה", unit: "לשנה", calc: function (m) { return m * 12; } },
-  custom: { label: "מספר ימים", unit: "", calc: function (m) { return m * 12 / 365 * pr.days; } }
+  day: { label: "Per day", unit: "per day", calc: function (m) { return m * 12 / 365; } },
+  week: { label: "Per week", unit: "per week", calc: function (m) { return m * 12 / 52; } },
+  month: { label: "Per month", unit: "per month", calc: function (m) { return m; } },
+  year: { label: "Per year", unit: "per year", calc: function (m) { return m * 12; } },
+  custom: { label: "Custom days", unit: "", calc: function (m) { return m * 12 / 365 * pr.days; } }
 };
 
-/* Skills come from Anthropic's public skills repository (github.com/anthropics/skills). */
-var SKILL_CATS = ["הכל", "אתרים ועיצוב", "מסמכים", "קוד וכלים", "כתיבה", "יצירה"];
+/* Skills come from Anthropic’s public skills repository (github.com/anthropics/skills). */
+var SKILL_CATS = ["All", "Web & design", "Documents", "Code & tools", "Writing", "Creative"];
 var SKILLS = [
-  { n: "frontend-design", c: "אתרים ועיצוב", d: "עיצוב ממשקי אתר עם בחירות עיצוב מכוונות במקום תבניות כלליות." },
-  { n: "web-artifacts-builder", c: "אתרים ועיצוב", d: "בניית אפליקציות ווב מורכבות כ-artifacts." },
-  { n: "theme-factory", c: "אתרים ועיצוב", d: "החלת ערכות צבעים ופונטים על מסמכים, מצגות ודפים." },
-  { n: "brand-guidelines", c: "אתרים ועיצוב", d: "החלת צבעי המותג והטיפוגרפיה על תוצרים." },
-  { n: "pdf", c: "מסמכים", d: "קריאה, חילוץ טקסט וטבלאות, מיזוג ופיצול של קובצי PDF." },
-  { n: "docx", c: "מסמכים", d: "יצירה ועריכה של מסמכי Word." },
-  { n: "pptx", c: "מסמכים", d: "יצירה ועריכה של מצגות PowerPoint." },
-  { n: "xlsx", c: "מסמכים", d: "עבודה עם גיליונות Excel ונוסחאות." },
-  { n: "mcp-builder", c: "קוד וכלים", d: "בניית שרתי MCP שמחברים מודל לשירותים חיצוניים." },
-  { n: "webapp-testing", c: "קוד וכלים", d: "בדיקת אפליקציות ווב מקומיות עם Playwright." },
-  { n: "skill-creator", c: "קוד וכלים", d: "יצירה ושיפור של skills חדשים." },
-  { n: "doc-coauthoring", c: "כתיבה", d: "תהליך כתיבה משותפת של מסמכים." },
-  { n: "internal-comms", c: "כתיבה", d: "כתיבת תקשורת פנימית כמו עדכוני סטטוס וניוזלטרים." },
-  { n: "canvas-design", c: "יצירה", d: "יצירת עיצובים ויזואליים סטטיים." },
-  { n: "algorithmic-art", c: "יצירה", d: "אמנות גנרטיבית שנוצרת בקוד." },
-  { n: "slack-gif-creator", c: "יצירה", d: "יצירת GIF מונפש לסלאק." }
+  { n: "frontend-design", c: "Web & design", d: "Designs web interfaces with deliberate choices instead of generic templates." },
+  { n: "web-artifacts-builder", c: "Web & design", d: "Builds multi-part web apps as artifacts." },
+  { n: "theme-factory", c: "Web & design", d: "Applies color and font themes to documents, slides and pages." },
+  { n: "brand-guidelines", c: "Web & design", d: "Applies brand colors and typography to outputs." },
+  { n: "pdf", c: "Documents", d: "Reads PDFs, extracts text and tables, merges and splits files." },
+  { n: "docx", c: "Documents", d: "Creates and edits Word documents." },
+  { n: "pptx", c: "Documents", d: "Creates and edits PowerPoint presentations." },
+  { n: "xlsx", c: "Documents", d: "Works with Excel spreadsheets and formulas." },
+  { n: "mcp-builder", c: "Code & tools", d: "Builds MCP servers that connect a model to outside services." },
+  { n: "webapp-testing", c: "Code & tools", d: "Tests local web apps with Playwright." },
+  { n: "skill-creator", c: "Code & tools", d: "Creates and improves skills." },
+  { n: "doc-coauthoring", c: "Writing", d: "A workflow for writing documents together with a model." },
+  { n: "internal-comms", c: "Writing", d: "Writes internal communication such as status updates and newsletters." },
+  { n: "canvas-design", c: "Creative", d: "Creates static visual designs." },
+  { n: "algorithmic-art", c: "Creative", d: "Generative art made in code." },
+  { n: "slack-gif-creator", c: "Creative", d: "Makes animated GIFs for Slack." }
 ];
 
-var SKILL_TEMPLATE = "---\nname: my-skill\ndescription: מתי להשתמש ב-skill הזה ומה הוא עושה, במשפט אחד.\n---\n\n# הוראות\n\n1. הצעד הראשון.\n2. הצעד השני.\n3. איך נראה תוצר גמור.";
+var SKILL_TEMPLATE = "---\nname: my-skill\ndescription: When to use this skill and what it does, in one sentence.\n---\n\n# Instructions\n\n1. The first step.\n2. The second step.\n3. What a finished result looks like.";
 
 /* ---------- state ---------- */
 var USER_KEY = "ai-guide-user", THEME_KEY = "ai-guide-theme";
-var user = null, openId = null, filter = "הכל", query = "", current = null, botOpen = false;
+var user = null, openId = null, filter = "All", query = "", current = null, botOpen = false;
 var pr = { tab: "sub", period: "month", sort: "default", days: 10 };
 var cmp = { a: "claude", b: "chatgpt" };
-var sk = { cat: "הכל", q: "" };
+var sk = { cat: "All", q: "" };
 var tk = { tokens: 1000000, share: 75, peak: false };
 var botCount = 0;
 
@@ -324,17 +320,13 @@ function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch 
 function $(id) { return document.getElementById(id); }
 function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 function byId(id) { return MODELS.filter(function (x) { return x.id === id; })[0]; }
-function money(n) { if (n === 0) return "חינם"; return "$" + (n < 10 || n % 1 !== 0 ? n.toFixed(2) : n.toFixed(0)); }
+function money(n) { if (n === 0) return "Free"; return "$" + (n < 10 || n % 1 !== 0 ? n.toFixed(2) : n.toFixed(0)); }
 function price(m, k) { if (k === "year" && m.year) return m.year; return PERIODS[k].calc(m.month); }
 function isPro() { return !!(user && user.premium); }
-function adBox() { return isPro() ? "" : '<div class="ad">מקום לפרסומת. משתמשי Premium לא רואים אותה. בגרסה הזו זו דוגמה בלבד.</div>'; }
-function sub() { return SUB; }
+function adBox() { return isPro() ? "" : '<div class="ad">Ad space. Premium users do not see it. In this version it is only an example.</div>'; }
 
 /* ---------- top bar ---------- */
-var NAV = [
-  ["home", "דף ראשי"], ["prices", "מחירים"], ["compare", "השוואה"],
-  ["skills", "ספריית סקילים"], ["guides", "מדריכים"], ["upgrade", "שדרוג"]
-];
+var NAV = [["home", "Home"], ["prices", "Prices"], ["compare", "Compare"], ["skills", "Skills library"], ["guides", "Guides"], ["upgrade", "Upgrade"]];
 var SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>';
 var MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>';
 var COIN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.8"></circle><path d="M12 6.5l1.5 4 4 1.5-4 1.5-1.5 4-1.5-4-4-1.5 4-1.5z" fill="currentColor"></path></svg>';
@@ -345,8 +337,8 @@ function paintBar() {
     var open = current && current.id === n[0];
     return '<button class="navbtn' + (open ? " is-open" : "") + '" type="button" data-win="' + n[0] + '">' + n[1] + '</button>';
   }).join("");
-  $("who").innerHTML = user ? '<span>' + esc(user.name) + '</span><span class="badge' + (isPro() ? " pro" : "") + '">' + (isPro() ? "Premium" : "חינם") + '</span>' : "כניסה";
-  $("theme").innerHTML = isDark() ? SUN + "<span>מצב יום</span>" : MOON + "<span>מצב לילה</span>";
+  $("who").innerHTML = user ? '<span>' + esc(user.name) + '</span><span class="badge' + (isPro() ? " pro" : "") + '">' + (isPro() ? "Premium" : "Free") + '</span>' : "Sign in";
+  $("theme").innerHTML = isDark() ? SUN + "<span>Light mode</span>" : MOON + "<span>Dark mode</span>";
 }
 function isDark() {
   var t = document.documentElement.getAttribute("data-theme");
@@ -369,13 +361,13 @@ $("nav").addEventListener("click", function (e) {
 
 /* ---------- windows ---------- */
 var WINDOWS = {
-  prices: { title: "מחירים", render: pricesWin, bind: bindPrices },
-  compare: { title: "השוואה בין שני מודלים", render: compareWin, bind: bindCompare },
-  skills: { title: "ספריית סקילים", render: skillsWin, bind: bindSkills },
-  guides: { title: "מדריכים", render: guidesWin, bind: bindGuides },
-  upgrade: { title: "שדרוג ל-Premium", render: upgradeWin, bind: bindUpgrade },
-  account: { title: "החשבון שלי", render: accountWin, bind: bindAccount },
-  tokens: { title: "מחשבון טוקנים", render: tokensWin, bind: bindTokens }
+  prices: { title: "Prices", render: pricesWin, bind: bindPrices },
+  compare: { title: "Compare two models", render: compareWin, bind: bindCompare },
+  skills: { title: "Skills library", render: skillsWin, bind: bindSkills },
+  guides: { title: "Guides", render: guidesWin, bind: bindGuides },
+  upgrade: { title: "Upgrade to Premium", render: upgradeWin, bind: bindUpgrade },
+  account: { title: "My account", render: accountWin, bind: bindAccount },
+  tokens: { title: "Token calculator", render: tokensWin, bind: bindTokens }
 };
 
 function openWindow(id, btn) {
@@ -384,7 +376,7 @@ function openWindow(id, btn) {
   var def = WINDOWS[id];
   var overlay = document.createElement("div");
   overlay.className = "overlay";
-  overlay.innerHTML = '<section class="panel" role="dialog" aria-modal="true" aria-labelledby="wtitle"><header class="phead"><h2 id="wtitle">' + def.title + '</h2><button class="x" type="button" data-close aria-label="סגירה">×</button></header><div class="pbody" id="pbody"></div></section>';
+  overlay.innerHTML = '<section class="panel" role="dialog" aria-modal="true" aria-labelledby="wtitle"><header class="phead"><h2 id="wtitle">' + def.title + '</h2><button class="x" type="button" data-close aria-label="Close">×</button></header><div class="pbody" id="pbody"></div></section>';
   $("layer").appendChild(overlay);
   var panel = overlay.firstChild;
   $("pbody").innerHTML = def.render();
@@ -412,7 +404,7 @@ function closeWindow(instant) {
     setTimeout(function () { c.overlay.remove(); }, 260);
   }
   paintBar();
-  $("tokbtn") && $("tokbtn").classList.remove("is-open");
+  if ($("tokbtn")) $("tokbtn").classList.remove("is-open");
   if (!instant && c.prev && c.prev.focus) { try { c.prev.focus({ preventScroll: true }); } catch (e) {} }
 }
 document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (current) closeWindow(); else if (botOpen) toggleBot(false); } });
@@ -420,45 +412,45 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if
 /* ---------- home ---------- */
 function home() {
   var chips = FILTERS.map(function (f) {
-    var label = f === "זול" ? "זול וחינמי" : f === "API" ? "API לפי טוקנים" : f;
+    var label = f === "Budget" ? "Budget and free" : f === "API" ? "API (per token)" : f;
     return '<button class="chip" data-f="' + f + '" aria-pressed="' + (f === filter) + '">' + label + '</button>';
   }).join("");
-  return '<section class="hero"><h1>מודלי AI: מה כל אחד עושה וכמה הוא עולה</h1>' +
-    '<p>לחצו על מודל כדי לראות במה הוא טוב ובמה פחות. הכפתור "טוקנים" מחשב עלות לפי כמות טוקנים ולפי מחירי ה-API הרשמיים.</p></section>' +
-    '<div class="tools"><input class="field grow" id="q" type="search" placeholder="חיפוש מודל או יצרן" value="' + esc(query) + '" aria-label="חיפוש">' +
-    '<button class="tokbtn" id="tokbtn" type="button">' + COIN + 'טוקנים</button></div>' +
-    '<div class="chips" role="group" aria-label="סינון לפי תחום">' + chips + '</div>' +
+  return '<section class="hero"><h1>AI models: what each one does well and what it costs</h1>' +
+    '<p>Select a model to see what it does well and where it falls short. The Tokens button estimates a bill from a token count and the official API prices.</p></section>' +
+    '<div class="tools"><input class="field grow" id="q" type="search" placeholder="Search models" value="' + esc(query) + '" aria-label="Search">' +
+    '<button class="tokbtn" id="tokbtn" type="button">' + COIN + 'Tokens</button></div>' +
+    '<div class="chips" role="group" aria-label="Filter by use">' + chips + '</div>' +
     '<div class="grid" id="grid"></div><div id="detail-slot"></div>' + adBox() +
-    '<p class="note">גילוי נאות: חלק מהקישורים באתר הם קישורי שותפים. אם תרכשו דרכם, ייתכן שאקבל עמלה. המחירים והדירוג לא נקבעים לפי זה.</p>';
+    '<p class="note">Disclosure: some links on this site are affiliate links. If you buy through them, I may earn a commission. Prices and descriptions are not set by that.</p>';
 }
 function renderGrid() {
   var q = query.trim().toLowerCase();
   var list = MODELS.filter(function (m) {
-    var okF = filter === "הכל" || m.cats.indexOf(filter) > -1;
+    var okF = filter === "All" || m.cats.indexOf(filter) > -1;
     var okQ = !q || (m.name + " " + m.maker + " " + m.tag).toLowerCase().indexOf(q) > -1;
     return okF && okQ;
   });
   $("grid").innerHTML = list.length ? list.map(function (m) {
-    var cost = m.month !== null ? (m.month ? money(m.month) + " לחודש" : "חינם") : "$" + m.api.input + " קלט · $" + m.api.output + " פלט";
+    var cost = m.month !== null ? (m.month ? money(m.month) + " per month" : "Free") : "$" + m.api.input + " in · $" + m.api.output + " out";
     return '<button class="card" data-id="' + m.id + '" aria-expanded="' + (openId === m.id) + '"><span class="maker">' + esc(m.maker) + '</span><h3>' + esc(m.name) + '</h3><span class="tag">' + esc(m.tag) + '</span><span class="cost">' + cost + '</span></button>';
-  }).join("") : '<p class="empty">לא נמצא מודל שמתאים. נקו את החיפוש או בחרו "הכל".</p>';
+  }).join("") : '<p class="empty">No model matches. Clear the search or choose "All".</p>';
 }
 function renderDetail() {
   var m = byId(openId), slot = $("detail-slot");
   if (!m) { slot.innerHTML = ""; return; }
   var li = function (a) { return a.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join(""); };
-  var head = m.month !== null ? (m.month ? money(m.month) + " לחודש" : "חינם") : "מחיר לפי טוקנים";
-  slot.innerHTML = '<section class="detail" id="detail" aria-label="פרטי ' + esc(m.name) + '"><div class="detail-head"><div><h2>' + esc(m.name) + '</h2><div style="color:var(--muted)">' + esc(m.maker) + " · " + head + '</div></div><button class="x" type="button" id="dclose" aria-label="סגירה">×</button></div>' +
-    '<div class="cols"><div><h3>במה הוא טוב</h3><ul>' + li(m.good) + '</ul></div><div><h3>פחות מתאים ל</h3><ul>' + li(m.less) + '</ul></div></div>' +
-    '<button class="btn" type="button" data-open="' + (m.month !== null ? "prices" : "tokens") + '">' + (m.month !== null ? "לראות מחירים" : "לחשב עלות") + '</button>' +
-    '<button class="btn alt" type="button" data-cmp="' + m.id + '">להשוות למודל אחר</button>' +
-    (m.aff ? '<a class="btn ghost" href="' + esc(m.aff) + '" target="_blank" rel="sponsored noopener noreferrer">לאתר של ' + esc(m.maker) + ' (קישור שותפים)</a><p class="note" style="margin-top:10px">קישור שותפים: ייתכן שאקבל עמלה אם תרכשו דרכו. המחירים והתיאור באתר לא תלויים בכך.</p>' : "") + '</section>';
+  var head = m.month !== null ? (m.month ? money(m.month) + " per month" : "Free") : "Priced per token";
+  slot.innerHTML = '<section class="detail" id="detail" aria-label="Details for ' + esc(m.name) + '"><div class="detail-head"><div><h2>' + esc(m.name) + '</h2><div style="color:var(--muted)">' + esc(m.maker) + " · " + head + '</div></div><button class="x" type="button" id="dclose" aria-label="Close">×</button></div>' +
+    '<div class="cols"><div><h3>Good at</h3><ul>' + li(m.good) + '</ul></div><div><h3>Less suited to</h3><ul>' + li(m.less) + '</ul></div></div>' +
+    '<button class="btn" type="button" data-open="' + (m.month !== null ? "prices" : "tokens") + '">' + (m.month !== null ? "See prices" : "Estimate cost") + '</button>' +
+    '<button class="btn alt" type="button" data-cmp="' + m.id + '">Compare with another</button>' +
+    (m.aff ? '<a class="btn ghost" href="' + esc(m.aff) + '" target="_blank" rel="sponsored noopener noreferrer">Visit ' + esc(m.maker) + ' (affiliate link)</a><p class="note" style="margin-top:10px">Affiliate link: I may earn a commission if you buy through it. Prices and descriptions here do not depend on that.</p>' : "") + '</section>';
 }
 var app = $("app");
 function renderHome() { app.innerHTML = home(); renderGrid(); renderDetail(); }
 app.addEventListener("click", function (e) {
   var c = e.target.closest(".card"), f = e.target.closest("[data-f]"), cm = e.target.closest("[data-cmp]"), op = e.target.closest("[data-open]");
-  if (e.target.closest("#tokbtn")) { var tb = $("tokbtn"); openWindow("tokens", tb); return; }
+  if (e.target.closest("#tokbtn")) { openWindow("tokens", $("tokbtn")); return; }
   if (op) { openWindow(op.dataset.open, op); return; }
   if (cm) { cmp.a = cm.dataset.cmp; cmp.b = cm.dataset.cmp === "claude" ? "chatgpt" : "claude"; openWindow("compare", cm); return; }
   if (c) { openId = openId === c.dataset.id ? null : c.dataset.id; renderGrid(); renderDetail(); var d = $("detail"); if (d) d.scrollIntoView({ behavior: "smooth", block: "nearest" }); return; }
@@ -469,7 +461,7 @@ app.addEventListener("input", function (e) { if (e.target.id === "q") { query = 
 
 /* ---------- prices window ---------- */
 function pricesWin() {
-  return '<div class="seg" role="group" aria-label="סוג מחיר"><button type="button" data-tab="sub" aria-pressed="true">מנויים</button><button type="button" data-tab="api" aria-pressed="false">API לפי טוקנים</button></div><span class="stamp" style="margin-inline-start:10px">נבדק ב-4 וב-7 בנובמבר 2026</span><div id="prc"></div>';
+  return '<div class="seg" role="group" aria-label="Price type"><button type="button" data-tab="sub" aria-pressed="true">Subscriptions</button><button type="button" data-tab="api" aria-pressed="false">API (per token)</button></div> <span class="stamp">Checked Nov 4 and 7, 2026</span><div id="prc"></div>';
 }
 function bindPrices(root) {
   paintPrices(root);
@@ -484,28 +476,28 @@ function bindPrices(root) {
 function paintPrices(root) {
   var box = root.querySelector("#prc");
   if (pr.tab === "api") {
-    box.innerHTML = '<div class="tbl"><table><thead><tr><th>מודל</th><th>קלט למיליון</th><th>פלט למיליון</th><th>הערה</th></tr></thead><tbody>' +
+    box.innerHTML = '<div class="tbl"><table><thead><tr><th>Model</th><th>Input per 1M</th><th>Output per 1M</th><th>Note</th></tr></thead><tbody>' +
       API_MODELS.map(function (a) { return "<tr><td><b>" + esc(a.name) + "</b><br><span style='color:var(--muted);font-size:14px'>" + esc(a.vendor) + "</span></td><td>$" + a.input + "</td><td>$" + a.output + "</td><td>" + esc(a.note || "") + "</td></tr>"; }).join("") +
-      '</tbody></table></div><p class="note">מחירים בדולרים לכל מיליון טוקנים, מדפי התמחור הרשמיים של: <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener">Anthropic</a>, <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noopener">OpenAI</a>, <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener">Google</a>, <a href="https://docs.x.ai/developers/pricing" target="_blank" rel="noopener">xAI</a>, <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">DeepSeek</a>, <a href="https://docs.mistral.ai/inference/pricing" target="_blank" rel="noopener">Mistral</a>. לחישוב לפי כמות פתחו את "טוקנים" בדף הראשי.</p>';
+      '</tbody></table></div><p class="note">Prices in US dollars per million tokens, from the official pricing pages of <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener">Anthropic</a>, <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noopener">OpenAI</a>, <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener">Google</a>, <a href="https://docs.x.ai/developers/pricing" target="_blank" rel="noopener">xAI</a>, <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">DeepSeek</a> and <a href="https://docs.mistral.ai/inference/pricing" target="_blank" rel="noopener">Mistral</a>. To estimate a bill from a token count, open Tokens on the home page.</p>';
     return;
   }
   var seg = Object.keys(PERIODS).map(function (k) { return '<button type="button" data-p="' + k + '" aria-pressed="' + (k === pr.period) + '">' + PERIODS[k].label + "</button>"; }).join("");
-  var custom = pr.period === "custom" ? '<label class="field">כמה ימים? <input class="days" id="days" type="number" min="1" max="365" value="' + pr.days + '"></label>' : "";
-  box.innerHTML = '<div class="tools"><div class="seg" role="group" aria-label="תקופה">' + seg + "</div>" + custom +
-    '<label class="field">מיון <select id="sort"><option value="default">לפי הרשימה</option><option value="asc">מהזול ליקר</option><option value="desc">מהיקר לזול</option></select></label></div>' +
+  var custom = pr.period === "custom" ? '<label class="field">How many days? <input class="days" id="days" type="number" min="1" max="365" value="' + pr.days + '"></label>' : "";
+  box.innerHTML = '<div class="tools"><div class="seg" role="group" aria-label="Period">' + seg + "</div>" + custom +
+    '<label class="field">Sort <select id="sort"><option value="default">List order</option><option value="asc">Cheapest first</option><option value="desc">Most expensive first</option></select></label></div>' +
     '<div class="rows" id="rows"></div>' +
-    '<p class="note">המחיר החודשי הוא מחיר המנוי הרשמי. החברות לא מוכרות מנוי ליום או לשבוע, ולכן המחיר ליום, לשבוע ולמספר ימים מחושב מהמחיר החודשי. אתרים צד שלישי שמוכרים גישה ליום או לשבוע גובים מחיר אחר ואין להם קשר לחברות. מחיר שנתי רשמי קיים ב-Claude Pro, Google AI Pro, Microsoft 365 Premium, Perplexity Pro ו-Midjourney Basic. בשאר המנויים הוא מחושב כ-12 חודשים. מחירי ChatGPT, Google AI Plus ו-Claude Max נלקחו מאתרי השוואה ולא מהדף הרשמי. ב-DeepSeek, Meta AI ו-Qwen השימוש הבסיסי חינמי. ב-ElevenLabs החודש הראשון עולה $1 ואחריו $6. האתר עדיין לא מתעדכן אוטומטית, ולכן כדאי לבדוק באתר הרשמי לפני קנייה.</p>';
+    '<p class="note">The monthly price is the official subscription price. These companies do not sell day or week plans, so the daily, weekly and custom-day figures are calculated from the monthly price. Third-party sites that sell day or week access charge their own prices and have no link to the companies. An official annual price exists for Claude Pro, Google AI Pro, Microsoft 365 Premium, Perplexity Pro and Midjourney Basic; for the others the annual figure is 12 months of the monthly price. The prices for ChatGPT, Google AI Plus and Claude Max come from comparison sites, not the official page. DeepSeek, Meta AI and Qwen are free for basic use. ElevenLabs charges $1 for the first month, then $6. This site does not update automatically, so check the official site before you buy.</p>';
   box.querySelector("#sort").value = pr.sort;
   paintRows(root);
 }
 function paintRows(root) {
   var rows = root.querySelector("#rows");
   if (!rows) return;
-  var P = PERIODS[pr.period], list = sub().slice();
+  var P = PERIODS[pr.period], list = SUB.slice();
   if (pr.sort !== "default") list.sort(function (a, b) { return (price(a, pr.period) - price(b, pr.period)) * (pr.sort === "asc" ? 1 : -1); });
   rows.innerHTML = list.map(function (m) {
-    var deal = (pr.period === "year" && m.year) ? " · מחיר מנוי שנתי" : "";
-    var unit = !m.month ? "" : pr.period === "custom" ? "ל-" + pr.days + " ימים" : P.unit;
+    var deal = (pr.period === "year" && m.year) ? " · annual plan price" : "";
+    var unit = !m.month ? "" : pr.period === "custom" ? "for " + pr.days + " days" : P.unit;
     return '<div class="row"><b>' + esc(m.name) + '</b><span class="p">' + money(price(m, pr.period)) + '</span><span class="sub">' + esc(m.maker) + " · " + esc(m.tag) + deal + '</span><span class="unit">' + unit + "</span></div>";
   }).join("");
 }
@@ -513,7 +505,7 @@ function paintRows(root) {
 /* ---------- compare window ---------- */
 function compareWin() {
   var opts = function (sel) { return MODELS.map(function (m) { return '<option value="' + m.id + '"' + (m.id === sel ? " selected" : "") + ">" + esc(m.name) + "</option>"; }).join(""); };
-  return '<div class="tools"><label class="field">מודל ראשון <select id="cmpA">' + opts(cmp.a) + '</select></label><label class="field">מודל שני <select id="cmpB">' + opts(cmp.b) + '</select></label></div><div class="tbl" id="cmpT"></div>';
+  return '<div class="tools"><label class="field">First model <select id="cmpA">' + opts(cmp.a) + '</select></label><label class="field">Second model <select id="cmpB">' + opts(cmp.b) + '</select></label></div><div class="tbl" id="cmpT"></div>';
 }
 function bindCompare(root) {
   paintCompare(root);
@@ -522,12 +514,12 @@ function bindCompare(root) {
 function paintCompare(root) {
   var a = byId(cmp.a), b = byId(cmp.b);
   var li = function (arr) { return "<ul>" + arr.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>"; };
-  var mo = function (m) { return m.month === null ? "לפי טוקנים: $" + m.api.input + " קלט, $" + m.api.output + " פלט למיליון" : money(m.month); };
-  var yr = function (m) { return m.month === null ? "אין" : m.month ? money(m.year || m.month * 12) + (m.year ? "" : " (מחושב)") : "חינם"; };
+  var mo = function (m) { return m.month === null ? "Per token: $" + m.api.input + " input, $" + m.api.output + " output per million" : money(m.month); };
+  var yr = function (m) { return m.month === null ? "None" : m.month ? money(m.year || m.month * 12) + (m.year ? "" : " (calculated)") : "Free"; };
   var row = function (h, f) { return "<tr><th>" + h + "</th><td>" + f(a) + "</td><td>" + f(b) + "</td></tr>"; };
   root.querySelector("#cmpT").innerHTML = "<table><thead><tr><th></th><td>" + esc(a.name) + "</td><td>" + esc(b.name) + "</td></tr></thead><tbody>" +
-    row("יצרן", function (m) { return esc(m.maker); }) + row("מחיר לחודש", mo) + row("מחיר לשנה", yr) +
-    row("מתאים במיוחד ל", function (m) { return esc(m.tag); }) + row("במה הוא טוב", function (m) { return li(m.good); }) + row("פחות מתאים ל", function (m) { return li(m.less); }) + "</tbody></table>";
+    row("Company", function (m) { return esc(m.maker); }) + row("Price per month", mo) + row("Price per year", yr) +
+    row("Best for", function (m) { return esc(m.tag); }) + row("Good at", function (m) { return li(m.good); }) + row("Less suited to", function (m) { return li(m.less); }) + "</tbody></table>";
 }
 
 /* ---------- token window ---------- */
@@ -550,17 +542,17 @@ function thumbSvg() {
 function tokensWin() {
   var starsHtml = "";
   for (var i = 0; i < 16; i++) starsHtml += '<i style="left:' + (4 + (i * 6.1) % 92) + '%;top:' + (22 + ((i * 37) % 56)) + '%">' + (i % 3 ? "·" : "✦") + "</i>";
-  return '<p style="margin:0;color:var(--muted)">גררו את הטוקן או הקלידו מספר. העלות מחושבת לפי מחירי ה-API הרשמיים, לכל מודל.</p>' +
+  return '<p style="margin:0;color:var(--muted)">Drag the token or type a number. The cost is calculated for each model from its official API price.</p>' +
     '<div class="rail" id="rail"><div class="track"><div class="fill" id="fill"></div><div class="stars">' + starsHtml + '</div></div>' +
-    '<input id="tkRange" type="range" min="0" max="1000" step="1" aria-label="כמות טוקנים"><div class="thumb" id="thumb">' + thumbSvg() + '</div></div>' +
+    '<input id="tkRange" type="range" min="0" max="1000" step="1" aria-label="Number of tokens"><div class="thumb" id="thumb">' + thumbSvg() + '</div></div>' +
     '<div class="ends"><span>' + tkShort(TK_MIN) + '</span><span>' + tkShort(TK_MAX) + '</span></div>' +
     '<div class="bubble"><span id="bubble"></span></div>' +
-    '<div class="tk-in"><label>מספר טוקנים מדויק<input class="field" id="tkText" type="text" inputmode="decimal" autocomplete="off" aria-describedby="tkHint"></label>' +
-    '<label>חלק הקלט מתוך הטוקנים<select class="field" id="tkShare"><option value="90">90% קלט · 10% פלט</option><option value="75">75% קלט · 25% פלט</option><option value="50">50% קלט · 50% פלט</option><option value="25">25% קלט · 75% פלט</option></select></label>' +
-    '<label style="font-weight:400"><span><input type="checkbox" id="tkPeak"> תעריף שעות שיא של DeepSeek</span></label></div>' +
-    '<div id="tkHint" class="note" style="margin-top:6px">אפשר לכתוב 1,000,000 או 500k או 2m. הסליידר מכסה 100K עד 10M, והשדה מקבל עד מיליארד.</div>' +
+    '<div class="tk-in"><label>Exact token count<input class="field" id="tkText" type="text" inputmode="decimal" autocomplete="off" aria-describedby="tkHint"></label>' +
+    '<label>Share of input tokens<select class="field" id="tkShare"><option value="90">90% input · 10% output</option><option value="75">75% input · 25% output</option><option value="50">50% input · 50% output</option><option value="25">25% input · 75% output</option></select></label>' +
+    '<label style="font-weight:400"><span><input type="checkbox" id="tkPeak"> DeepSeek peak-hour rate</span></label></div>' +
+    '<div id="tkHint" class="note" style="margin-top:6px">You can type 1,000,000, 500k or 2m. The slider covers 100K to 10M. The field accepts up to one billion.</div>' +
     '<div class="tbl" id="tkRes"></div>' +
-    '<p class="note">החישוב הוא אומדן לפי טוקנים רגילים, בלי הנחות מטמון ו-Batch ובלי חיובי כלים וחיפוש. כשבקשה אחת ארוכה מהסף שמצוין ליד מודל, המחיר בפועל גבוה יותר. מחירים מדפי התמחור הרשמיים, נבדקו ב-6 וב-7 בנובמבר 2026.</p>';
+    '<p class="note">This is an estimate at standard token rates, without cache or Batch discounts and without tool or search charges. When a single request is longer than the threshold shown next to a model, the real price is higher. Prices come from the official pricing pages, checked on Nov 6 and 7, 2026.</p>';
 }
 function bindTokens(root) {
   var range = root.querySelector("#tkRange"), text = root.querySelector("#tkText");
@@ -569,7 +561,7 @@ function bindTokens(root) {
   text.value = tk.tokens.toLocaleString("en-US");
   range.value = tkToT(tk.tokens);
   paintTokens(root);
-  range.addEventListener("input", function () { tk.tokens = tkFromT(Number(range.value)); text.value = tk.tokens.toLocaleString("en-US"); text.setCustomValidity(""); paintTokens(root); });
+  range.addEventListener("input", function () { tk.tokens = tkFromT(Number(range.value)); text.value = tk.tokens.toLocaleString("en-US"); text.removeAttribute("aria-invalid"); paintTokens(root); });
   text.addEventListener("input", function () {
     var n = tkParse(text.value);
     if (n === null) { text.setAttribute("aria-invalid", "true"); return; }
@@ -582,7 +574,7 @@ function bindTokens(root) {
 function clamp01(x) { return Math.max(0, Math.min(1, x)); }
 function paintTokens(root) {
   var t = tkToT(tk.tokens), p = t / 1000;
-  var rail = root.querySelector("#rail"), thumb = root.querySelector("#thumb");
+  var thumb = root.querySelector("#thumb");
   var size = 40 + 44 * p, w = size * 88 / 64;
   thumb.style.left = (p * 100) + "%"; thumb.style.width = w + "px"; thumb.style.height = size + "px";
   var rocket = clamp01((p - 0.3) / 0.35);
@@ -600,14 +592,14 @@ function paintTokens(root) {
     return { m: m, ip: ip, op: op, ic: ic, oc: oc, total: ic + oc };
   }).sort(function (a, b) { return a.total - b.total; });
   var max = rows[rows.length - 1].total || 1;
-  root.querySelector("#tkRes").innerHTML = "<table><thead><tr><th>מודל</th><th>קלט / פלט למיליון</th><th>עלות קלט</th><th>עלות פלט</th><th>סה״כ</th></tr></thead><tbody>" +
+  root.querySelector("#tkRes").innerHTML = "<table><thead><tr><th>Model</th><th>Input / output per 1M</th><th>Input cost</th><th>Output cost</th><th>Total</th></tr></thead><tbody>" +
     rows.map(function (r) {
       return "<tr><td><b>" + esc(r.m.name) + "</b><br><span style='color:var(--muted);font-size:14px'>" + esc(r.m.vendor) + (r.m.note ? " · " + esc(r.m.note) : "") + "</span></td><td>$" + r.ip + " / $" + r.op + "</td><td>" + usd(r.ic) + "</td><td>" + usd(r.oc) + "</td><td class='total'>" + usd(r.total) + "<div class='bar2'><i style='width:" + Math.max(2, r.total / max * 100) + "%'></i></div></td></tr>";
     }).join("") + "</tbody></table>";
 }
 function usd(v) {
   if (v === 0) return "$0";
-  if (v < 0.01) return "פחות מ-$0.01";
+  if (v < 0.01) return "under $0.01";
   if (v >= 1000) return "$" + Math.round(v).toLocaleString("en-US");
   return "$" + v.toFixed(2);
 }
@@ -615,8 +607,8 @@ function usd(v) {
 /* ---------- skills + guides ---------- */
 function skillsWin() {
   var cats = SKILL_CATS.map(function (c) { return '<button type="button" data-cat="' + c + '" aria-pressed="' + (c === sk.cat) + '">' + c + "</button>"; }).join("");
-  return '<p style="margin:0 0 14px;color:var(--muted)">בחרו תחום, ותראו את הסקילים שמתאימים. הרשימה לקוחה מהמאגר הציבורי של Anthropic, ותיאורי הסקילים מקוצרים.</p>' +
-    '<div class="sk"><div class="cats" id="cats" role="group" aria-label="תחום">' + cats + '</div><div><input class="field" id="skq" type="search" placeholder="חיפוש סקיל" aria-label="חיפוש סקיל" style="width:100%"><div class="skills" id="skl" style="margin-top:12px"></div>' + adBox() + "</div></div>";
+  return '<p style="margin:0 0 14px;color:var(--muted)">Pick a category to see matching skills. The list comes from Anthropic’s public skills repository, and the descriptions are shortened.</p>' +
+    '<div class="sk"><div class="cats" id="cats" role="group" aria-label="Category">' + cats + '</div><div><input class="field" id="skq" type="search" placeholder="Search skills" aria-label="Search skills" style="width:100%"><div class="skills" id="skl" style="margin-top:12px"></div>' + adBox() + "</div></div>";
 }
 function bindSkills(root) {
   paintSkills(root);
@@ -625,28 +617,24 @@ function bindSkills(root) {
     sk.cat = b.dataset.cat; root.querySelectorAll("[data-cat]").forEach(function (x) { x.setAttribute("aria-pressed", String(x.dataset.cat === sk.cat)); }); paintSkills(root);
   });
   root.querySelector("#skq").addEventListener("input", function (e) { sk.q = e.target.value; paintSkills(root); });
-  root.querySelector("#skl").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-copy]"); if (!b) return;
-    copyText(b.dataset.copy, b);
-  });
 }
 function paintSkills(root) {
   var q = sk.q.trim().toLowerCase();
-  var list = SKILLS.filter(function (s) { return (sk.cat === "הכל" || s.c === sk.cat) && (!q || (s.n + " " + s.d).toLowerCase().indexOf(q) > -1); });
+  var list = SKILLS.filter(function (s) { return (sk.cat === "All" || s.c === sk.cat) && (!q || (s.n + " " + s.d).toLowerCase().indexOf(q) > -1); });
   root.querySelector("#skl").innerHTML = list.length ? list.map(function (s) {
-    return '<div class="skill"><b><code>' + esc(s.n) + '</code></b><span>' + esc(s.d) + '</span><span style="color:var(--muted);font-size:14px">' + esc(s.c) + ' · <a href="https://github.com/anthropics/skills" target="_blank" rel="noopener">מאגר Anthropic</a></span></div>';
-  }).join("") : '<p class="empty">אין סקיל שמתאים לחיפוש.</p>';
+    return '<div class="skill"><b><code>' + esc(s.n) + '</code></b><span>' + esc(s.d) + '</span><span style="color:var(--muted);font-size:14px">' + esc(s.c) + ' · <a href="https://github.com/anthropics/skills" target="_blank" rel="noopener">Anthropic repository</a></span></div>';
+  }).join("") : '<p class="empty">No skill matches your search.</p>';
 }
 function copyText(txt, btn) {
-  var done = function (ok) { if (btn) { var old = btn.textContent; btn.textContent = ok ? "הועתק" : "בחרו והעתיקו ידנית"; setTimeout(function () { btn.textContent = old; }, 1600); } };
+  var done = function (ok) { if (btn) { var old = btn.textContent; btn.textContent = ok ? "Copied" : "Select and copy manually"; setTimeout(function () { btn.textContent = old; }, 1600); } };
   try { navigator.clipboard.writeText(txt).then(function () { done(true); }, function () { done(false); }); } catch (e) { done(false); }
 }
 function guidesWin() {
-  return '<p style="margin:0;color:var(--muted)">איך מוסיפים סקיל לכלי AI. הפרטים של ממשק הכלים משתנים, ולכן בדקו את התפריטים בגרסה שלכם.</p>' +
-    '<details open><summary>Claude</summary><ol><li>צרו תיקייה בשם הסקיל, ובתוכה קובץ <code>SKILL.md</code>. בראש הקובץ חייבים להיות השדות <code>name</code> ו-<code>description</code>.</li><li>ב-Claude.ai, בהגדרות באזור Capabilities, מעלים את התיקייה כקובץ zip.</li><li>ב-Claude Code, שמים את התיקייה ב-<code>~/.claude/skills/</code> לשימוש אישי, או ב-<code>.claude/skills/</code> בתוך הפרויקט.</li><li>Claude קורא את התיאור ומפעיל את הסקיל כשהבקשה מתאימה לו.</li></ol><span class="code" id="tpl">' + esc(SKILL_TEMPLATE) + '</span><button class="btn alt" type="button" data-copy-tpl style="margin-top:0">העתקת התבנית</button></details>' +
-    '<details><summary>ChatGPT</summary><ul><li>עד כמה שבדקתי, ChatGPT לא משתמש בפורמט <code>SKILL.md</code>.</li><li>הדבר הקרוב הוא GPT מותאם אישית, או הוראות קבועות בתוך Project. מדביקים שם את ההוראות של הסקיל.</li><li>את התבנית אפשר להשתמש בה כטקסט ההוראות, בלי שורות ה-<code>name</code> וה-<code>description</code>.</li></ul></details>' +
-    '<details><summary>Gemini</summary><ul><li>הדבר הקרוב הוא Gem: עוזר מותאם אישית עם הוראות קבועות.</li><li>יוצרים Gem חדש ומדביקים בו את ההוראות של הסקיל.</li></ul></details>' +
-    '<details><summary>כתיבת סקיל טוב</summary><ul><li>התיאור קובע מתי הסקיל מופעל, ולכן כתבו בו מתי להשתמש בו ולא רק מה הוא עושה.</li><li>הוראות קצרות וממוספרות עובדות טוב יותר מפסקאות ארוכות.</li><li>דוגמה אחת של תוצר מוכן שווה יותר מתיאור כללי.</li></ul></details>';
+  return '<p style="margin:0;color:var(--muted)">How to add a skill to an AI tool. The tools’ menus change, so check them in your version.</p>' +
+    '<details open><summary>Claude</summary><ol><li>Create a folder named after the skill, with a <code>SKILL.md</code> file inside. The top of the file needs <code>name</code> and <code>description</code> fields.</li><li>In Claude.ai, open Settings, go to Capabilities, and upload the folder as a zip file.</li><li>In Claude Code, put the folder in <code>~/.claude/skills/</code> for personal use, or in <code>.claude/skills/</code> inside a project.</li><li>Claude reads the description and uses the skill when a request matches it.</li></ol><span class="code" id="tpl">' + esc(SKILL_TEMPLATE) + '</span><button class="btn alt" type="button" data-copy-tpl style="margin-top:0">Copy the template</button></details>' +
+    '<details><summary>ChatGPT</summary><ul><li>As far as I checked, ChatGPT does not use the <code>SKILL.md</code> format.</li><li>The closest options are a custom GPT, or standing instructions inside a Project. Paste the skill’s instructions there.</li><li>You can use the template as the instruction text, without the <code>name</code> and <code>description</code> lines.</li></ul></details>' +
+    '<details><summary>Gemini</summary><ul><li>The closest option is a Gem, a custom assistant with standing instructions.</li><li>Create a new Gem and paste the skill’s instructions into it.</li></ul></details>' +
+    '<details><summary>Writing a good skill</summary><ul><li>The description decides when the skill runs, so say when to use it and not only what it does.</li><li>Short numbered instructions work better than long paragraphs.</li><li>One example of a finished result is worth more than a general description.</li></ul></details>';
 }
 function bindGuides(root) {
   root.addEventListener("click", function (e) { var b = e.target.closest("[data-copy-tpl]"); if (b) copyText(SKILL_TEMPLATE, b); });
@@ -655,36 +643,39 @@ function bindGuides(root) {
 /* ---------- upgrade ---------- */
 function upgradeWin() {
   var rows = [
-    ["חשבון ושמירת העדפות", "יש", "יש"],
-    ["מחשבון טוקנים, מחירים והשוואה", "יש", "יש"],
-    ["ספריית סקילים", "יש", "יש"],
-    ["פרסומות", "יש", "אין"],
-    ["שאלות לבוט בכל ביקור", "5", "ללא הגבלה"],
-    ["סקילים מועדפים", "אין", "יש"],
-    ["התראה במייל על מודל שמתאים לבקשה שלך", "אין", "בקרוב"]
+    ["Account and saved preferences", "Yes", "Yes"],
+    ["Token calculator, prices and compare", "Yes", "Yes"],
+    ["Skills library", "Yes", "Yes"],
+    ["Ads", "Yes", "None"],
+    ["Questions to the bot per visit", "5", "Unlimited"],
+    ["Favorite skills", "No", "Yes"],
+    ["Email alert when a model fits your needs", "No", "Coming soon"]
   ];
-  return '<div class="tbl"><table><thead><tr><th></th><td>חינם</td><td>Premium</td></tr></thead><tbody>' + rows.map(function (r) { return "<tr><th>" + r[0] + "</th><td>" + r[1] + "</td><td class='yes'>" + r[2] + "</td></tr>"; }).join("") + "</tbody></table></div>" +
-    '<p class="note">מחיר מוצע: $3 לחודש. התשלום עדיין לא מחובר, ובגרסת ההדגמה השדרוג מופעל רק בדפדפן הזה. התראות מייל דורשות שרת, ולכן הן עדיין לא פעילות.</p>' +
+  return '<div class="tbl"><table><thead><tr><th></th><td>Free</td><td>Premium</td></tr></thead><tbody>' + rows.map(function (r) { return "<tr><th>" + r[0] + "</th><td>" + r[1] + "</td><td class='yes'>" + r[2] + "</td></tr>"; }).join("") + "</tbody></table></div>" +
+    '<p class="note">Suggested price: $3 a month. Payment is not connected yet, and in this demo the upgrade only switches on in this browser. Email alerts need a server, so they are not live.</p>' +
     '<div id="upAct"></div>';
 }
-function bindUpgrade(root) { paintUpgrade(root); root.addEventListener("click", function (e) {
-  var b = e.target.closest("[data-up]"); if (!b) return;
-  user.premium = b.dataset.up === "on"; save(USER_KEY, user); paintBar(); paintUpgrade(root); renderHome();
-}); }
+function bindUpgrade(root) {
+  paintUpgrade(root);
+  root.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-up]"); if (!b) return;
+    user.premium = b.dataset.up === "on"; save(USER_KEY, user); paintBar(); paintUpgrade(root); renderHome();
+  });
+}
 function paintUpgrade(root) {
-  root.querySelector("#upAct").innerHTML = isPro() ? '<span class="badge pro">Premium פעיל</span> <button class="btn ghost" type="button" data-up="off" style="margin-top:0">חזרה לחינם</button>' : '<button class="btn" type="button" data-up="on" style="margin-top:0">שדרוג (הדגמה)</button>';
+  root.querySelector("#upAct").innerHTML = isPro() ? '<span class="badge pro">Premium is on</span> <button class="btn ghost" type="button" data-up="off" style="margin-top:0">Back to Free</button>' : '<button class="btn" type="button" data-up="on" style="margin-top:0">Upgrade (demo)</button>';
 }
 
 /* ---------- account ---------- */
-var USES = ["כתיבה", "קוד", "חיפוש", "תמונות", "Office", "קול ומוזיקה"];
+var USES = ["Writing", "Coding", "Search", "Images", "Office", "Voice & music"];
 function accountWin() {
-  return '<div class="form"><div><b>' + esc(user.name) + '</b><div style="color:var(--muted)">' + esc(user.email) + ' <span class="badge' + (isPro() ? " pro" : "") + '">' + (isPro() ? "Premium" : "חינם") + '</span></div></div>' +
-    '<label>במה אתם צריכים AI?<select class="field" id="aUse">' + USES.map(function (u) { return '<option value="' + u + '"' + (user.use === u ? " selected" : "") + ">" + u + "</option>"; }).join("") + '</select></label>' +
-    '<label>תקציב חודשי בדולרים<input class="field" id="aBudget" type="number" min="0" max="1000" step="1" value="' + (user.budget == null ? 10 : user.budget) + '"></label>' +
-    '<label style="font-weight:400"><span><input type="checkbox" disabled> עדכון במייל כשיש מודל שמתאים יותר (מחכה לשרת מיילים)</span></label></div>' +
-    '<h3 style="margin-top:20px">מה מתאים לכם עכשיו</h3><div class="rows" id="recs"></div>' +
-    '<p class="note">החשבון נשמר רק בדפדפן הזה. אין סיסמה ואין שרת, ולכן אף אחד אחר לא רואה את הפרטים. כשיתחבר שרת, אפשר יהיה לשמור חשבון בין מכשירים.</p>' +
-    '<button class="btn ghost" type="button" id="logout" style="margin-top:6px">יציאה</button>';
+  return '<div class="form"><div><b>' + esc(user.name) + '</b><div style="color:var(--muted)">' + esc(user.email) + ' <span class="badge' + (isPro() ? " pro" : "") + '">' + (isPro() ? "Premium" : "Free") + '</span></div></div>' +
+    '<label>What do you need AI for?<select class="field" id="aUse">' + USES.map(function (u) { return '<option value="' + u + '"' + (user.use === u ? " selected" : "") + ">" + u + "</option>"; }).join("") + '</select></label>' +
+    '<label>Monthly budget in US dollars<input class="field" id="aBudget" type="number" min="0" max="1000" step="1" value="' + (user.budget == null ? 10 : user.budget) + '"></label>' +
+    '<label style="font-weight:400"><span><input type="checkbox" disabled> Email me when a better-fitting model appears (waiting for an email server)</span></label></div>' +
+    '<h3 style="margin-top:20px">What fits you now</h3><div class="rows" id="recs"></div>' +
+    '<p class="note">Your account is stored only in this browser. There is no password and no server, so nobody else can see these details. Once a server is connected, accounts can be kept across devices.</p>' +
+    '<button class="btn ghost" type="button" id="logout" style="margin-top:6px">Sign out</button>';
 }
 function bindAccount(root) {
   paintRecs(root);
@@ -697,43 +688,43 @@ function bindAccount(root) {
   root.querySelector("#logout").addEventListener("click", function () { closeWindow(true); user = null; try { localStorage.removeItem(USER_KEY); } catch (e) {} botOpen = false; paintBar(); renderBot(); showGate(); });
 }
 function paintRecs(root) {
-  var use = user.use || "כתיבה", budget = user.budget == null ? 10 : user.budget;
+  var use = user.use || "Writing", budget = user.budget == null ? 10 : user.budget;
   var fit = SUB.filter(function (m) { return m.cats.indexOf(use) > -1 && m.month <= budget; }).sort(function (a, b) { return b.month - a.month; }).slice(0, 3);
   var html;
-  if (fit.length) html = fit.map(function (m) { return '<div class="row"><b>' + esc(m.name) + '</b><span class="p">' + money(m.month) + '</span><span class="sub">' + esc(m.tag) + "</span><span class=\"unit\">" + (m.month ? "לחודש" : "") + "</span></div>"; }).join("");
+  if (fit.length) html = fit.map(function (m) { return '<div class="row"><b>' + esc(m.name) + '</b><span class="p">' + money(m.month) + '</span><span class="sub">' + esc(m.tag) + '</span><span class="unit">' + (m.month ? "per month" : "") + "</span></div>"; }).join("");
   else {
     var cheapest = SUB.filter(function (m) { return m.cats.indexOf(use) > -1; }).sort(function (a, b) { return a.month - b.month; })[0];
-    html = '<p class="empty" style="margin:0">אין מנוי בתחום "' + esc(use) + '" עד $' + budget + '. הזול ביותר בתחום: ' + (cheapest ? esc(cheapest.name) + " ב-" + money(cheapest.month) + " לחודש" : "לא נמצא") + ".</p>";
+    html = '<p class="empty" style="margin:0">No plan for "' + esc(use) + '" up to $' + budget + '. The cheapest in this category: ' + (cheapest ? esc(cheapest.name) + " at " + money(cheapest.month) + " per month" : "none found") + ".</p>";
   }
   root.querySelector("#recs").innerHTML = html;
 }
 
 /* ---------- FAQ bot (rule-based, runs in the browser) ---------- */
 var BOT_RULES = [
-  [/מחיר|עולה|כמה|עלות|דולר/, "המחירים נמצאים בחלון \"מחירים\": מנויים לפי יום, שבוע, חודש, שנה או מספר ימים, וטבלת API לפי טוקנים. לחישוב לפי כמות, לחצו על \"טוקנים\" ליד החיפוש."],
-  [/טוקן|טוקנים|api|קלט|פלט/, "בכפתור \"טוקנים\" בוחרים כמות בין 100K ל-10M, או מקלידים מספר. האתר מחשב עלות לכל מודל לפי מחיר הקלט והפלט למיליון טוקנים. אפשר לשנות את חלוקת הקלט והפלט."],
-  [/שדרג|שדרוג|פרימיום|premium|מנוי שלכם/, "ב-Premium אין פרסומות, אין הגבלה על שאלות לבוט ואפשר לשמור סקילים מועדפים. התשלום עדיין לא מחובר, ובגרסת ההדגמה השדרוג מופעל בדפדפן הזה בלבד."],
-  [/סקיל|skill|סקילים/, "בחלון \"ספריית סקילים\" בוחרים תחום ורואים את הסקילים שמתאימים. בחלון \"מדריכים\" יש הסבר איך מוסיפים סקיל ל-Claude, ומה הקרוב לזה ב-ChatGPT וב-Gemini."],
-  [/מייל|התראה|אימייל/, "התראות במייל דורשות שרת, ולכן הן עדיין לא פעילות. אפשר להגדיר תחום ותקציב בחשבון, והאתר יציג מיד מה מתאים."],
-  [/חשבון|התחבר|כניסה|סיסמ|יציאה/, "החשבון נשמר רק בדפדפן הזה, בלי סיסמה ובלי שרת. כדי להחליף משתמש, לחצו על השם שלכם למעלה ואז על \"יציאה\"."],
-  [/פרסומ/, "בגרסה החינמית יש מקומות לפרסומות. אלה דוגמאות בלבד. ב-Premium הם לא מוצגים."],
-  [/לילה|יום|כהה|בהיר|מצב/, "הכפתור בפינה העליונה מחליף בין מצב לילה למצב יום, והבחירה נשמרת."],
-  [/השוואה|להשוות/, "בחלון \"השוואה\" בוחרים שני מודלים ורואים אותם זה לצד זה: מחיר, במה כל אחד טוב ובמה פחות."],
-  [/מתי|עדכון|נבדק|אמיתי|מדויק/, "המחירים נבדקו ב-4 וב-7 בנובמבר 2026 מדפי התמחור הרשמיים. כמה מחירים נלקחו מאתרי השוואה, וזה כתוב בחלון המחירים. האתר לא מתעדכן לבד, ולכן בדקו באתר הרשמי לפני קנייה."]
+  [/token|input|output|api/, "Under Tokens you pick an amount between 100K and 10M, or type a number. The site calculates a cost for each model from its input and output price per million tokens. You can change the input and output split."],
+  [/price|cost|how much|cheap|dollar/, "Prices are in the Prices window: subscriptions by day, week, month, year or a number of days, plus an API table per token. To estimate a bill from an amount, use the Tokens button next to the search box."],
+  [/upgrade|premium|subscribe|pro plan/, "Premium has no ads, no limit on bot questions and favorite skills. Payment is not connected yet, and in this demo the upgrade only switches on in this browser."],
+  [/skill/, "In the Skills library you pick a category and see matching skills. The Guides window explains how to add a skill to Claude, and what comes closest in ChatGPT and Gemini."],
+  [/mail|alert|notif/, "Email alerts need a server, so they are not live yet. You can set a use and a budget in your account, and the site shows what fits right away."],
+  [/account|login|log in|sign|password|log out/, "Your account is stored only in this browser, with no password and no server. To switch users, select your name at the top and choose Sign out."],
+  [/\bads?\b|advert/, "The free version has ad spaces. They are examples only. Premium does not show them."],
+  [/dark|light|theme|night|mode/, "The button in the top corner switches between dark and light mode, and your choice is saved."],
+  [/compare|versus|\bvs\b/, "In the Compare window you pick two models and see them side by side: price, what each does well and where each falls short."],
+  [/when|update|checked|real|accurate|official/, "Prices were checked on Nov 4 and 7, 2026 against the official pricing pages. A few prices come from comparison sites, and the Prices window says which. The site does not update by itself, so check the official site before you buy."]
 ];
-var BOT_SUGGEST = ["כמה זה עולה?", "איך עובד מחשבון הטוקנים?", "מה יש ב-Premium?", "איך מוסיפים סקיל?"];
+var BOT_SUGGEST = ["How much does it cost?", "How does the token calculator work?", "What is in Premium?", "How do I add a skill?"];
 function botAnswer(q) {
   for (var i = 0; i < BOT_RULES.length; i++) if (BOT_RULES[i][0].test(q.toLowerCase())) return BOT_RULES[i][1];
-  return "אני עונה רק על שאלות על האתר: מחירים, טוקנים, סקילים, שדרוג וחשבון. נסו לשאול למשל \"כמה זה עולה?\".";
+  return "I only answer questions about this site: prices, tokens, skills, upgrading and your account. Try asking, for example, \"How much does it cost?\".";
 }
 function renderBot() {
   var dock = $("botDock");
   if (!user) { dock.innerHTML = ""; return; }
-  if (!botOpen) { dock.innerHTML = '<button class="botbtn" id="botOpen" type="button">' + CHAT + "שאלות על האתר</button>"; return; }
-  dock.innerHTML = '<section class="bot" role="dialog" aria-label="בוט שאלות על האתר"><header><span>שאלות על האתר</span><button class="x" id="botClose" type="button" aria-label="סגירה">×</button></header>' +
-    '<div class="msgs" id="msgs"><div class="m">שלום ' + esc(user.name) + '. אני עונה על שאלות על האתר. אני בוט פשוט שרץ בדפדפן ואינו מודל שפה, ולכן אני מכיר רק את הנושאים של האתר.</div></div>' +
+  if (!botOpen) { dock.innerHTML = '<button class="botbtn" id="botOpen" type="button">' + CHAT + "Ask a question</button>"; return; }
+  dock.innerHTML = '<section class="bot" role="dialog" aria-label="Questions about the site"><header><span>Questions about the site</span><button class="x" id="botClose" type="button" aria-label="Close">×</button></header>' +
+    '<div class="msgs" id="msgs"><div class="m">Hi ' + esc(user.name) + '. I answer questions about this site. I am a simple bot that runs in your browser, not a language model, so I only know the topics on this site.</div></div>' +
     '<div class="qs">' + BOT_SUGGEST.map(function (s) { return '<button type="button" data-q="' + s + '">' + s + "</button>"; }).join("") + "</div>" +
-    '<form id="botForm"><input class="field" id="botQ" autocomplete="off" placeholder="כתבו שאלה" aria-label="שאלה"><button class="btn" type="submit" style="margin:0">שלח</button></form></section>';
+    '<form id="botForm"><input class="field" id="botQ" autocomplete="off" placeholder="Type a question" aria-label="Question"><button class="btn" type="submit" style="margin:0">Send</button></form></section>';
   $("botQ").focus({ preventScroll: true });
 }
 function toggleBot(v) { botOpen = v; renderBot(); }
@@ -742,7 +733,7 @@ function botSend(q) {
   var box = $("msgs");
   var add = function (t, me) { var d = document.createElement("div"); d.className = "m" + (me ? " me" : ""); d.textContent = t; box.appendChild(d); box.scrollTop = box.scrollHeight; };
   add(q, true);
-  if (!isPro() && botCount >= 5) { add("הגעתם ל-5 שאלות בביקור הזה. ב-Premium אין הגבלה.", false); return; }
+  if (!isPro() && botCount >= 5) { add("You have reached 5 questions in this visit. Premium has no limit.", false); return; }
   botCount++;
   add(botAnswer(q), false);
 }
@@ -757,13 +748,13 @@ $("botDock").addEventListener("submit", function (e) { e.preventDefault(); var i
 function showGate() {
   var g = document.createElement("div");
   g.className = "gate"; g.id = "gate";
-  g.innerHTML = '<form class="box" id="gateForm"><h1>כניסה</h1><p>כדי להשתמש באתר צריך חשבון. החשבון נשמר רק בדפדפן הזה, בלי סיסמה ובלי שרת.</p>' +
-    '<div class="form" style="max-width:none"><label>שם<input class="field" id="gName" required autocomplete="name"></label><label>אימייל<input class="field" id="gMail" type="email" required autocomplete="email" dir="ltr"></label><button class="btn" type="submit" style="margin:0">כניסה</button></div></form>';
+  g.innerHTML = '<form class="box" id="gateForm"><h1>Sign in</h1><p>You need an account to use the site. It is stored only in this browser, with no password and no server.</p>' +
+    '<div class="form" style="max-width:none"><label>Name<input class="field" id="gName" required autocomplete="name"></label><label>Email<input class="field" id="gMail" type="email" required autocomplete="email"></label><button class="btn" type="submit" style="margin:0">Continue</button></div></form>';
   document.body.appendChild(g);
   $("gName").focus();
   $("gateForm").addEventListener("submit", function (e) {
     e.preventDefault();
-    user = { name: $("gName").value.trim(), email: $("gMail").value.trim(), premium: false, use: "כתיבה", budget: 10 };
+    user = { name: $("gName").value.trim(), email: $("gMail").value.trim(), premium: false, use: "Writing", budget: 10 };
     save(USER_KEY, user); g.remove(); paintBar(); renderHome(); renderBot();
   });
 }
