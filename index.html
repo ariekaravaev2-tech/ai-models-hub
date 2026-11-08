@@ -182,6 +182,7 @@ details ol, details ul { padding-inline-start: 22px; display: grid; gap: 4px; ma
     <span class="brand">AI Models Guide</span>
     <nav class="nav" aria-label="Main" id="nav"></nav>
     <div class="side">
+      <select class="pill" id="lang" aria-label="Language"></select>
       <button class="pill" id="who" type="button"></button>
       <button class="pill" id="theme" type="button" aria-label="Switch between light and dark mode"></button>
     </div>
@@ -744,17 +745,94 @@ $("botDock").addEventListener("click", function (e) {
 });
 $("botDock").addEventListener("submit", function (e) { e.preventDefault(); var i = $("botQ"); botSend(i.value); i.value = ""; });
 
+
+/* ---------- languages ---------- */
+/* UI chrome is translated; model descriptions, guides and the FAQ bot stay in English. */
+var LANGS = [["en","English","ltr"],["es","Español","ltr"],["fr","Français","ltr"],["de","Deutsch","ltr"],["pt","Português","ltr"],["ru","Русский","ltr"],["zh","中文","ltr"],["ar","العربية","rtl"],["he","עברית","rtl"]];
+var LASTLANG_KEY = "ai-guide-lang", LANGS_KEY = "ai-guide-langs";
+var LANG = "en";
+var I18N = {
+es: {"Home":"Inicio","Prices":"Precios","Compare":"Comparar","Skills library":"Biblioteca de skills","Guides":"Guías","Upgrade":"Mejorar","Sign in":"Iniciar sesión","Dark mode":"Modo oscuro","Light mode":"Modo claro","Tokens":"Tokens","All":"Todos","Writing":"Escritura","Coding":"Programación","Search":"Búsqueda","Images":"Imágenes","Voice & music":"Voz y música","Office":"Oficina","Budget and free":"Económicos y gratis","API (per token)":"API (por token)","Name":"Nombre","Email":"Correo electrónico","Continue":"Continuar","Language":"Idioma","Ask a question":"Hacer una pregunta","Subscriptions":"Suscripciones","Per day":"Por día","Per week":"Por semana","Per month":"Por mes","Per year":"Por año","Custom days":"Días a elegir","Sort":"Ordenar","Cheapest first":"Más barato primero","Most expensive first":"Más caro primero","Free":"Gratis","Premium":"Premium","My account":"Mi cuenta","Token calculator":"Calculadora de tokens","Compare two models":"Comparar dos modelos","Upgrade to Premium":"Pasar a Premium","Search models":"Buscar modelos","Filter by use":"Filtrar por uso","AI models: what each one does well and what it costs":"Modelos de IA: en qué destaca cada uno y cuánto cuesta"},
+fr: {"Home":"Accueil","Prices":"Tarifs","Compare":"Comparer","Skills library":"Bibliothèque de skills","Guides":"Guides","Upgrade":"Passer à Premium","Sign in":"Connexion","Dark mode":"Mode sombre","Light mode":"Mode clair","Tokens":"Tokens","All":"Tous","Writing":"Écriture","Coding":"Code","Search":"Recherche","Images":"Images","Voice & music":"Voix et musique","Office":"Bureautique","Budget and free":"Petits prix et gratuit","API (per token)":"API (au token)","Name":"Nom","Email":"E-mail","Continue":"Continuer","Language":"Langue","Ask a question":"Poser une question","Subscriptions":"Abonnements","Per day":"Par jour","Per week":"Par semaine","Per month":"Par mois","Per year":"Par an","Custom days":"Jours au choix","Sort":"Trier","Cheapest first":"Moins cher d’abord","Most expensive first":"Plus cher d’abord","Free":"Gratuit","Premium":"Premium","My account":"Mon compte","Token calculator":"Calculateur de tokens","Compare two models":"Comparer deux modèles","Upgrade to Premium":"Passer à Premium","Search models":"Rechercher un modèle","Filter by use":"Filtrer par usage","AI models: what each one does well and what it costs":"Modèles d’IA : ce que chacun fait bien et ce qu’il coûte"},
+de: {"Home":"Start","Prices":"Preise","Compare":"Vergleichen","Skills library":"Skills-Bibliothek","Guides":"Anleitungen","Upgrade":"Upgrade","Sign in":"Anmelden","Dark mode":"Dunkelmodus","Light mode":"Hellmodus","Tokens":"Tokens","All":"Alle","Writing":"Schreiben","Coding":"Programmieren","Search":"Suche","Images":"Bilder","Voice & music":"Stimme und Musik","Office":"Büro","Budget and free":"Günstig und kostenlos","API (per token)":"API (pro Token)","Name":"Name","Email":"E-Mail","Continue":"Weiter","Language":"Sprache","Ask a question":"Frage stellen","Subscriptions":"Abos","Per day":"Pro Tag","Per week":"Pro Woche","Per month":"Pro Monat","Per year":"Pro Jahr","Custom days":"Eigene Tage","Sort":"Sortieren","Cheapest first":"Günstigste zuerst","Most expensive first":"Teuerste zuerst","Free":"Kostenlos","Premium":"Premium","My account":"Mein Konto","Token calculator":"Token-Rechner","Compare two models":"Zwei Modelle vergleichen","Upgrade to Premium":"Auf Premium upgraden","Search models":"Modelle suchen","Filter by use":"Nach Einsatz filtern","AI models: what each one does well and what it costs":"KI-Modelle: Stärken und Preise im Überblick"},
+pt: {"Home":"Início","Prices":"Preços","Compare":"Comparar","Skills library":"Biblioteca de skills","Guides":"Guias","Upgrade":"Fazer upgrade","Sign in":"Entrar","Dark mode":"Modo escuro","Light mode":"Modo claro","Tokens":"Tokens","All":"Todos","Writing":"Escrita","Coding":"Programação","Search":"Pesquisa","Images":"Imagens","Voice & music":"Voz e música","Office":"Escritório","Budget and free":"Baratos e grátis","API (per token)":"API (por token)","Name":"Nome","Email":"E-mail","Continue":"Continuar","Language":"Idioma","Ask a question":"Fazer uma pergunta","Subscriptions":"Assinaturas","Per day":"Por dia","Per week":"Por semana","Per month":"Por mês","Per year":"Por ano","Custom days":"Dias à escolha","Sort":"Ordenar","Cheapest first":"Mais barato primeiro","Most expensive first":"Mais caro primeiro","Free":"Grátis","Premium":"Premium","My account":"Minha conta","Token calculator":"Calculadora de tokens","Compare two models":"Comparar dois modelos","Upgrade to Premium":"Mudar para Premium","Search models":"Buscar modelos","Filter by use":"Filtrar por uso","AI models: what each one does well and what it costs":"Modelos de IA: no que cada um é bom e quanto custa"},
+ru: {"Home":"Главная","Prices":"Цены","Compare":"Сравнить","Skills library":"Библиотека skills","Guides":"Руководства","Upgrade":"Улучшить","Sign in":"Войти","Dark mode":"Тёмная тема","Light mode":"Светлая тема","Tokens":"Токены","All":"Все","Writing":"Тексты","Coding":"Код","Search":"Поиск","Images":"Изображения","Voice & music":"Голос и музыка","Office":"Офис","Budget and free":"Недорогие и бесплатные","API (per token)":"API (за токен)","Name":"Имя","Email":"Эл. почта","Continue":"Продолжить","Language":"Язык","Ask a question":"Задать вопрос","Subscriptions":"Подписки","Per day":"В день","Per week":"В неделю","Per month":"В месяц","Per year":"В год","Custom days":"Свои дни","Sort":"Сортировка","Cheapest first":"Сначала дешёвые","Most expensive first":"Сначала дорогие","Free":"Бесплатно","Premium":"Премиум","My account":"Мой аккаунт","Token calculator":"Калькулятор токенов","Compare two models":"Сравнить две модели","Upgrade to Premium":"Перейти на Премиум","Search models":"Поиск моделей","Filter by use":"Фильтр по задаче","AI models: what each one does well and what it costs":"ИИ-модели: в чём каждая сильна и сколько стоит"},
+zh: {"Home":"首页","Prices":"价格","Compare":"对比","Skills library":"技能库","Guides":"指南","Upgrade":"升级","Sign in":"登录","Dark mode":"深色模式","Light mode":"浅色模式","Tokens":"Token","All":"全部","Writing":"写作","Coding":"编程","Search":"搜索","Images":"图像","Voice & music":"语音与音乐","Office":"办公","Budget and free":"低价与免费","API (per token)":"API（按 Token）","Name":"姓名","Email":"邮箱","Continue":"继续","Language":"语言","Ask a question":"提问","Subscriptions":"订阅","Per day":"每天","Per week":"每周","Per month":"每月","Per year":"每年","Custom days":"自定义天数","Sort":"排序","Cheapest first":"价格从低到高","Most expensive first":"价格从高到低","Free":"免费","Premium":"高级版","My account":"我的账户","Token calculator":"Token 计算器","Compare two models":"对比两个模型","Upgrade to Premium":"升级到高级版","Search models":"搜索模型","Filter by use":"按用途筛选","AI models: what each one does well and what it costs":"AI 模型：各自擅长什么，价格多少"},
+ar: {"Home":"الرئيسية","Prices":"الأسعار","Compare":"مقارنة","Skills library":"مكتبة المهارات","Guides":"الأدلة","Upgrade":"ترقية","Sign in":"تسجيل الدخول","Dark mode":"الوضع الداكن","Light mode":"الوضع الفاتح","Tokens":"الرموز (Tokens)","All":"الكل","Writing":"الكتابة","Coding":"البرمجة","Search":"البحث","Images":"الصور","Voice & music":"الصوت والموسيقى","Office":"المكتب","Budget and free":"اقتصادي ومجاني","API (per token)":"API (لكل رمز)","Name":"الاسم","Email":"البريد الإلكتروني","Continue":"متابعة","Language":"اللغة","Ask a question":"اطرح سؤالاً","Subscriptions":"الاشتراكات","Per day":"في اليوم","Per week":"في الأسبوع","Per month":"في الشهر","Per year":"في السنة","Custom days":"أيام مخصصة","Sort":"ترتيب","Cheapest first":"الأرخص أولاً","Most expensive first":"الأغلى أولاً","Free":"مجاني","Premium":"بريميوم","My account":"حسابي","Token calculator":"حاسبة الرموز","Compare two models":"مقارنة نموذجين","Upgrade to Premium":"الترقية إلى بريميوم","Search models":"ابحث عن نموذج","Filter by use":"تصفية حسب الاستخدام","AI models: what each one does well and what it costs":"نماذج الذكاء الاصطناعي: نقاط قوة كل نموذج وسعره"},
+he: {"Home":"בית","Prices":"מחירים","Compare":"השוואה","Skills library":"ספריית סקילז","Guides":"מדריכים","Upgrade":"שדרוג","Sign in":"התחברות","Dark mode":"מצב כהה","Light mode":"מצב בהיר","Tokens":"טוקנים","All":"הכול","Writing":"כתיבה","Coding":"תכנות","Search":"חיפוש","Images":"תמונות","Voice & music":"קול ומוזיקה","Office":"משרד","Budget and free":"זול וחינמי","API (per token)":"API (לפי טוקן)","Name":"שם","Email":"אימייל","Continue":"המשך","Language":"שפה","Ask a question":"שאלה","Subscriptions":"מנויים","Per day":"ליום","Per week":"לשבוע","Per month":"לחודש","Per year":"לשנה","Custom days":"ימים לבחירה","Sort":"מיון","Cheapest first":"הזול קודם","Most expensive first":"היקר קודם","Free":"חינם","Premium":"פרימיום","My account":"החשבון שלי","Token calculator":"מחשבון טוקנים","Compare two models":"השוואת שני מודלים","Upgrade to Premium":"שדרוג לפרימיום","Search models":"חיפוש מודלים","Filter by use":"סינון לפי שימוש","AI models: what each one does well and what it costs":"מודלי AI: במה כל אחד טוב וכמה הוא עולה"}
+};
+var _orig = new WeakMap(), _busy = false, _mo = null;
+function guessLang() {
+  var n = ((navigator.language || "en") + "").slice(0, 2).toLowerCase();
+  return LANGS.some(function (l) { return l[0] === n; }) ? n : "en";
+}
+function langInfo(c) { return LANGS.filter(function (l) { return l[0] === c; })[0] || LANGS[0]; }
+function fillLangSelect(sel, cur) {
+  sel.innerHTML = LANGS.map(function (l) { return '<option value="' + l[0] + '"' + (l[0] === cur ? " selected" : "") + ">" + l[1] + "</option>"; }).join("");
+}
+function trText(s) { var d = I18N[LANG]; return (d && d[s]) || s; }
+function trNode(n) {
+  if (n.nodeType === 3) {
+    var raw = _orig.has(n) ? _orig.get(n) : n.nodeValue, t = raw.trim();
+    if (!t) return;
+    var out = trText(t);
+    if (!_orig.has(n) && out === t) return;
+    _orig.set(n, raw);
+    var v = raw.replace(t, out);
+    if (n.nodeValue !== v) n.nodeValue = v;
+  } else if (n.nodeType === 1 && n.tagName !== "SCRIPT" && n.tagName !== "STYLE") {
+    ["placeholder", "aria-label"].forEach(function (a) {
+      if (!n.hasAttribute(a)) return;
+      var k = "_o_" + a; if (!n[k]) n[k] = n.getAttribute(a);
+      var o = trText(n[k]); if (n.getAttribute(a) !== o) n.setAttribute(a, o);
+    });
+    for (var c = n.firstChild; c; c = c.nextSibling) trNode(c);
+  }
+}
+function applyLang() {
+  var i = langInfo(LANG);
+  document.documentElement.lang = i[0]; document.documentElement.dir = i[2];
+  _busy = true; trNode(document.body); _busy = false;
+  var ls = $("lang"); if (ls) ls.value = LANG;
+}
+function setLang(c) {
+  LANG = c; save(LASTLANG_KEY, c);
+  if (user) { user.lang = c; save(USER_KEY, user); rememberLang(user.email, c); }
+  applyLang();
+}
+function rememberLang(email, c) {
+  if (!email) return; var m = load(LANGS_KEY) || {}; m[email.toLowerCase()] = c; save(LANGS_KEY, m);
+}
+function recallLang(email) { var m = load(LANGS_KEY) || {}; return m[(email || "").trim().toLowerCase()] || null; }
+function initLang() {
+  fillLangSelect($("lang"), LANG);
+  $("lang").addEventListener("change", function () { setLang($("lang").value); });
+  _mo = new MutationObserver(function (list) {
+    if (_busy || LANG === "en") return;
+    _busy = true;
+    list.forEach(function (m) { m.addedNodes.forEach(trNode); if (m.type === "characterData") trNode(m.target); });
+    _busy = false;
+  });
+  _mo.observe(document.body, { childList: true, subtree: true, characterData: true });
+  applyLang();
+}
+
 /* ---------- login gate ---------- */
 function showGate() {
   var g = document.createElement("div");
   g.className = "gate"; g.id = "gate";
   g.innerHTML = '<form class="box" id="gateForm"><h1>Sign in</h1><p>You need an account to use the site. It is stored only in this browser, with no password and no server.</p>' +
-    '<div class="form" style="max-width:none"><label>Name<input class="field" id="gName" required autocomplete="name"></label><label>Email<input class="field" id="gMail" type="email" required autocomplete="email"></label><button class="btn" type="submit" style="margin:0">Continue</button></div></form>';
+    '<div class="form" style="max-width:none"><label>Name<input class="field" id="gName" required autocomplete="name"></label><label>Email<input class="field" id="gMail" type="email" required autocomplete="email"></label><label>Language<select class="field" id="gLang"></select></label><button class="btn" type="submit" style="margin:0">Continue</button></div></form>';
   document.body.appendChild(g);
+  fillLangSelect($("gLang"), LANG);
+  $("gLang").addEventListener("change", function () { setLang($("gLang").value); });
+  $("gMail").addEventListener("change", function () { var l = recallLang($("gMail").value); if (l) { $("gLang").value = l; setLang(l); } });
   $("gName").focus();
+  applyLang();
   $("gateForm").addEventListener("submit", function (e) {
     e.preventDefault();
-    user = { name: $("gName").value.trim(), email: $("gMail").value.trim(), premium: false, use: "Writing", budget: 10 };
+    user = { name: $("gName").value.trim(), email: $("gMail").value.trim(), premium: false, use: "Writing", budget: 10, lang: $("gLang").value };
+    rememberLang(user.email, user.lang); setLang(user.lang);
     save(USER_KEY, user); g.remove(); paintBar(); renderHome(); renderBot();
   });
 }
@@ -763,6 +841,8 @@ function showGate() {
 (function () {
   var t = load(THEME_KEY); if (t) document.documentElement.setAttribute("data-theme", t);
   user = load(USER_KEY);
+  LANG = (user && user.lang) || load(LASTLANG_KEY) || guessLang();
+  initLang();
   paintBar(); renderHome(); renderBot();
   if (!user) showGate();
 })();
