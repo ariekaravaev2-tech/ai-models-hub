@@ -653,24 +653,24 @@ function upgradeWin() {
     ["Account and saved preferences", "Yes", "Yes"],
     ["Token calculator, prices and compare", "Yes", "Yes"],
     ["Skills library", "Yes", "Yes"],
-    ["Ads", "Yes", "None"],
-    ["Questions to the bot per visit", "5", "Unlimited"],
-    ["Favorite skills", "No", "Yes"],
-    ["Email alert when a model fits your needs", "No", "Coming soon"]
+    ["Questions to the bot per visit", "5", "Planned"],
+    ["Favorite skills", "No", "Planned"],
+    ["Email alert when a model fits your needs", "No", "Planned"]
   ];
   return '<div class="tbl"><table><thead><tr><th></th><td>Free</td><td>Premium</td></tr></thead><tbody>' + rows.map(function (r) { return "<tr><th>" + r[0] + "</th><td>" + r[1] + "</td><td class='yes'>" + r[2] + "</td></tr>"; }).join("") + "</tbody></table></div>" +
-    '<p class="note">Suggested price: $3 a month. Payment is not connected yet, and in this demo the upgrade only switches on in this browser. Email alerts need a server, so they are not live.</p>' +
+    '<p class="note">Premium is not on sale yet. The features marked Planned are not built. If you would want it, tap the button below; the tap is only counted, and nothing is collected or charged.</p>' +
     '<div id="upAct"></div>';
 }
 function bindUpgrade(root) {
   paintUpgrade(root);
   root.addEventListener("click", function (e) {
     var b = e.target.closest("[data-up]"); if (!b) return;
-    user.premium = b.dataset.up === "on"; save(USER_KEY, user); paintBar(); paintUpgrade(root); renderHome();
+    try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "premium-interest", title: "Premium interest", event: true }); } catch (x) {}
+    user.interest = true; save(USER_KEY, user); paintUpgrade(root);
   });
 }
 function paintUpgrade(root) {
-  root.querySelector("#upAct").innerHTML = isPro() ? '<span class="badge pro">Premium is on</span> <button class="btn ghost" type="button" data-up="off" style="margin-top:0">Back to Free</button>' : '<button class="btn" type="button" data-up="on" style="margin-top:0">Upgrade (demo)</button>';
+  root.querySelector("#upAct").innerHTML = user.interest ? '<span class="badge">Thanks, noted</span>' : '<button class="btn" type="button" data-up="on" style="margin-top:0">I would want Premium</button>';
 }
 
 /* ---------- account ---------- */
@@ -847,6 +847,7 @@ function showGate() {
 (function () {
   var t = load(THEME_KEY); if (t) document.documentElement.setAttribute("data-theme", t);
   user = load(USER_KEY);
+  if (user && user.premium) { user.premium = false; save(USER_KEY, user); }
   LANG = (user && user.lang) || load(LASTLANG_KEY) || guessLang();
   initLang();
   paintBar(); renderHome(); renderBot();
