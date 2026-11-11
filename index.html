@@ -163,6 +163,14 @@ details ol, details ul { padding-inline-start: 22px; display: grid; gap: 4px; ma
 .bar2 i { display: block; height: 100%; background: var(--accent); }
 @media (prefers-reduced-motion: reduce) { .panel, .overlay, .navbtn, .tokbtn, .card { transition: none; } }
 
+.marq { direction: ltr; overflow: hidden; margin: 6px 0 18px; border-block: 1px solid var(--line); padding: 12px 0; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.marq-track { display: flex; width: max-content; gap: 40px; animation: marq 38s linear infinite; }
+.marq:hover .marq-track { animation-play-state: paused; }
+.marq span { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--muted); white-space: nowrap; display: inline-flex; align-items: center; gap: 40px; }
+.marq span::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+@keyframes marq { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .marq-track { animation: none; } }
+
 .botbtn { position: fixed; z-index: 25; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: inline-flex; gap: 8px; align-items: center; background: var(--accent); color: var(--accent-fg); border: 0; border-radius: 999px; padding: 12px 18px; font-weight: 700; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
 .botbtn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .bot { position: fixed; z-index: 26; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: min(380px, calc(100vw - 32px)); max-height: min(560px, 80vh); display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,.3); overflow: hidden; }
@@ -417,13 +425,19 @@ function closeWindow(instant) {
 document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (current) closeWindow(); else if (botOpen) toggleBot(false); } });
 
 /* ---------- home ---------- */
+function marquee() {
+  var seen = {}, names = [];
+  MODELS.forEach(function (m) { if (!seen[m.maker]) { seen[m.maker] = 1; names.push(m.maker); } });
+  var one = names.map(function (n) { return "<span>" + esc(n) + "</span>"; }).join("");
+  return '<div class="marq" aria-label="Companies compared on this site"><div class="marq-track">' + one + one + "</div></div>";
+}
 function home() {
   var chips = FILTERS.map(function (f) {
     var label = f === "Budget" ? "Budget and free" : f === "API" ? "API (per token)" : f;
     return '<button class="chip" data-f="' + f + '" aria-pressed="' + (f === filter) + '">' + label + '</button>';
   }).join("");
   return '<section class="hero"><h1>AI models: what each one does well and what it costs</h1>' +
-    '<p>Select a model to see what it does well and where it falls short. The Tokens button estimates a bill from a token count and the official API prices.</p></section>' +
+    '<p>Select a model to see what it does well and where it falls short. The Tokens button estimates a bill from a token count and the official API prices.</p></section>' + marquee() +
     '<div class="tools"><input class="field grow" id="q" type="search" placeholder="Search models" value="' + esc(query) + '" aria-label="Search">' +
     '<button class="tokbtn" id="tokbtn" type="button">' + COIN + 'Tokens</button></div>' +
     '<div class="chips" role="group" aria-label="Filter by use">' + chips + '</div>' +
