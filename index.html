@@ -171,6 +171,11 @@ details ol, details ul { padding-inline-start: 22px; display: grid; gap: 4px; ma
 .mt { display: inline-flex; align-items: center; gap: 12px; padding: 8px 18px 8px 8px; border: 1px solid var(--line); border-radius: 20px; background: var(--surface); white-space: nowrap; }
 .mt i { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font-style: normal; font-family: var(--font-display); font-weight: 800; font-size: 22px; color: #fff; background: linear-gradient(145deg, hsl(var(--h) 62% 60%), hsl(var(--h) 55% 36%)); box-shadow: inset 0 1px 0 rgba(255,255,255,.35); }
 .mt b { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--fg); }
+.mt i.lg { background: none; box-shadow: none; overflow: hidden; }
+.mt i.lg.pad { background: #fff; border: 1px solid var(--line); }
+.mt i.lg img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.mt i.lg.pad img { width: 32px; height: 32px; }
+.fine { text-align: center; font-size: 13px; color: var(--muted); margin: -8px 0 16px; }
 @keyframes marq { to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .marq-track { animation: none; } }
 
@@ -589,7 +594,10 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if
 function marquee() {
   var seen = {}, names = [];
   MODELS.forEach(function (m) { if (!seen[m.maker]) { seen[m.maker] = 1; names.push(m.maker); } });
+  var LOGOS = { OpenAI: ["logos/openai.png", "pad"], Anthropic: ["logos/anthropic.png", "pad"], Perplexity: ["logos/perplexity.png", "full"] };
   function tile(n, i) {
+    var lg = LOGOS[n];
+    if (lg) return '<span class="mt"><i class="lg ' + lg[1] + '"><img src="' + lg[0] + '" alt="" width="48" height="48" loading="lazy"></i><b>' + esc(n) + '</b></span>';
     return '<span class="mt" style="--h:' + ((i * 47 + 250) % 360) + '"><i>' + esc(n.charAt(0)) + '</i><b>' + esc(n) + '</b></span>';
   }
   function row(list, rev) {
@@ -605,7 +613,7 @@ function home() {
     return '<button class="chip" data-f="' + f + '" aria-pressed="' + (f === filter) + '">' + label + '</button>';
   }).join("");
   return '<section class="hero"><h1>AI models: what each one does well and what it costs</h1>' +
-    '<p>Select a model to see what it does well and where it falls short. The Tokens button estimates a bill from a token count and the official API prices.</p></section>' + marquee() +
+    '<p>Select a model to see what it does well and where it falls short. The Tokens button estimates a bill from a token count and the official API prices.</p></section>' + marquee() + '<p class="fine">Logos belong to their owners. This site is not affiliated with them.</p>' +
     '<div class="tools"><input class="field grow" id="q" type="search" placeholder="Search models" value="' + esc(query) + '" aria-label="Search">' +
     '<button class="tokbtn" id="tokbtn" type="button">' + COIN + 'Tokens</button></div>' +
     '<div class="chips" role="group" aria-label="Filter by use">' + chips + '</div>' +
