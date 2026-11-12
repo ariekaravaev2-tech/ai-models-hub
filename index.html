@@ -594,7 +594,7 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if
 function marquee() {
   var seen = {}, names = [];
   MODELS.forEach(function (m) { if (!seen[m.maker]) { seen[m.maker] = 1; names.push(m.maker); } });
-  var LOGOS = { OpenAI: ["logos/openai.png", "pad"], Anthropic: ["logos/anthropic.png", "pad"], Perplexity: ["logos/perplexity.png", "full"] };
+  var LOGOS = { OpenAI: ["logos/openai.png", "pad"], Anthropic: ["logos/anthropic.png", "pad"], Perplexity: ["logos/perplexity.png", "full"], DeepSeek: ["logos/deepseek.png", "full"], Microsoft: ["logos/microsoft.png", "pad"], Mistral: ["logos/mistral.png", "pad"], xAI: ["logos/xai.png", "pad"], Google: ["logos/google.png", "pad"] };
   function tile(n, i) {
     var lg = LOGOS[n];
     if (lg) return '<span class="mt"><i class="lg ' + lg[1] + '"><img src="' + lg[0] + '" alt="" width="68" height="68" loading="lazy"></i><b>' + esc(n) + '</b></span>';
