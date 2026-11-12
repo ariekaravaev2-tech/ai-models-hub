@@ -165,19 +165,16 @@ details ol, details ul { padding-inline-start: 22px; display: grid; gap: 4px; ma
 
 .marq { direction: ltr; overflow: hidden; margin: 8px 0 20px; display: grid; gap: 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
 .marq-row { overflow: hidden; }
-.marq-track { display: flex; width: max-content; gap: 14px; animation: marq 40s linear infinite; }
+.marq-track { display: flex; width: max-content; gap: 12px; animation: marq 40s linear infinite; }
 .marq-row.rev .marq-track { animation-direction: reverse; animation-duration: 46s; }
 .marq:hover .marq-track { animation-play-state: paused; }
-.mt { display: inline-flex; align-items: center; gap: 12px; padding: 8px 18px 8px 8px; border: 1px solid var(--line); border-radius: 20px; background: var(--surface); white-space: nowrap; }
-.mt i { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font-style: normal; font-family: var(--font-display); font-weight: 800; font-size: 22px; color: #fff; background: linear-gradient(145deg, hsl(var(--h) 62% 60%), hsl(var(--h) 55% 36%)); box-shadow: inset 0 1px 0 rgba(255,255,255,.35); }
-.mt b { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--fg); }
-.mt i.lg { background: none; box-shadow: none; overflow: hidden; }
-.mt i.lg.pad { background: #fff; border: 1px solid var(--line); }
+.mt { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; width: 84px; white-space: nowrap; }
+.mt i { width: 68px; height: 68px; border-radius: 18px; display: grid; place-items: center; font-style: normal; font-family: var(--font-display); font-weight: 800; font-size: 30px; color: #fff; background: linear-gradient(145deg, hsl(var(--h) 62% 60%), hsl(var(--h) 55% 36%)); box-shadow: 0 8px 18px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.35); }
+.mt b { font-family: var(--font-display); font-weight: 600; font-size: 13px; color: var(--muted); }
+.mt i.lg { background: none; box-shadow: 0 8px 18px rgba(0,0,0,.22); overflow: hidden; }
+.mt i.lg.pad { background: #fff; }
 .mt i.lg img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.mt i.lg.pad img { width: 32px; height: 32px; }
-.more { margin-top: 28px; font-size: 15px; color: var(--muted); }
-.more h2 { font-size: 18px; margin-bottom: 8px; }
-.more a { white-space: nowrap; }
+.mt i.lg.pad img { width: 44px; height: 44px; }
 .fine { text-align: center; font-size: 13px; color: var(--muted); margin: -8px 0 16px; }
 @keyframes marq { to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .marq-track { animation: none; } }
@@ -600,15 +597,15 @@ function marquee() {
   var LOGOS = { OpenAI: ["logos/openai.png", "pad"], Anthropic: ["logos/anthropic.png", "pad"], Perplexity: ["logos/perplexity.png", "full"] };
   function tile(n, i) {
     var lg = LOGOS[n];
-    if (lg) return '<span class="mt"><i class="lg ' + lg[1] + '"><img src="' + lg[0] + '" alt="" width="48" height="48" loading="lazy"></i><b>' + esc(n) + '</b></span>';
+    if (lg) return '<span class="mt"><i class="lg ' + lg[1] + '"><img src="' + lg[0] + '" alt="" width="68" height="68" loading="lazy"></i><b>' + esc(n) + '</b></span>';
     return '<span class="mt" style="--h:' + ((i * 47 + 250) % 360) + '"><i>' + esc(n.charAt(0)) + '</i><b>' + esc(n) + '</b></span>';
   }
   function row(list, rev) {
     var one = list.map(function (n) { return tile(n, names.indexOf(n)); }).join("");
-    return '<div class="marq-row' + (rev ? " rev" : "") + '"><div class="marq-track">' + one + one + "</div></div>";
+    return '<div class="marq-row' + (rev ? " rev" : "") + '"><div class="marq-track">' + one + one + one + one + "</div></div>";
   }
   var half = Math.ceil(names.length / 2);
-  return '<div class="marq" aria-label="Companies compared on this site: ' + esc(names.join(", ")) + '">' + row(names.slice(0, half), false) + row(names.slice(half).concat(names.slice(0, 2)), true) + "</div>";
+  return '<div class="marq" aria-label="Companies compared on this site: ' + esc(names.join(", ")) + '">' + row(names.slice(0, half), false) + row(names.slice(half), true) + "</div>";
 }
 function home() {
   var chips = FILTERS.map(function (f) {
