@@ -35,5 +35,17 @@ td:last-child{font-weight:700;font-variant-numeric:tabular-nums}ul{padding-inlin
 <p style="margin-top:26px"><a class="btn" href="../">Compare all models</a></p>
 <p class="fine">Prices are in US dollars and come from the makers' public pages, checked in November 2026. Check the maker's own page before you buy.</p>
 </main></div>
+<script>
+function trackAff(e) {
+  var a = e.target.closest && e.target.closest('a[rel~="sponsored"]');
+  if (!a || (e.type === "auxclick" && e.button !== 1)) return;
+  try {
+    var slug = (a.hostname || "link").replace(/^(try|www)\./, "").split(".")[0];
+    if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "affiliate-click/" + slug, title: "Affiliate click: " + slug, event: true });
+  } catch (x) {}
+}
+document.addEventListener("click", trackAff, true);
+document.addEventListener("auxclick", trackAff, true);
+</script>
 <script data-goatcounter="https://arieka.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body></html>
