@@ -218,6 +218,7 @@ details ol, details ul { padding-inline-start: 22px; display: grid; gap: 4px; ma
 .gate .box { width: 100%; max-width: 440px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 26px; }
 .gate h1 { font-size: 26px; }
 .gate p { color: var(--muted); }
+.comparison-card{display:flex;flex-direction:column;min-width:0;gap:8px}.comparison-card>.card{width:100%;flex:1}.comparison-link{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:12px 16px;border:1px solid var(--accent);border-radius:12px;color:var(--accent);background:var(--surface);font-weight:700;text-decoration:none;text-align:start;overflow-wrap:anywhere}.comparison-link:hover{text-decoration:underline}.comparison-link:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 </style>
 <style id="design-v2">
 /* Load after the existing site CSS. The theme button uses data-theme="dark". */
@@ -705,7 +706,8 @@ function renderGrid() {
   });
   $("grid").innerHTML = list.length ? list.map(function (m) {
     var cost = m.month !== null ? (m.month ? money(m.month) + " per month" : "Free") : "$" + m.api.input + " in · $" + m.api.output + " out";
-    return '<button class="card" data-id="' + m.id + '" aria-expanded="' + (openId === m.id) + '"><span class="maker">' + esc(m.maker) + '</span><h3>' + esc(m.name) + '</h3><span class="tag">' + esc(m.tag) + '</span><span class="cost">' + cost + '</span></button>';
+    var card = '<button class="card" data-id="' + m.id + '" aria-expanded="' + (openId === m.id) + '"><span class="maker">' + esc(m.maker) + '</span><h3>' + esc(m.name) + '</h3><span class="tag">' + esc(m.tag) + '</span><span class="cost">' + cost + '</span></button>';
+    return (m.id === "chatgpt" || m.id === "claude") ? '<div class="comparison-card">' + card + '<a class="comparison-link" href="models/chatgpt-plus-vs-claude-pro.html">ChatGPT Plus vs Claude Pro <span aria-hidden="true">↗</span></a></div>' : card;
   }).join("") : '<p class="empty">No model matches. Clear the search or choose "All".</p>';
 }
 function renderDetail() {
