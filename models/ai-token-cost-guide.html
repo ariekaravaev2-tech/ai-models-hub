@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI cost per million tokens: calculate input and output costs</title>
+<meta name="description" content="Calculate AI API token costs with a worked example. Understand input, output and cached tokens, then compare models using the token calculator.">
+<link rel="canonical" href="https://ariekaravaev2-tech.github.io/ai-models-hub/models/ai-token-cost-guide.html">
+<meta property="og:title" content="AI cost per million tokens: a worked example">
+<meta property="og:description" content="Turn input and output token counts into an estimated API bill.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://ariekaravaev2-tech.github.io/ai-models-hub/models/ai-token-cost-guide.html">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&family=Noto+Sans+Hebrew:wght@400..800&display=swap">
+<style>
+:root{color-scheme:light dark;--bg:#f7f7fb;--surface:#fff;--fg:#191b27;--muted:#51596e;--line:#d3d8e4;--accent:#5939b5}
+@media(prefers-color-scheme:dark){:root{--bg:#101218;--surface:#191c25;--fg:#f4f5fa;--muted:#b4bacb;--line:#3e4557;--accent:#b8a6ff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:18px/1.65 Inter,"Noto Sans Hebrew",system-ui,sans-serif}.wrap{max-width:780px;margin-inline:auto;padding:24px 20px 64px}header{margin-block-end:36px}a{color:var(--accent);overflow-wrap:anywhere}h1{font-size:clamp(30px,6vw,46px);line-height:1.15;letter-spacing:-.025em}h2{font-size:24px;margin-block:36px 12px}.lead,.fine{color:var(--muted)}.fine{font-size:14px}.example{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}.formula{font-weight:700;overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;font-size:16px}th,td{text-align:start;padding:12px 8px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}caption{text-align:start;font-weight:700;margin-block:12px}ul,ol{padding-inline-start:24px}li{margin-block:10px}:focus-visible{outline:3px solid var(--accent);outline-offset:4px}@media(max-width:480px){th,td{padding:10px 5px;font-size:14px}.example{padding:14px}}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"AI cost per million tokens: calculate input and output costs","datePublished":"2026-11-18","dateModified":"2026-11-18","author":{"@type":"Organization","name":"AI Models Guide"},"mainEntityOfPage":"https://ariekaravaev2-tech.github.io/ai-models-hub/models/ai-token-cost-guide.html"}</script>
+</head>
+<body><div class="wrap"><header><a href="../">AI Models Guide</a></header><main>
+<p class="fine">Token pricing guide · November 18, 2026</p>
+<h1>How much does a million AI tokens cost?</h1>
+<p class="lead">There is no single price. An API bill depends on the model, how many tokens you send and how many it generates. Calculate input and output separately, then add them.</p>
+<p><a href="../">Compare model prices and open the Tokens calculator</a></p>
+<h2>The basic calculation</h2>
+<p>For ordinary text requests without caching or extra tool charges:</p>
+<p class="formula">Cost = input tokens ÷ 1,000,000 × input rate + output tokens ÷ 1,000,000 × output rate</p>
+<p>Use rates quoted per million tokens in the same currency. A million input tokens and a million output tokens are two separate quantities, not one million total.</p>
+<section class="example" aria-labelledby="example-title">
+<h2 id="example-title" style="margin-top:0">A worked example</h2>
+<p>These are invented rates for learning the calculation, not a provider quote: $2 per million input tokens and $8 per million output tokens.</p>
+<table><caption>Example monthly workload</caption><thead><tr><th scope="col">Type</th><th scope="col">Tokens</th><th scope="col">Cost</th></tr></thead><tbody>
+<tr><th scope="row">Input</th><td>500,000</td><td>$1.00</td></tr>
+<tr><th scope="row">Output</th><td>100,000</td><td>$0.80</td></tr>
+<tr><th scope="row">Total</th><td>600,000</td><td>$1.80</td></tr>
+</tbody></table>
+<p>Keeping the input unchanged but doubling output to 200,000 tokens raises this example to $2.60. The mix matters as much as the total token count.</p>
+</section>
+<h2>What counts toward your bill?</h2>
+<ul>
+<li><strong>Input:</strong> the material supplied in a request. Repeated conversation history and documents can add to the input count.</li>
+<li><strong>Output:</strong> generated tokens. For OpenAI reasoning models, billed output can include internal reasoning as well as the visible answer.</li>
+<li><strong>Cached input:</strong> reused input may have a different rate. Use the provider's reported breakdown; do not charge the same cached tokens again as ordinary input.</li>
+<li><strong>Other charges:</strong> tools, storage and non-text media may have separate prices. Batch and service tiers can also change the applicable rate.</li>
+</ul>
+<h2>Estimate a real workload</h2>
+<ol>
+<li>Run a small sample of the tasks you expect to repeat, and record the provider's reported input and output usage.</li>
+<li>Calculate each task's cost at the applicable rates. Include retries and additional model calls.</li>
+<li>Multiply the average task cost by the number of tasks you expect. Compare several samples if task lengths vary.</li>
+<li>Check the provider's usage dashboard against the estimate before scaling up.</li>
+</ol>
+<h2>Are tokens the same as words?</h2>
+<p>No. Token counts depend on the model and language. A word-count shortcut is only an approximation; use the model's tokenizer or reported usage for a closer estimate. Counting input alone cannot predict output length.</p>
+<h2>What about a monthly subscription?</h2>
+<p>A chat-plan fee is not a per-token API rate. Check the plan's API billing and any separate credits before including them in your budget. See our <a href="chatgpt-plus-vs-claude-pro.html">ChatGPT Plus and Claude Pro comparison</a> for subscription billing context.</p>
+<h2>Sources</h2>
+<p>The terminology and billing caveats above are based on <a href="https://help.openai.com/en/articles/4936856-understanding-and-counting-tokens">OpenAI's token guide</a> and <a href="https://developers.openai.com/api/docs/pricing">official API pricing documentation</a>, checked November 18, 2026. Other providers may use different billing categories. The worked example is our own arithmetic.</p>
+<p><a href="../">Return to AI subscription and API price comparisons</a></p>
+</main></div><script data-goatcounter="https://arieka.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script></body></html>
