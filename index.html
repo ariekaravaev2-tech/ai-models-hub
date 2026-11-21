@@ -1144,6 +1144,8 @@ function applyLang() {
 function setLang(c) {
   LANG = c; save(LASTLANG_KEY, c);
   if (user) { user.lang = c; save(USER_KEY, user); rememberLang(user.email, c); }
+  renderHome();
+  if(current && current.id === "tokenGuide"){ $("pbody").innerHTML=tokenGuideWin(); bindTokenGuide($("pbody")); }
   applyLang();
 }
 function rememberLang(email, c) {
