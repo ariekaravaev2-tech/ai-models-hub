@@ -236,6 +236,8 @@ details ol, details ul { padding-inline-start: 22px; display: grid; gap: 4px; ma
 .card .cost{padding-top:6px;font-size:24px}
 .rate-unit{font-size:13px;color:var(--muted);font-weight:500}
 @media(max-width:600px){.hero{padding:24px 16px}.card{padding:14px}.card h3{font-size:18px}.card .tag{font-size:14px}}
+
+.token-help,.token-guide-callout{padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--accent-soft);margin-block:14px}.token-help p{max-width:70ch}.token-help .btn{margin:4px}
 </style>
 <style id="design-v2">
 /* Load after the existing site CSS. The theme button uses data-theme="dark". */
@@ -624,6 +626,7 @@ var WINDOWS = {
   prices: { title: "Prices", render: pricesWin, bind: bindPrices },
   compare: { title: "Compare two models", render: compareWin, bind: bindCompare },
   skills: { title: "Skills library", render: skillsWin, bind: bindSkills },
+  tokenGuide: { title: "Token guide", render: tokenGuideWin, bind: bindTokenGuide },
   guides: { title: "Guides", render: guidesWin, bind: bindGuides },
   upgrade: { title: "Upgrade to Premium", render: upgradeWin, bind: bindUpgrade },
   account: { title: "My account", render: accountWin, bind: bindAccount },
@@ -695,6 +698,7 @@ function home() {
     '<p>Select a model to see what it does well and where it falls short. The Tokens button estimates a bill from a token count and the official API prices.</p></section>' + marquee() + '<p class="fine">Logos belong to their owners. This site is not affiliated with them.</p>' +
      recsHome() + partnersHome() + '<div class="tools"><input class="field grow" id="q" type="search" placeholder="Search models" value="' + esc(query) + '" aria-label="Search">' +
     '<button class="tokbtn" id="tokbtn" type="button">' + COIN + 'Tokens</button></div>' +
+    '<p class="token-guide-callout"><button class="btn alt" data-open="tokenGuide">' + tokenHelpText(4) + '</button></p>' +
     '<div class="chips" role="group" aria-label="Filter by use">' + chips + '</div>' +
     '<div class="grid" id="grid"></div><div id="detail-slot"></div>' + adBox() +
     '<p class="note">Disclosure: some links on this site are affiliate links. If you buy through them, I may earn a commission. Prices and descriptions are not set by that.</p>';
@@ -752,7 +756,7 @@ function renderHome() { app.innerHTML = home(); renderGrid(); renderDetail(); }
 app.addEventListener("click", function (e) {
   var c = e.target.closest(".card"), f = e.target.closest("[data-f]"), cm = e.target.closest("[data-cmp]"), op = e.target.closest("[data-open]");
   if (e.target.closest("#tokbtn")) { openWindow("tokens", $("tokbtn")); return; }
-  if (op) { openWindow(op.dataset.open, op); return; }
+  if (op) { if(op.dataset.open === "tokens"){var selected=byId(openId);tk.model=selected && selected.api ? selected.api.name : null;} openWindow(op.dataset.open, op); return; }
   if (cm) { cmp.a = cm.dataset.cmp; cmp.b = cm.dataset.cmp === "claude" ? "chatgpt" : "claude"; openWindow("compare", cm); return; }
   if (c) { openId = openId === c.dataset.id ? null : c.dataset.id; renderGrid(); renderDetail(); var d = $("detail"); if (d) d.scrollIntoView({ behavior: "smooth", block: "nearest" }); return; }
   if (f) { filter = f.dataset.f; renderHome(); return; }
@@ -841,6 +845,12 @@ function thumbSvg() {
     '<g id="coin"><circle r="18" fill="var(--accent)" stroke="var(--fg)" stroke-width="2"></circle><circle r="12.5" fill="none" stroke="var(--accent-fg)" stroke-width="1.5"></circle><path d="M0 -9 L2.6 -2.6 L9 0 L2.6 2.6 L0 9 L-2.6 2.6 L-9 0 L-2.6 -2.6Z" fill="var(--accent-fg)"></path></g>' +
     '<g id="rocket" opacity="0"><path id="flame" d="M-20 -5 L-38 0 L-20 5Z" fill="var(--flame)"></path><path d="M-20 -9 L-31 -19 L-12 -9Z M-20 9 L-31 19 L-12 9Z" fill="var(--fg)"></path><path d="M-20 -10 Q8 -17 30 0 Q8 17 -20 10Z" fill="var(--accent)" stroke="var(--fg)" stroke-width="2"></path><circle cx="6" cy="0" r="5" fill="var(--accent-fg)" stroke="var(--fg)" stroke-width="1.5"></circle></g></svg>';
 }
+
+var TOKEN_HELP = {"en":["Token billing: a quick start","Input is what you send; output is what the model generates. Costs are calculated separately per million tokens.","Example only: 100 requests × 800 input + 200 output tokens = 100,000 tokens, 80% input. Real usage varies by task, language and conversation history.","Use example: 100 requests","Read the token guide","Token guide","Estimate your workload"],"he":["תשלום לפי טוקנים: מתחילים כאן","קלט הוא מה ששולחים; פלט הוא מה שהמודל מייצר. מחשבים כל אחד בנפרד לפי מחיר למיליון טוקנים.","דוגמה בלבד: 100 בקשות × 800 טוקני קלט ו־200 פלט = 100,000 טוקנים, 80% קלט. השימוש בפועל תלוי במשימה, בשפה ובהיסטוריית השיחה.","השתמש בדוגמה: 100 בקשות","פתח מדריך טוקנים","מדריך טוקנים","הערכת השימוש שלך"],"fr":["Facturation des tokens : pour commencer","L’entrée est ce que vous envoyez ; la sortie est ce que le modèle génère. Chaque coût se calcule séparément par million de tokens.","Exemple uniquement : 100 requêtes × 800 tokens d’entrée + 200 de sortie = 100 000 tokens, dont 80 % en entrée. L’usage réel dépend de la tâche, de la langue et de l’historique.","Utiliser l’exemple : 100 requêtes","Ouvrir le guide des tokens","Guide des tokens","Estimer votre utilisation"],"es":["Coste de tokens: primeros pasos","La entrada es lo que envías; la salida es lo que genera el modelo. Cada coste se calcula por separado por millón de tokens.","Solo un ejemplo: 100 solicitudes × 800 tokens de entrada + 200 de salida = 100.000 tokens, 80% de entrada. El uso real depende de la tarea, el idioma y el historial.","Usar ejemplo: 100 solicitudes","Abrir guía de tokens","Guía de tokens","Estima tu uso"],"de":["Tokenkosten: Einstieg","Eingabe ist, was Sie senden; Ausgabe erzeugt das Modell. Beide Kosten werden getrennt pro Million Tokens berechnet.","Nur ein Beispiel: 100 Anfragen × 800 Eingabe- + 200 Ausgabetokens = 100.000 Tokens, 80% Eingabe. Der Verbrauch hängt von Aufgabe, Sprache und Verlauf ab.","Beispiel nutzen: 100 Anfragen","Tokenleitfaden öffnen","Tokenleitfaden","Nutzung schätzen"],"pt":["Custos de tokens: primeiros passos","Entrada é o que envia; saída é o que o modelo gera. Os custos são calculados separadamente por milhão de tokens.","Apenas um exemplo: 100 pedidos × 800 tokens de entrada + 200 de saída = 100.000 tokens, 80% de entrada. O uso real depende da tarefa, idioma e histórico.","Usar exemplo: 100 pedidos","Abrir guia de tokens","Guia de tokens","Estimar utilização"],"ru":["Стоимость токенов: начало","Вход — то, что вы отправляете; выход — то, что создаёт модель. Стоимость считается отдельно за миллион токенов.","Только пример: 100 запросов × 800 входных + 200 выходных токенов = 100 000 токенов, 80% входных. Расход зависит от задачи, языка и истории.","Применить пример: 100 запросов","Открыть руководство","Руководство по токенам","Оценить расход"],"zh":["Token 计费入门","输入是发送给模型的内容；输出是模型生成的内容。两者分别按每百万 token 计费。","仅为示例：100 次请求 × 800 输入 + 200 输出 token = 100,000 token，其中输入占 80%。实际用量取决于任务、语言和对话历史。","使用示例：100 次请求","打开 token 指南","Token 指南","估算用量"],"ar":["دليل البدء بتكلفة الرموز","الإدخال هو ما ترسله والإخراج هو ما يولده النموذج. تُحسب التكلفة لكل منهما بشكل منفصل لكل مليون رمز.","مثال فقط: 100 طلب × 800 رمز إدخال و200 إخراج = 100,000 رمز، 80% إدخال. الاستخدام الفعلي يعتمد على المهمة واللغة وسجل المحادثة.","استخدام مثال: 100 طلب","فتح دليل الرموز","دليل الرموز","تقدير الاستخدام"]};
+function tokenHelpText(i){return (TOKEN_HELP[LANG] || TOKEN_HELP.en)[i];}
+function tokenGuideWin(){return '<section class="token-help"><h3>'+tokenHelpText(0)+'</h3><p>'+tokenHelpText(1)+'</p><p>'+tokenHelpText(2)+'</p><button class="btn" data-example> '+tokenHelpText(3)+'</button></section>';}
+function bindTokenGuide(root){root.querySelector('[data-example]').addEventListener('click',function(){tk.tokens=100000;tk.share=80;openWindow("tokens",null);});}
+
 function tokensWin() {
   var starsHtml = "";
   for (var i = 0; i < 16; i++) starsHtml += '<i style="left:' + (4 + (i * 6.1) % 92) + '%;top:' + (22 + ((i * 37) % 56)) + '%">' + (i % 3 ? "·" : "✦") + "</i>";
@@ -850,13 +860,15 @@ function tokensWin() {
     '<div class="ends"><span>' + tkShort(TK_MIN) + '</span><span>' + tkShort(TK_MAX) + '</span></div>' +
     '<div class="bubble"><span id="bubble"></span></div>' +
     '<div class="tk-in"><label>Exact token count<input class="field" id="tkText" type="text" inputmode="decimal" autocomplete="off" aria-describedby="tkHint"></label>' +
-    '<label>Share of input tokens<select class="field" id="tkShare"><option value="90">90% input · 10% output</option><option value="75">75% input · 25% output</option><option value="50">50% input · 50% output</option><option value="25">25% input · 75% output</option></select></label>' +
+    '<label>Share of input tokens<select class="field" id="tkShare"><option value="90">90% input · 10% output</option><option value="80">80% input · 20% output</option><option value="75">75% input · 25% output</option><option value="50">50% input · 50% output</option><option value="25">25% input · 75% output</option></select></label>' +
     '<label style="font-weight:400"><span><input type="checkbox" id="tkPeak"> DeepSeek peak-hour rate</span></label></div>' +
     '<div id="tkHint" class="note" style="margin-top:6px">You can type 1,000,000, 500k or 2m. The slider covers 100K to 10M. The field accepts up to one billion.</div>' +
-    '<div class="tbl" id="tkRes"></div>' +
+    '<section class="token-help"><h3>' + tokenHelpText(6) + '</h3><p>' + tokenHelpText(2) + '</p><button class="btn alt" type="button" data-example>' + tokenHelpText(3) + '</button><button class="btn alt" type="button" data-token-guide>' + tokenHelpText(4) + '</button></section><div class="tbl" id="tkRes"></div>' +
     '<p class="note">This is an estimate at standard token rates, without cache or Batch discounts and without tool or search charges. When a single request is longer than the threshold shown next to a model, the real price is higher. Prices come from the official pricing pages, checked on Nov 6 and 7, 2026.</p>';
 }
 function bindTokens(root) {
+ root.querySelector("[data-example]").addEventListener("click",function(){tk.tokens=100000;tk.share=80;root.querySelector("#tkShare").value="80";root.querySelector("#tkText").value="100,000";root.querySelector("#tkRange").value=tkToT(tk.tokens);paintTokens(root);});
+ root.querySelector("[data-token-guide]").addEventListener("click",function(){openWindow("tokenGuide",null);});
   var range = root.querySelector("#tkRange"), text = root.querySelector("#tkText");
   root.querySelector("#tkShare").value = String(tk.share);
   root.querySelector("#tkPeak").checked = tk.peak;
@@ -892,8 +904,8 @@ function paintTokens(root) {
     var ip = tk.peak && m.peakInput != null ? m.peakInput : m.input, op = tk.peak && m.peakOutput != null ? m.peakOutput : m.output;
     var ic = inT / 1e6 * ip, oc = outT / 1e6 * op;
     return { m: m, ip: ip, op: op, ic: ic, oc: oc, total: ic + oc };
-  }).sort(function (a, b) { return a.total - b.total; });
-  var max = rows[rows.length - 1].total || 1;
+  }).sort(function (a, b) { return (a.m.name === tk.model ? -1 : b.m.name === tk.model ? 1 : a.total - b.total); });
+  var max = Math.max.apply(null, rows.map(function(r){return r.total;})) || 1;
   root.querySelector("#tkRes").innerHTML = "<table><thead><tr><th>Model</th><th>Input / output per 1M</th><th>Input cost</th><th>Output cost</th><th>Total</th></tr></thead><tbody>" +
     rows.map(function (r) {
       return "<tr><td><b>" + esc(r.m.name) + "</b><br><span style='color:var(--muted);font-size:14px'>" + esc(r.m.vendor) + (r.m.note ? " · " + esc(r.m.note) : "") + "</span></td><td>$" + r.ip + " / $" + r.op + "</td><td>" + usd(r.ic) + "</td><td>" + usd(r.oc) + "</td><td class='total'>" + usd(r.total) + "<div class='bar2'><i style='width:" + Math.max(2, r.total / max * 100) + "%'></i></div></td></tr>";
