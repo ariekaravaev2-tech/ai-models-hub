@@ -238,6 +238,8 @@ details ol, details ul { padding-inline-start: 22px; display: grid; gap: 4px; ma
 @media(max-width:600px){.hero{padding:24px 16px}.card{padding:14px}.card h3{font-size:18px}.card .tag{font-size:14px}}
 
 .token-help,.token-guide-callout{padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--accent-soft);margin-block:14px}.token-help p{max-width:70ch}.token-help .btn{margin:4px}
+
+.panel{display:flex;flex-direction:column;max-height:calc(100dvh - 80px)}.phead{flex:none}.pbody{min-height:0;overflow:auto;overscroll-behavior:contain}@media(max-width:600px){.panel{max-height:calc(100dvh - 32px)}.pbody{padding:14px}}
 </style>
 <style id="design-v2">
 /* Load after the existing site CSS. The theme button uses data-theme="dark". */
