@@ -14,7 +14,7 @@ document.getElementById('test').addEventListener('click',function(){
  report();if(goatcounter.filter())return;
  var img=new Image();
  img.onload=function(){document.getElementById('result').textContent='The tracking endpoint responded. Check the dashboard for diagnostic-visit; an endpoint response alone does not confirm the event was counted.';};
- img.onerror=function(){document.getElementById('result').textContent='The tracking endpoint could not be reached from this browser. Check the browser network error.';};
+ img.onerror=function(){document.getElementById('result').textContent='The image request did not complete. It may be blocked or have returned an unexpected response. Receipt has not been confirmed; check the dashboard.';};
  document.getElementById('result').textContent='Contacting tracking endpoint';
  img.src=goatcounter.url({path:'diagnostic-visit',title:'Analytics connection test',event:true});
 });
