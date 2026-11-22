@@ -1,0 +1,21 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Analytics connection check</title><style>body{font:18px/1.6 system-ui;max-width:760px;margin:40px auto;padding:20px;background:#101218;color:#f4f5fa}button,a{color:#c4b3ff}button{background:transparent;border:1px solid;padding:12px;border-radius:8px;font:inherit}dt{font-weight:700}dd{margin:0 0 16px;overflow-wrap:anywhere}</style></head><body><h1>Analytics connection check</h1><p>This diagnostic does not count a pageview automatically. It checks the same tracking service used by the site.</p><dl><dt>Tracking script</dt><dd id="scriptStatus">Loading</dd><dt>Request filter</dt><dd id="filterStatus">Waiting</dd><dt>Automation classification</dt><dd id="botStatus">Waiting</dd><dt>Page visibility</dt><dd id="visibilityStatus">Waiting</dd></dl><button id="test" disabled>Send a diagnostic event</button><p id="result" role="status">No test sent.</p><p><a href="./">Back to AI Models Guide</a></p><script>
+window.goatcounter={no_onload:true};
+function report(){
+ document.getElementById('visibilityStatus').textContent=document.visibilityState;
+ if(!window.goatcounter.count)return;
+ document.getElementById('scriptStatus').textContent='Loaded';
+ var reason=goatcounter.filter(),data=goatcounter.get_data();
+ document.getElementById('filterStatus').textContent=reason || 'No client-side filter';
+ document.getElementById('botStatus').textContent=data.b ? 'Classified as automation: '+data.b : 'Not classified as automation by the script';
+ document.getElementById('test').disabled=!!reason;
+}
+document.addEventListener('visibilitychange',report);
+document.getElementById('test').addEventListener('click',function(){
+ report();if(goatcounter.filter())return;
+ var img=new Image();
+ img.onload=function(){document.getElementById('result').textContent='The tracking endpoint responded. Check the dashboard for diagnostic-visit; an endpoint response alone does not confirm the event was counted.';};
+ img.onerror=function(){document.getElementById('result').textContent='The tracking endpoint could not be reached from this browser. Check the browser network error.';};
+ document.getElementById('result').textContent='Contacting tracking endpoint';
+ img.src=goatcounter.url({path:'diagnostic-visit',title:'Analytics connection test',event:true});
+});
+</script><script data-goatcounter="https://arieka.goatcounter.com/count" src="https://gc.zgo.at/count.js" onload="report()" onerror="document.getElementById('scriptStatus').textContent='Failed to load tracking script'"></script></body></html>
