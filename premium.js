@@ -74,8 +74,17 @@
   function scenarioHTML() {
     return '<section class="pro-scenario"><h3>'+t('scenario')+'</h3><form id="workloadForm"><div class="pro-fields">'+[['requests',1000],['input',800],['output',200]].map(function(a){return '<label>'+t(a[0])+'<input class="field" type="number" name="'+a[0]+'" min="'+(a[0]==='requests'?1:0)+'" max="1000000000" step="1" required value="'+a[1]+'"></label>';}).join('')+'</div><button class="btn" type="submit">'+t('calculate')+'</button></form><p role="status" aria-live="polite" data-pro-message></p><div class="tbl" id="workloadResults"></div><p class="note">'+t('assumptions')+'</p></section>';
   }
+  function premiumBenefits() {
+    var words = {
+      en: ['Your 3 days of Premium include', 'Saved comparisons', 'Save a pair of models and reopen it later.', 'Saved token estimates', 'Keep token counts and the input/output split for reuse.', 'Monthly workload calculator', 'Enter requests per month and tokens per request to compare estimated API costs.'],
+      he: ['מה מקבלים ב־3 ימי הפרימיום?', 'השוואות שמורות', 'שומרים זוג מודלים ופותחים את ההשוואה שוב בהמשך.', 'הערכות טוקנים שמורות', 'שומרים את כמות הטוקנים ואת חלוקת הקלט והפלט לשימוש חוזר.', 'מחשבון שימוש חודשי', 'מזינים בקשות בחודש וטוקנים לבקשה ומשווים את עלויות ה־API המשוערות.'],
+      ar: ['ما الذي تتضمنه أيام Premium الثلاثة؟', 'مقارنات محفوظة', 'احفظ نموذجين وأعد فتح المقارنة لاحقاً.', 'تقديرات رموز محفوظة', 'احفظ عدد الرموز ونسبة الإدخال والإخراج لإعادة استخدامها.', 'حاسبة الاستخدام الشهري', 'أدخل الطلبات الشهرية والرموز لكل طلب لمقارنة تكاليف API التقديرية.']
+    };
+    var labels = words[LANG] || words.en;
+    return '<section class="token-help pro-benefits"><h3>'+labels[0]+'</h3><ul>'+[1,3,5].map(function(i){return '<li><strong>'+labels[i]+'</strong><p style="margin:4px 0 12px">'+labels[i+1]+'</p></li>';}).join('')+'</ul></section>';
+  }
   function premiumWindow() {
-    return '<div class="pro-workspace"><p>'+t('intro')+'</p>'+streakHTML()+'<h3>'+t('tools')+'</h3>'+
+    return '<div class="pro-workspace"><p>'+t('intro')+'</p>'+premiumBenefits()+streakHTML()+'<h3>'+t('tools')+'</h3>'+
       (isPro()?scenarioHTML():'<p>'+t('locked')+'</p>')+savedHTML()+'<p class="note">'+t('local')+'</p>'+(!storageOK?'<p role="status">'+t('unavailable')+'</p>':'')+'</div>';
   }
   function bindPremium(root) {
