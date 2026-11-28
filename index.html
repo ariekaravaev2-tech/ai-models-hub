@@ -8,10 +8,10 @@
 <meta name="theme-color" content="#5939b5">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>AI Models Guide: AI Subscription and API Token Prices</title>
-<meta name="description" content="Compare AI subscriptions and API token prices. See what ChatGPT, Claude, Gemini, Grok and others cost, and estimate your token bill.">
-<meta property="og:title" content="AI Models Guide">
-<meta property="og:description" content="Compare AI subscriptions and API token prices, and estimate what your token usage will cost.">
+<title>Compare AI Subscription Prices &amp; API Token Costs</title>
+<meta name="description" content="Compare ChatGPT, Claude, Gemini and other AI plans. Check subscription prices, compare two models and estimate API input/output token costs. No signup needed.">
+<meta property="og:title" content="Compare AI Subscription Prices &amp; API Token Costs">
+<meta property="og:description" content="Compare AI plans side by side and estimate API costs from input and output tokens. Browse prices and use the calculator without signing up.">
 <meta property="og:type" content="website">
 <meta name="google-site-verification" content="sygvF0-xfZs7Cx9PA6-hfBjPZyY-8Fshhuy7W8QUZeU" />
 <link rel="canonical" href="https://ariekaravaev2-tech.github.io/ai-models-hub/">
@@ -814,11 +814,42 @@ function paintRows(root) {
 /* ---------- compare window ---------- */
 function compareWin() {
   var opts = function (sel) { return MODELS.map(function (m) { return '<option value="' + m.id + '"' + (m.id === sel ? " selected" : "") + ">" + esc(m.name) + "</option>"; }).join(""); };
-  return '<div class="tools"><label class="field">First model <select id="cmpA">' + opts(cmp.a) + '</select></label><label class="field">Second model <select id="cmpB">' + opts(cmp.b) + '</select></label></div><div class="tbl" id="cmpT"></div>';
+  return '<div class="tools"><label class="field">First model <select id="cmpA">' + opts(cmp.a) + '</select></label><label class="field">Second model <select id="cmpB">' + opts(cmp.b) + '</select></label></div>' +
+    '<section class="token-help"><label for="compareLink">' + compareShareText(0) + '</label><div class="tools" style="margin-top:8px"><input class="field grow" id="compareLink" type="text" readonly dir="ltr" style="min-width:0;width:100%"><button class="btn alt" id="copyCompare" type="button" style="margin:0">' + compareShareText(1) + '</button></div><p class="note" id="compareShareStatus" role="status" aria-live="polite">' + compareShareText(2) + '</p></section><div class="tbl" id="cmpT"></div>';
+}
+function compareShareText(i) {
+  var labels = {
+    en: ['Link to this comparison', 'Copy comparison link', 'Opens these two models. No account details are shared.', 'Link copied.', 'Select and copy the link manually.'],
+    he: ['קישור להשוואה הזאת', 'העתק קישור להשוואה', 'הקישור פותח את שני המודלים האלה. פרטי החשבון אינם משותפים.', 'הקישור הועתק.', 'יש לסמן ולהעתיק את הקישור ידנית.'],
+    ar: ['رابط لهذه المقارنة', 'نسخ رابط المقارنة', 'يفتح هذين النموذجين دون مشاركة بيانات الحساب.', 'تم نسخ الرابط.', 'حدد الرابط وانسخه يدوياً.'],
+    es: ['Enlace a esta comparación', 'Copiar enlace', 'Abre estos dos modelos sin compartir datos de cuenta.', 'Enlace copiado.', 'Selecciona y copia el enlace manualmente.'],
+    fr: ['Lien vers cette comparaison', 'Copier le lien', 'Ouvre ces deux modèles sans partager de données de compte.', 'Lien copié.', 'Sélectionnez et copiez le lien manuellement.'],
+    de: ['Link zu diesem Vergleich', 'Link kopieren', 'Öffnet diese beiden Modelle ohne Kontodaten weiterzugeben.', 'Link kopiert.', 'Link auswählen und manuell kopieren.'],
+    pt: ['Link para esta comparação', 'Copiar link', 'Abre estes dois modelos sem partilhar dados da conta.', 'Link copiado.', 'Selecione e copie o link manualmente.'],
+    ru: ['Ссылка на это сравнение', 'Копировать ссылку', 'Открывает эти две модели без передачи данных аккаунта.', 'Ссылка скопирована.', 'Выделите и скопируйте ссылку вручную.'],
+    zh: ['此比较的链接', '复制比较链接', '打开这两个模型，不分享账户信息。', '链接已复制。', '请选中并手动复制链接。']
+  };
+  return (labels[LANG] || labels.en)[i];
+}
+function comparisonLink(a, b) {
+  if (!byId(a) || !byId(b)) return null;
+  var url = new URL('https://ariekaravaev2-tech.github.io/ai-models-hub/');
+  url.hash = new URLSearchParams({compare: a, with: b}).toString();
+  return url.href;
+}
+function updateComparisonLink(root) {
+  root.querySelector('#compareLink').value = comparisonLink(cmp.a, cmp.b);
+  root.querySelector('#compareShareStatus').textContent = compareShareText(2);
 }
 function bindCompare(root) {
   paintCompare(root);
-  root.addEventListener("change", function (e) { if (e.target.id === "cmpA") cmp.a = e.target.value; else if (e.target.id === "cmpB") cmp.b = e.target.value; else return; paintCompare(root); });
+  updateComparisonLink(root);
+  root.addEventListener("change", function (e) { if (e.target.id === "cmpA") cmp.a = e.target.value; else if (e.target.id === "cmpB") cmp.b = e.target.value; else return; paintCompare(root); updateComparisonLink(root); });
+  root.querySelector('#copyCompare').addEventListener('click', function () {
+    var field = root.querySelector('#compareLink'), status = root.querySelector('#compareShareStatus');
+    var fallback = function () { field.focus(); field.select(); status.textContent = compareShareText(4); };
+    try { navigator.clipboard.writeText(field.value).then(function () { status.textContent = compareShareText(3); }, fallback); } catch (e) { fallback(); }
+  });
 }
 function paintCompare(root) {
   var a = byId(cmp.a), b = byId(cmp.b);
@@ -1202,6 +1233,17 @@ function showGate() {
 })();
 </script>
 <script src="premium.js"></script>
+<script>
+function openSharedComparison() {
+  var params = new URLSearchParams(location.hash.slice(1)), a = params.get('compare'), b = params.get('with');
+  if (!byId(a) || !byId(b)) return;
+  cmp.a = a; cmp.b = b;
+  if (current && current.id === 'compare') closeWindow(true);
+  openWindow('compare', null);
+}
+window.addEventListener('hashchange', openSharedComparison);
+openSharedComparison();
+</script>
 <nav class="more wrap" aria-label="Model pages"><p><a href="models/ai-token-cost-guide.html">AI cost per million tokens: calculation and worked example</a></p><h2>Price pages</h2><p><a href="models/chatgpt-plus-vs-claude-pro.html">ChatGPT Plus vs Claude Pro: prices, tools and limits</a></p><p><a href="models/chatgpt-go.html">ChatGPT Go</a> · <a href="models/chatgpt-plus.html">ChatGPT Plus</a> · <a href="models/claude-pro.html">Claude Pro</a> · <a href="models/claude-max.html">Claude Max</a> · <a href="models/google-ai-pro.html">Google AI Pro</a> · <a href="models/google-ai-plus.html">Google AI Plus</a> · <a href="models/supergrok.html">SuperGrok</a> · <a href="models/perplexity-pro.html">Perplexity Pro</a> · <a href="models/microsoft-365-premium.html">Microsoft 365 Premium</a> · <a href="models/le-chat-pro.html">Le Chat Pro</a> · <a href="models/deepseek.html">DeepSeek</a> · <a href="models/midjourney-basic.html">Midjourney Basic</a> · <a href="models/github-copilot-pro.html">GitHub Copilot Pro</a> · <a href="models/suno-pro.html">Suno Pro</a> · <a href="models/elevenlabs-starter.html">ElevenLabs Starter</a> · <a href="models/meta-ai.html">Meta AI</a> · <a href="models/qwen-chat.html">Qwen Chat</a> · <a href="models/claude-fable-5-1.html">Claude Fable 5.1</a> · <a href="models/claude-opus-5-5.html">Claude Opus 5.5</a> · <a href="models/claude-sonnet-5-5.html">Claude Sonnet 5.5</a> · <a href="models/claude-haiku-5-5.html">Claude Haiku 5.5</a> · <a href="models/gpt-5-5.html">GPT-5.5</a> · <a href="models/gpt-5-4.html">GPT-5.4</a> · <a href="models/gpt-5-4-mini.html">GPT-5.4 Mini</a> · <a href="models/gemini-3-1-pro.html">Gemini 3.1 Pro</a> · <a href="models/gemini-3-5-flash.html">Gemini 3.5 Flash</a> · <a href="models/gemini-3-1-flash-lite.html">Gemini 3.1 Flash-Lite</a> · <a href="models/grok-4-7.html">Grok 4.7</a> · <a href="models/grok-4-6.html">Grok 4.6</a> · <a href="models/grok-4-3.html">Grok 4.3</a> · <a href="models/deepseek-v4-1-flash.html">DeepSeek V4.1 Flash</a> · <a href="models/deepseek-v4-pro.html">DeepSeek V4 Pro</a> · <a href="models/mistral-large-4.html">Mistral Large 4</a> · <a href="models/mistral-small-4.html">Mistral Small 4</a></p></nav>
 <script>
 function trackAff(e) {
